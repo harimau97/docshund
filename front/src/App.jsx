@@ -2,8 +2,8 @@ import "./App.css";
 import { useLocation } from "react-router-dom";
 import AppRouter from "./router.jsx";
 import Footer from "./components/footer/footer.jsx";
-import UpperNav from "./components/header/upperHeader.jsx";
-import LeftNav from "./components/header/leftHeader.jsx";
+import UpperNav from "./components/header/upperNav.jsx";
+import LeftNav from "./components/header/leftNav.jsx";
 
 function App() {
   const location = useLocation();
