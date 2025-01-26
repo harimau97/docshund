@@ -15,13 +15,13 @@ const UpperNav = ({ loginStatus }) => {
 
   return (
     <div className=" bg-[#f0eee5] pl-[120px] pr-[64px] py-[22px] flex flex-row items-center justify-between relative shadow-[0px_-1px_1px_0px_rgba(0, 0, 0, 0.10)]">
-      <a href="/">
+      <NavLink to="/">
         <img
           className="shrink-0 w-[196px] h-[82px] relative object-cover"
           src={logo}
           alt="로고 이미지"
         />
-      </a>
+      </NavLink>
       <div className="flex flex-row items-center justify-between shrink-0 w-[40%] relative">
         <div className="shrink-0 w-fit h-[18px] relative">
           {location.pathname === "/" ? (
