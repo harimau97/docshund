@@ -72,7 +72,11 @@ const UpperNav = ({ loginStatus }) => {
       <div className="rounded-[5px] flex flex-row gap-[20px] items-center justify-start shrink-0 relative">
         {loginStatus ? (
           <div>
-            <img src={notification} alt="알림 아이콘" />
+            <img
+              className="cursor-pointer"
+              src={notification}
+              alt="알림 아이콘"
+            />
           </div>
         ) : null}
 
@@ -88,7 +92,7 @@ const UpperNav = ({ loginStatus }) => {
             onClick={() => {
               navigate("/myPage");
             }}
-            className="box-border w-[64px] h-[64px] relative object-cover"
+            className="box-border w-[64px] h-[64px] relative object-cover cursor-pointer"
             src={SampleProfileImg}
           />
         ) : null}
