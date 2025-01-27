@@ -86,7 +86,7 @@ const UpperNav = ({ loginStatus }) => {
           // 프로필 이미지를 누르면 마이페이지로 navigate
           <img
             onClick={() => {
-              navigate("/myPage");
+              navigate("/myPage/profile");
             }}
             className="box-border w-[64px] h-[64px] relative object-cover"
             src={SampleProfileImg}
