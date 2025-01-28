@@ -10,21 +10,14 @@ import RectBtn from "../button/roundCornerBtn.jsx";
 
 const LeftNav = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [docs, setDocs] = useState([
-    "test1",
-    "test2",
-    "test3",
-    "test4",
-    "test5",
-    "test6",
-  ]);
+  const [docs, setDocs] = useState([]);
   const [isMemoOpen, setIsMemoOpen] = useState(false);
   const [memos, setMemo] = useState([]);
   const [isNavOpen, setIsNavOpen] = useState(true);
   const [btnToggled, setBtnToggled] = useState("absolute top-25 -right-3");
   const [showNav, setShowNav] = useState(
-    "w-60 h-[80%] bg-[#F0EEE5] flex flex-col border-box border-2 border-black fixed top-1/2 -translate-y-1/2 rounded-br-4xl rounded-tr-4xl"
-  );
+    "w-60 h-[80%] bg-[#F0EEE5] flex flex-col border-box border-2 border-black fixed top-1/2 -translate-y-1/2 rounded-br-4xl rounded-tr-4xl z-100"
+  ); // leftNav가 화면 최상위에 오도록 z-index 설정
   const navigate = useNavigate();
 
   function toggleNav() {
@@ -36,7 +29,7 @@ const LeftNav = () => {
         "absolute top-25 -right-3 transform transition-transform duration-250 rotate-180"
       );
       setShowNav(
-        "w-60 h-[80%] bg-[#F0EEE5] flex flex-col border-box border-2 border-black fixed top-1/2 -translate-y-1/2 rounded-br-4xl rounded-tr-4xl transform transition-transform duration-250 -translate-x-[95%]"
+        "w-60 h-[80%] bg-[#F0EEE5] flex flex-col border-box border-2 border-black fixed top-1/2 -translate-y-1/2 rounded-br-4xl rounded-tr-4xl transform transition-transform duration-250 -translate-x-[95%] z-100"
       );
     } else if (isNavOpen === false) {
       console.log("nav 연다.");
@@ -45,7 +38,7 @@ const LeftNav = () => {
         "absolute top-25 -right-3 transform transition-transform duration-250 "
       );
       setShowNav(
-        "w-60 h-[80%] bg-[#F0EEE5] flex flex-col border-box border-2 border-black fixed top-1/2 -translate-y-1/2 rounded-br-4xl rounded-tr-4xl transform transition-transform duration-250"
+        "w-60 h-[80%] bg-[#F0EEE5] flex flex-col border-box border-2 border-black fixed top-1/2 -translate-y-1/2 rounded-br-4xl rounded-tr-4xl transform transition-transform duration-250 z-100"
       );
     }
   }
