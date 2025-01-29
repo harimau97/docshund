@@ -9,7 +9,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Builder
-public class UserDTO {
+public class UserDto {
 
 	private Provider provider;
 	private String personalId;
@@ -17,8 +17,8 @@ public class UserDTO {
 	private String nickname;
 	private String role;
 
-	public static UserDTO createUserDto(OAuth2Response oAuth2Response, String username) {
-		return UserDTO.builder()
+	public static UserDto createUserDto(OAuth2Response oAuth2Response, String username) {
+		return UserDto.builder()
 			.provider(oAuth2Response.getProvider())
 			.personalId(oAuth2Response.getProviderId())
 			.email(oAuth2Response.getEmail())

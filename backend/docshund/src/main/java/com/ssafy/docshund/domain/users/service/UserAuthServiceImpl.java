@@ -13,7 +13,7 @@ import com.ssafy.docshund.domain.users.dto.auth.CustomOAuth2User;
 import com.ssafy.docshund.domain.users.dto.auth.GithubResponse;
 import com.ssafy.docshund.domain.users.dto.auth.GoogleResponse;
 import com.ssafy.docshund.domain.users.dto.auth.OAuth2Response;
-import com.ssafy.docshund.domain.users.dto.auth.UserDTO;
+import com.ssafy.docshund.domain.users.dto.auth.UserDto;
 import com.ssafy.docshund.domain.users.entity.User;
 import com.ssafy.docshund.domain.users.repository.UserRepository;
 
@@ -34,7 +34,7 @@ public class UserAuthServiceImpl extends DefaultOAuth2UserService {
 		OAuth2Response oAuth2Response = getOAuth2Response(registrationId, oAuth2User);
 
 		String username = generateUsername(oAuth2Response);
-		UserDTO userDto = UserDTO.createUserDto(oAuth2Response, username);
+		UserDto userDto = UserDto.createUserDto(oAuth2Response, username);
 
 		userRepository.findByProviderAndPersonalId(oAuth2Response.getProvider(), oAuth2Response.getProviderId())
 			.orElseGet(() -> userRepository.save(User.createUser(userDto)));
