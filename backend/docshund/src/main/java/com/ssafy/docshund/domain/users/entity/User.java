@@ -2,6 +2,7 @@ package com.ssafy.docshund.domain.users.entity;
 
 import java.time.LocalDateTime;
 
+import com.ssafy.docshund.domain.users.dto.auth.UserDTO;
 import com.ssafy.docshund.global.audit.BaseTimeEntityWithUpdatedAt;
 
 import jakarta.persistence.Column;
@@ -27,7 +28,7 @@ public class User extends BaseTimeEntityWithUpdatedAt {
 	@Column(name = "email", nullable = false, unique = true, length = 100)
 	private String email;
 
-	@Column(name = "profile_image", length = 255)
+	@Column(name = "profile_image")
 	private String profileImage;
 
 	@Column(name = "nickname", length = 20, unique = true)
@@ -37,8 +38,9 @@ public class User extends BaseTimeEntityWithUpdatedAt {
 	@Column(name = "role", nullable = false, columnDefinition = "ENUM('ROLE_USER', 'ROLE_ADMIN') DEFAULT 'ROLE_USER'")
 	private Role role;
 
+	@Enumerated(EnumType.STRING)
 	@Column(name = "provider", nullable = false, length = 20)
-	private String provider;
+	private Provider provider;
 
 	@Column(name = "personal_id", length = 100)
 	private String personalId;
@@ -50,7 +52,22 @@ public class User extends BaseTimeEntityWithUpdatedAt {
 	@Column(name = "last_login")
 	private LocalDateTime lastLogin;
 
-	@Column(name = "token", length = 255)
+	@Column(name = "token")
 	private String token;
+
+	public static User createUser(UserDTO userDTO) {
+		User user = new User();
+		user.email = userDTO.getEmail();
+		// default image 수정 필요
+		user.profileImage = "https://cdn.discordapp.com/attachments/1325677272572891136/1334006138638958713/docshund.png?ex=679af588&is=6799a408&hm=29441a9c35dd323776e3a367f2cc18daea6dd7883f1cfef1a225f3b6a1bb63cb&";
+		user.nickname = userDTO.getNickname();
+		user.role = Role.ROLE_USER;
+		user.provider = userDTO.getProvider();
+		user.personalId = userDTO.getPersonalId();
+		user.status = Status.ACTIVE;
+		user.lastLogin = LocalDateTime.now();
+		user.token = "a";
+		return user;
+	}
 
 }
