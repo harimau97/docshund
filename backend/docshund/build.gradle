@@ -29,6 +29,7 @@ dependencies {
 
     /* Lombok */
     implementation 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
 
     /* WebSocket */
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
@@ -46,7 +47,7 @@ dependencies {
     testImplementation 'org.springframework.security:spring-security-test'
 
 
-	/* Swagger-ui */
+    /* Swagger-ui */
     implementation group: 'io.swagger.core.v3', name: 'swagger-annotations', version: '2.2.27'
 }
 
