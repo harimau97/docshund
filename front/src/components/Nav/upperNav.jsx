@@ -18,7 +18,7 @@ const UpperNav = ({ loginStatus }) => {
       <NavLink to="/">
         <img
           className="shrink-0 w-[196px] h-[82px] relative object-cover"
-          src={logo}
+          src="https://cdn.discordapp.com/attachments/1325677272572891136/1334006138638958713/docshund.png?ex=679af588&is=6799a408&hm=29441a9c35dd323776e3a367f2cc18daea6dd7883f1cfef1a225f3b6a1bb63cb&"
           alt="로고 이미지"
         />
       </NavLink>

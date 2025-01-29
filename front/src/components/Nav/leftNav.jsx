@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 import { NavLink, useNavigate } from "react-router-dom";
 import logo from "../../assets/logo.png";
@@ -43,6 +43,10 @@ const LeftNav = () => {
     }
   }
 
+  // useEffect(() => {
+  //   setIsNavOpen(false);
+  // }, []);
+
   return (
     <div className="h-screen">
       <div className={showNav}>
@@ -55,7 +59,7 @@ const LeftNav = () => {
         </button>
         <div className="p-5 text-center">
           <NavLink to="/translate">
-            <img src={logo} alt="닥스훈트 로고" />
+            <img src="https://cdn.discordapp.com/attachments/1325677272572891136/1334006138638958713/docshund.png?ex=679af588&is=6799a408&hm=29441a9c35dd323776e3a367f2cc18daea6dd7883f1cfef1a225f3b6a1bb63cb&" alt="닥스훈트 로고" />
           </NavLink>
         </div>
 
