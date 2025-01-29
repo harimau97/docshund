@@ -10,4 +10,6 @@ import com.ssafy.docshund.domain.users.entity.User;
 public interface UserRepository extends JpaRepository<User, Long> {
 
 	Optional<User> findByProviderAndPersonalId(Provider provider, String personalId);
+
+	Optional<User> findByPersonalId(String personalId);
 }

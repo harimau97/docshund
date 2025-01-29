@@ -14,10 +14,12 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Getter;
+import lombok.ToString;
 
 @Entity
-@Table(name = "user")
 @Getter
+@ToString
+@Table(name = "user")
 public class User extends BaseTimeEntityWithUpdatedAt {
 
 	@Id
@@ -66,7 +68,6 @@ public class User extends BaseTimeEntityWithUpdatedAt {
 		user.personalId = userDto.getPersonalId();
 		user.status = Status.ACTIVE;
 		user.lastLogin = LocalDateTime.now();
-		user.token = "a";
 		return user;
 	}
 
