@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-const useUserProfileStore = create((set) => ({
+const userProfileStore = create((set) => ({
   profile: {
     image:
       "https://img1.daumcdn.net/thumb/C500x500/?fname=http://t1.daumcdn.net/brunch/service/user/40yV/image/57msSqM71XQfFFReQZbkJm3c0Hg.jpg",
@@ -18,4 +18,4 @@ const useUserProfileStore = create((set) => ({
     })),
 }));
 
-export default useUserProfileStore;
+export default userProfileStore;

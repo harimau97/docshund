@@ -28,7 +28,7 @@ const Sidebar = () => {
 
   return (
     <div className="w-auto p-4 text-[#7D7C77]">
-      <div className="border-1 border-gray-300 rounded-xl p-3 bg-[#FFFFFF]">
+      <div className="border-1 border-[#E1E1DF] rounded-xl p-3 bg-[#FFFFFF]">
         {/* 상위 메뉴 항목 */}
         {mainMenuItems.map((item) => {
           const isActive = location.pathname.includes(item.path);
@@ -42,7 +42,7 @@ const Sidebar = () => {
                     isActive || navLinkIsActive
                       ? "text-[#bc5b39]"
                       : "text-[#7D7C77]"
-                  }`
+                  } hover:text-[#bc5b39]`
                 }
               >
                 {item.name}
@@ -60,7 +60,7 @@ const Sidebar = () => {
                           subNavLinkIsActive
                             ? "text-[#bc5b39]"
                             : "text-[#7D7C77]"
-                        }`
+                        } hover:text-[#bc5b39]`
                       }
                     >
                       {subItem.name}
