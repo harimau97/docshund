@@ -17,7 +17,7 @@ function AppRoutes() {
       <Route path="/helpDesk" element={<HelpDesk />}></Route>
 
       {/* 번역 관련 주소 */}
-      <Route path="/translate/viewer" element={<TranslateViewer />}></Route>
+      <Route path="/translate/viewer/:docsName" element={<TranslateViewer />}></Route>
     </Routes>
   );
 }
