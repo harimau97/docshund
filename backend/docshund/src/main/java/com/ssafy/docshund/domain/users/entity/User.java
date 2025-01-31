@@ -2,6 +2,7 @@ package com.ssafy.docshund.domain.users.entity;
 
 import java.time.LocalDateTime;
 
+import com.ssafy.docshund.domain.users.dto.auth.UserDto;
 import com.ssafy.docshund.global.audit.BaseTimeEntityWithUpdatedAt;
 
 import jakarta.persistence.Column;
@@ -13,10 +14,12 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Getter;
+import lombok.ToString;
 
 @Entity
-@Table(name = "user")
 @Getter
+@ToString
+@Table(name = "user")
 public class User extends BaseTimeEntityWithUpdatedAt {
 
 	@Id
@@ -27,7 +30,7 @@ public class User extends BaseTimeEntityWithUpdatedAt {
 	@Column(name = "email", nullable = false, unique = true, length = 100)
 	private String email;
 
-	@Column(name = "profile_image", length = 255)
+	@Column(name = "profile_image")
 	private String profileImage;
 
 	@Column(name = "nickname", length = 20, unique = true)
@@ -37,8 +40,9 @@ public class User extends BaseTimeEntityWithUpdatedAt {
 	@Column(name = "role", nullable = false, columnDefinition = "ENUM('ROLE_USER', 'ROLE_ADMIN') DEFAULT 'ROLE_USER'")
 	private Role role;
 
+	@Enumerated(EnumType.STRING)
 	@Column(name = "provider", nullable = false, length = 20)
-	private String provider;
+	private Provider provider;
 
 	@Column(name = "personal_id", length = 100)
 	private String personalId;
@@ -50,7 +54,26 @@ public class User extends BaseTimeEntityWithUpdatedAt {
 	@Column(name = "last_login")
 	private LocalDateTime lastLogin;
 
-	@Column(name = "token", length = 255)
-	private String token;
+	public static User createUser(UserDto userDto) {
+		User user = new User();
+		user.email = userDto.getEmail();
+		// default image 수정 필요
+		user.profileImage = "https://cdn.discordapp.com/attachments/1325677272572891136/1334006138638958713/docshund.png?ex=679af588&is=6799a408&hm=29441a9c35dd323776e3a367f2cc18daea6dd7883f1cfef1a225f3b6a1bb63cb&";
+		user.nickname = userDto.getNickname();
+		user.role = Role.ROLE_USER;
+		user.provider = userDto.getProvider();
+		user.personalId = userDto.getPersonalId();
+		user.status = Status.ACTIVE;
+		user.lastLogin = LocalDateTime.now();
+		return user;
+	}
+
+	public void updateLastLogin() {
+		this.lastLogin = LocalDateTime.now();
+	}
+
+	public void deleteUser() {
+		this.status = Status.WITHDRAWN;
+	}
 
 }
