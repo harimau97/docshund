@@ -9,4 +9,8 @@ import com.ssafy.docshund.domain.users.dto.page.UserSearchCondition;
 public interface UserQueryService {
 
 	public Page<UserAndInfoDto> searchUsers(UserSearchCondition condition, Pageable pageable);
+
+	public UserAndInfoDto getUserProfile(Long userId);
+
+	public void modifyUserProfile();
 }
