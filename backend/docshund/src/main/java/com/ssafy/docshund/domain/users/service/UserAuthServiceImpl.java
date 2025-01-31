@@ -8,6 +8,7 @@ import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.ssafy.docshund.domain.users.dto.auth.CustomOAuth2User;
 import com.ssafy.docshund.domain.users.dto.auth.GithubResponse;
@@ -16,16 +17,19 @@ import com.ssafy.docshund.domain.users.dto.auth.OAuth2Response;
 import com.ssafy.docshund.domain.users.dto.auth.UserDto;
 import com.ssafy.docshund.domain.users.entity.User;
 import com.ssafy.docshund.domain.users.repository.UserRepository;
+import com.ssafy.docshund.global.util.user.UserUtil;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class UserAuthServiceImpl extends DefaultOAuth2UserService {
 
 	private final UserRepository userRepository;
+	private final UserUtil userUtil;
 
 	@Override
 	public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
@@ -40,6 +44,11 @@ public class UserAuthServiceImpl extends DefaultOAuth2UserService {
 			.orElseGet(() -> userRepository.save(User.createUser(userDto)));
 
 		return new CustomOAuth2User(userDto);
+	}
+
+	public void deleteUser() {
+		User user = userUtil.getUser();
+		user.deleteUser();
 	}
 
 	private OAuth2Response getOAuth2Response(String registrationId, OAuth2User oAuth2User) {

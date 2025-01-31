@@ -54,9 +54,6 @@ public class User extends BaseTimeEntityWithUpdatedAt {
 	@Column(name = "last_login")
 	private LocalDateTime lastLogin;
 
-	@Column(name = "token")
-	private String token;
-
 	public static User createUser(UserDto userDto) {
 		User user = new User();
 		user.email = userDto.getEmail();
@@ -69,6 +66,14 @@ public class User extends BaseTimeEntityWithUpdatedAt {
 		user.status = Status.ACTIVE;
 		user.lastLogin = LocalDateTime.now();
 		return user;
+	}
+
+	public void updateLastLogin() {
+		this.lastLogin = LocalDateTime.now();
+	}
+
+	public void deleteUser() {
+		this.status = Status.WITHDRAWN;
 	}
 
 }
