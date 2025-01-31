@@ -20,7 +20,6 @@ const TranslateViewer = () => {
   const dbName = "docs"; //DB 이름
   const objectStoreName = docsName; //객체저장소(테이블) 이름
   const [isDbInitialized, setIsDbInitialized] = useState(false);
- 
 
   useEffect(() => {
     async function checkDB() {
@@ -28,7 +27,6 @@ const TranslateViewer = () => {
       try {
         await initDB(dbName, objectStoreName);
         const loadedData = await loadData(objectStoreName);
-        
 
         if (loadedData.length === 0) {
           console.log("db에 데이터가 없습니다. 데이터 가져오기 시작...");
@@ -127,8 +125,6 @@ const TranslateViewer = () => {
       loadMore();
     }
   }, [isDbInitialized]);
-
-  
 
   return (
     <div className="h-[99%] border-black border-2 w-[70%] absolute top-1/2 left-1/2 -translate-1/2 overflow-x-hidden overflow-y-scroll p-4 flex flex-col">
