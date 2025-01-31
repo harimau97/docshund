@@ -36,8 +36,7 @@ public class SecurityConfig {
 				.userService(userAuthServiceImpl))
 			.successHandler(customSuccessHandler));
 		http.authorizeHttpRequests((auth) -> auth
-			.requestMatchers("/").permitAll()
-			.anyRequest().authenticated());
+			.anyRequest().permitAll());
 		http.sessionManagement((session) -> session
 			.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
