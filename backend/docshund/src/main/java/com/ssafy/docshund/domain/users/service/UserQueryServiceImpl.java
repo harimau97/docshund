@@ -23,4 +23,15 @@ public class UserQueryServiceImpl implements UserQueryService {
 	public Page<UserAndInfoDto> searchUsers(UserSearchCondition condition, Pageable pageable) {
 		return userRepository.searchUsers(condition, pageable);
 	}
+
+	@Override
+	public UserAndInfoDto getUserProfile(Long userId) {
+		return userRepository.getProfileUser(userId);
+	}
+
+	@Override
+	public void modifyUserProfile() {
+
+	}
+
 }
