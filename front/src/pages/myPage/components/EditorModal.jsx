@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import PropTypes from "prop-types";
 import { Editor } from "@toast-ui/react-editor";
 import "@toast-ui/editor/dist/toastui-editor.css";
@@ -11,6 +11,7 @@ const EditorModal = ({
   onSubmit,
   isOpen,
   closeModal,
+  memoData, // 수정 모드일 때 memo 데이터를 받음
 }) => {
   const [formData, setFormData] = useState(
     fields.reduce((acc, field) => {
@@ -18,7 +19,29 @@ const EditorModal = ({
       return acc;
     }, {})
   );
-  const editorRef = React.createRef();
+  const editorRef = useRef();
+
+  useEffect(() => {
+    if (isOpen) {
+      if (memoData) {
+        // 수정 모드일 때 memoData로 폼 채우기
+        setFormData({
+          title: memoData.title,
+          content: memoData.content,
+        });
+        editorRef.current.getInstance().setMarkdown(memoData.content);
+      } else {
+        // 새 메모일 경우 초기화
+        setFormData(
+          fields.reduce((acc, field) => {
+            acc[field.name] = field.value || ""; // 기본값으로 리셋
+            return acc;
+          }, {})
+        );
+        editorRef.current.getInstance().setMarkdown("내용을 입력해주세요"); // 에디터 초기화
+      }
+    }
+  }, [isOpen, memoData, fields]); // 의존성 배열 수정
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -41,15 +64,18 @@ const EditorModal = ({
         !isOpen ? "hidden" : ""
       } backdrop-blur-xs backdrop-brightness-50`}
     >
-      <div className="bg-white w-3/5 h-auto rounded-lg border-1 border-[#E1E1DF] shadow-lg overflow-y-auto z-50">
+      <div className="h-[75vh] bg-white w-3/5 rounded-lg border-1 border-[#E1E1DF] shadow-lg overflow-hidden flex flex-col">
         <div className="flex justify-between p-4 border-b">
-          <button onClick={closeModal} className="text-gray-500 text-2xl">
+          <button onClick={closeModal}>
             <img src={back} alt="뒤로가기" />
           </button>
           <h2 className="text-lg font-semibold">{title}</h2>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-4 space-y-4">
+        <form
+          onSubmit={handleSubmit}
+          className="flex flex-col flex-grow p-4 space-y-4"
+        >
           {fields.map((field, idx) => (
             <div
               key={idx}
@@ -62,20 +88,22 @@ const EditorModal = ({
                 type={field.type}
                 name={field.name}
                 placeholder={field.placeholder}
-                value={formData[field.name]}
+                value={formData[field.name] || ""}
                 onChange={handleInputChange}
                 className="border w-9/10 p-2 rounded focus:outline-none focus:ring-1"
                 required={field.required}
               />
             </div>
           ))}
-          <Editor
-            initialValue="내용을 작성해주세요."
-            ref={editorRef}
-            height="450px"
-            previewStyle="tab"
-            useCommandShortcut={true}
-          />
+          <div className="flex-grow">
+            <Editor
+              initialValue="내용을 작성해주세요."
+              ref={editorRef}
+              height="100%"
+              previewStyle="tab"
+              useCommandShortcut={true}
+            />
+          </div>
           <div className="flex justify-end space-x-3">
             <button
               type="button"
@@ -109,6 +137,10 @@ EditorModal.propTypes = {
   onSubmit: PropTypes.func.isRequired,
   isOpen: PropTypes.bool.isRequired,
   closeModal: PropTypes.func.isRequired,
+  memoData: PropTypes.shape({
+    title: PropTypes.string.isRequired,
+    content: PropTypes.string.isRequired,
+  }), // memoData 추가
 };
 
 export default EditorModal;

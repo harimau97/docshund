@@ -1,9 +1,11 @@
+import { useNavigate } from "react-router-dom";
 import viewModalStore from "./stores/viewModalStore";
 import inquiryStore from "./stores/inquiryStore";
-import InlineModal from "./components/InlineModal";
+import InquiryModal from "./components/InquiryModal";
 import ListRender from "./components/ListRender";
 
 const InquiryPage = () => {
+  const navigate = useNavigate();
   const inquiries = inquiryStore((state) => state.inquiries);
   const { setOpenId, closeModal } = viewModalStore();
 
@@ -39,7 +41,7 @@ const InquiryPage = () => {
           </div>
         </div>
         {item.id === viewModalStore.getState().openId && (
-          <InlineModal item={item} closeModal={closeModal} />
+          <InquiryModal item={item} closeModal={closeModal} />
         )}
       </div>
     );
@@ -50,7 +52,7 @@ const InquiryPage = () => {
       <div className="flex justify-between mt-5 mb-5">
         <h1 className="font-bold text-2xl">나의 문의</h1>
         <button
-          onClick={setOpenId}
+          onClick={() => navigate("/helpdesk/inquiry")}
           className="border-box bg-[#bc5b39] rounded-[12px] px-[20px] w-fit h-10 relative flex items-center justify-center text-[#ffffff] hover:bg-[#C96442]"
         >
           + 문의작성
