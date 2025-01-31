@@ -7,10 +7,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.ssafy.docshund.domain.users.dto.auth.CustomOAuth2User;
+import com.ssafy.docshund.domain.users.entity.Role;
 import com.ssafy.docshund.domain.users.entity.Status;
 import com.ssafy.docshund.domain.users.entity.User;
 import com.ssafy.docshund.domain.users.repository.UserRepository;
-import com.ssafy.docshund.global.util.jwt.JwtUtil;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,7 +20,6 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class UserUtil {
 
-	private final JwtUtil jwtUtil;
 	private final UserRepository userRepository;
 
 	@Transactional(readOnly = true)
@@ -51,6 +50,17 @@ public class UserUtil {
 
 		log.error("User is not active");
 		return false;
+	}
+
+	@Transactional(readOnly = true)
+	public boolean isAdmin(User user) {
+		if (user.getRole() != Role.ROLE_ADMIN) {
+			log.info("is Not Admin");
+			return false;
+		}
+
+		log.info("is Admin");
+		return true;
 	}
 
 }
