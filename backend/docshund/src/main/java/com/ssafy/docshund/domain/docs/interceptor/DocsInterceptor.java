@@ -1,4 +1,4 @@
 package com.ssafy.docshund.domain.docs.interceptor;
 
-public class DocumentInterceptor {
+public class DocsInterceptor {
 }
