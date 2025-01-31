@@ -40,7 +40,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 		log.info("Token: " + token);
 
 		response.addHeader("Authorization", "Bearer " + token);
-		response.sendRedirect("http://localhost:8080/api/v1/docshund/users/login");
+		response.sendRedirect("http://localhost:3000/");
 	}
 
 }
