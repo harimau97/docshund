@@ -24,5 +24,5 @@ public interface DocsService {
     OriginDocumentDto getOriginDocumentDetail(Integer originId);
 
     // 원본 생성하기
-    OriginDocumentDto createOriginDocument(OriginDocumentDto originDocumentDto);
+    List<OriginDocumentDto> createOriginDocuments(Integer docsId, String content);
 }

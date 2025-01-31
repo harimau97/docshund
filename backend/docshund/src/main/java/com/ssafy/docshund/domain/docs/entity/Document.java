@@ -12,6 +12,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "document")
@@ -37,6 +38,7 @@ public class Document extends BaseTimeEntity {
 	private String documentLink;
 
 	@Column(name = "view_count", nullable = false)
+	@Setter
 	private Integer viewCount;
 
 	@Column(name = "document_version", nullable = false)
@@ -62,4 +64,5 @@ public class Document extends BaseTimeEntity {
 		this.license = license;
 		this.documentLink = documentLink;
 	}
+
 }

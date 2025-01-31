@@ -2,6 +2,7 @@ package com.ssafy.docshund.global.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -30,14 +31,13 @@ public class SecurityConfig {
 		http.csrf((auth) -> auth.disable());
 		http.formLogin((auth) -> auth.disable());
 		http.httpBasic((auth) -> auth.disable());
-		http.addFilterBefore(new JwtFilter(jwtUtil, userRepository), UsernamePasswordAuthenticationFilter.class);
-		http.oauth2Login((oauth2) -> oauth2
-			.userInfoEndpoint((userInfoEndpointConfig) -> userInfoEndpointConfig
-				.userService(userAuthServiceImpl))
-			.successHandler(customSuccessHandler));
+//		http.addFilterBefore(new JwtFilter(jwtUtil, userRepository), UsernamePasswordAuthenticationFilter.class);
+//		http.oauth2Login((oauth2) -> oauth2
+//			.userInfoEndpoint((userInfoEndpointConfig) -> userInfoEndpointConfig
+//				.userService(userAuthServiceImpl))
+//			.successHandler(customSuccessHandler));
 		http.authorizeHttpRequests((auth) -> auth
-			.requestMatchers("/").permitAll()
-			.anyRequest().authenticated());
+			.anyRequest().permitAll());
 		http.sessionManagement((session) -> session
 			.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 

@@ -17,42 +17,41 @@ public class DocsController {
 
     private final DocsService docsService;
 
-    // ✅ 문서 목록 조회 (GET /docs)
+    // 문서 목록 조회
     @GetMapping("")
     public ResponseEntity<List<DocumentDto>> getDocs() {
         List<DocumentDto> documents = docsService.getAllDocuments();
         return ResponseEntity.ok(documents);
     }
 
-    // ✅ 문서 정보(Document) 등록 (POST /docs)
+    // 문서 정보(Document) 등록
     @PostMapping("")
     public ResponseEntity<DocumentDto> postDocs(@RequestBody DocumentDto documentDto) {
         DocumentDto createdDocument = docsService.createDocument(documentDto);
         return ResponseEntity.ok(createdDocument);
     }
 
-    // ✅ 문서 정보 상세 조회 (GET /docs/{docsId})
+    // 문서 정보 상세 조회
     @GetMapping("/{docsId}")
     public ResponseEntity<DocumentDto> getDocsDetail(@PathVariable Integer docsId) {
         DocumentDto document = docsService.getDocumentDetail(docsId);
         return ResponseEntity.ok(document);
     }
 
-    // ✅ 원본 문서(OriginDocument) 등록 (POST /docs/{docsId}/origin)
+    // 받은 원본 문서를 파싱하여 생성
     @PostMapping("/{docsId}/origin")
-    public ResponseEntity<OriginDocumentDto> postOriginDocs(
+    public ResponseEntity<List<OriginDocumentDto>> postOriginDocs(
             @PathVariable Integer docsId,
-            @RequestBody OriginDocumentDto originDocumentDto
+            @RequestParam String content
     ) {
-        // docsId를 DTO에 포함하여 처리
-        OriginDocumentDto createdOriginDocument = docsService.createOriginDocument(
-                new OriginDocumentDto(null, docsId, originDocumentDto.pOrder(),
-                        originDocumentDto.tag(), originDocumentDto.content())
-        );
-        return ResponseEntity.ok(createdOriginDocument);
+        if (content == null || content.trim().isEmpty()) {
+            throw new IllegalArgumentException("Content is empty or null");
+        }
+        List<OriginDocumentDto> createdDocs = docsService.createOriginDocuments(docsId, content);
+        return ResponseEntity.ok(createdDocs);
     }
 
-    // ✅ 원본 문서(OriginDocument) 조회 (전체 조회 / 단락별 조회)
+    // 원본 문서(OriginDocument) 조회 (전체 조회 / 단락별 조회)
     @GetMapping("/{docsId}/origin")
     public ResponseEntity<?> getOriginDocs(
             @PathVariable Integer docsId,

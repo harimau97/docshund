@@ -7,7 +7,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface DocumentRepository extends JpaRepository<Document, Integer> {
 
-    // 특정 문서 상세 조회
     Document findByDocsId(Integer docsId);
 
 }

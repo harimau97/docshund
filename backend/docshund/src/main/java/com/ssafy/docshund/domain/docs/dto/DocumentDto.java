@@ -12,12 +12,11 @@ public record DocumentDto(
         String documentLogo,
         String documentVersion,
         Integer viewCount,
-        Integer likeCount,  // Join을 통해 받아옴
-        LocalDateTime createdDate,
+        Integer likeCount,  // Join을 통해 받아올 예정
         Position position,
         String license,
-        String documentLink
-) {
+        String documentLink,
+        LocalDateTime createdAt) {
     // 문서 조회용
     public static DocumentDto fromEntity(Document document) {
         return new DocumentDto(
@@ -28,10 +27,10 @@ public record DocumentDto(
                 document.getDocumentVersion(),
                 document.getViewCount(),
                 0, // likeCount 기본값 0
-                document.getCreatedDate(),
                 document.getPosition(),
                 document.getLicense(),
-                document.getDocumentLink()
+                document.getDocumentLink(),
+                document.getCreatedAt()
         );
     }
 }
