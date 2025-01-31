@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import RectBtn from "../../components/button/rectBtn";
-import RoundCornerBtn from "../../components/button/roundCornerBtn";
 
 const CommunityPage = () => {
   const navigate = useNavigate();
