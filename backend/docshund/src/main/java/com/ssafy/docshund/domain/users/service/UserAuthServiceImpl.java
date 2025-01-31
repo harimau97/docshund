@@ -16,6 +16,8 @@ import com.ssafy.docshund.domain.users.dto.auth.GoogleResponse;
 import com.ssafy.docshund.domain.users.dto.auth.OAuth2Response;
 import com.ssafy.docshund.domain.users.dto.auth.UserDto;
 import com.ssafy.docshund.domain.users.entity.User;
+import com.ssafy.docshund.domain.users.entity.UserInfo;
+import com.ssafy.docshund.domain.users.repository.UserInfoRepository;
 import com.ssafy.docshund.domain.users.repository.UserRepository;
 import com.ssafy.docshund.global.util.user.UserUtil;
 
@@ -29,6 +31,7 @@ import lombok.extern.slf4j.Slf4j;
 public class UserAuthServiceImpl extends DefaultOAuth2UserService {
 
 	private final UserRepository userRepository;
+	private final UserInfoRepository userInfoRepository;
 	private final UserUtil userUtil;
 
 	@Override
@@ -41,7 +44,11 @@ public class UserAuthServiceImpl extends DefaultOAuth2UserService {
 		UserDto userDto = UserDto.createUserDto(oAuth2Response, username);
 
 		userRepository.findByProviderAndPersonalId(oAuth2Response.getProvider(), oAuth2Response.getProviderId())
-			.orElseGet(() -> userRepository.save(User.createUser(userDto)));
+			.orElseGet(() -> {
+				User user = userRepository.save(User.createUser(userDto));
+				userInfoRepository.save(UserInfo.createUserInfo(user));
+				return user;
+			});
 
 		return new CustomOAuth2User(userDto);
 	}
