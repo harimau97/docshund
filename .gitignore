@@ -283,3 +283,6 @@ $RECYCLE.BIN/
 /backend/docshund/src/main/resources/application-API-KEY.properties
 /backend/docshund/gradle/wrapper/gradle-wrapper.jar
 /backend/docshund/build
+
+
+/backend/**/generated
