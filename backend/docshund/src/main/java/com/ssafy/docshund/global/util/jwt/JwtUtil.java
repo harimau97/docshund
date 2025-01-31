@@ -10,7 +10,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import io.jsonwebtoken.Jwts;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Component
 public class JwtUtil {
 
@@ -61,5 +63,15 @@ public class JwtUtil {
 			.expiration(new Date(System.currentTimeMillis() + expiredMs))
 			.signWith(secretKey)
 			.compact();
+	}
+
+	public boolean isValidAuthorization(String authorizationHeader) {
+		log.info("Authorization Header: " + authorizationHeader);
+		if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
+			log.info("Token is missing or invalid");
+			return true;
+		}
+
+		return false;
 	}
 }
