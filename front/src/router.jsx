@@ -1,18 +1,47 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import LandingPage from "./pages/landingPage.jsx";
 import TranslatePage from "./pages/translate/translate.jsx";
-import MyPage from "./pages/myPage/myPage.jsx";
+import MyPage from "./pages/myPage/MyPage.jsx";
+import MyProfilePage from "./pages/myPage/MyProfilePage.jsx";
+import ArchivePage from "./pages/myPage/ArchivePage.jsx";
+import LikeArticlePage from "./pages/myPage/archive/LikeArticlePage.jsx";
+import LikeTranslationPage from "./pages/myPage/archive/LikeTranslationPage.jsx";
+import LikeDocsPage from "./pages/myPage/archive/LikeDocsPage.jsx";
+import ActivityPage from "./pages/myPage/ActivityPage.jsx";
+import MyTranslationPage from "./pages/myPage/activity/MyTranslationPage.jsx";
+import MyArticlePage from "./pages/myPage/activity/MyArticlePage.jsx";
+import MyCommentPage from "./pages/myPage/activity/MyCommentPage.jsx";
+import MemoPage from "./pages/myPage/MemoPage.jsx";
+import InquiryPage from "./pages/myPage/InquiryPage.jsx";
 import CommunityPage from "./pages/community/community.jsx";
 import HelpDesk from "./pages/helpDesk.jsx";
 
 function AppRoutes() {
   return (
     <Routes>
-      <Route path="/" element={<LandingPage />}></Route>
-      <Route path="/myPage" element={<MyPage />}></Route>
-      <Route path="/translate" element={<TranslatePage />}></Route>
-      <Route path="/community" element={<CommunityPage />}></Route>
-      <Route path="/helpDesk" element={<HelpDesk />}></Route>
+      <Route path="/" element={<LandingPage />} />
+      <Route path="/myPage" element={<MyPage />}>
+        <Route
+          path="/myPage"
+          element={<Navigate to="/myPage/profile" replace />}
+        />
+        <Route path="profile" element={<MyProfilePage />} />
+        <Route path="archive" element={<ArchivePage />}>
+          <Route path="likeTrans" element={<LikeTranslationPage />} />
+          <Route path="likeArticle" element={<LikeArticlePage />} />
+          <Route path="likeDocs" element={<LikeDocsPage />} />
+        </Route>
+        <Route path="activity" element={<ActivityPage />}>
+          <Route path="myTrans" element={<MyTranslationPage />} />
+          <Route path="myArticle" element={<MyArticlePage />} />
+          <Route path="myComment" element={<MyCommentPage />} />
+        </Route>
+        <Route path="memo" element={<MemoPage />} />
+        <Route path="inquiry" element={<InquiryPage />} />
+      </Route>
+      <Route path="/translate" element={<TranslatePage />} />
+      <Route path="/community" element={<CommunityPage />} />
+      <Route path="/helpDesk" element={<HelpDesk />} />
     </Routes>
   );
 }
