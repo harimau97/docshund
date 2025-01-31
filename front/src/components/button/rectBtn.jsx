@@ -5,7 +5,7 @@ const RectBtn = ({ onClick, text = "" }) => {
 
   return (
     <button
-      className="box-border bg-[#bc5b39] rounded-[5px] px-[22px] py-[8px] w-fit h-10 flex flex-row items-center justify-center shrink-0 relative hover:bg-[#C96442]"
+      className="box-border bg-[#bc5b39] rounded-[5px] px-[22px] py-[8px] w-fit h-10 flex flex-row items-center justify-center shrink-0 relative hover:bg-[#C96442] cursor-pointer"
       onClick={onClick}
       type="button"
     >

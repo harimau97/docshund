@@ -15,11 +15,15 @@ import MemoPage from "./pages/myPage/MemoPage.jsx";
 import InquiryPage from "./pages/myPage/InquiryPage.jsx";
 import CommunityPage from "./pages/community/community.jsx";
 import HelpDesk from "./pages/helpDesk.jsx";
+import TranslateViewer from "./pages/translate/translateViewer.jsx";
 
 function AppRoutes() {
   return (
     <Routes>
+      {/* UpperNav 바로가기 주소 */}
       <Route path="/" element={<LandingPage />} />
+
+      {/* 마이페이지 관련 주소 */}
       <Route path="/myPage" element={<MyPage />}>
         <Route
           path="/myPage"
@@ -39,8 +43,16 @@ function AppRoutes() {
         <Route path="memo" element={<MemoPage />} />
         <Route path="inquiry" element={<InquiryPage />} />
       </Route>
-      <Route path="/translate" element={<TranslatePage />} />
+
+      {/* 번역 관련 주소 */}
+      <Route path="/translate" element={<TranslatePage />}> 
+        <Route path="viewer/:docsName" element={<TranslateViewer />}></Route>      
+      </Route>
+
+      {/* 커뮤니티 관련 주소 */}
       <Route path="/community" element={<CommunityPage />} />
+
+      {/* 도움말 관련 주소 */}
       <Route path="/helpDesk" element={<HelpDesk />} />
     </Routes>
   );

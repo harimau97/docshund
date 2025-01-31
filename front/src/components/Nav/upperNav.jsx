@@ -18,7 +18,7 @@ const UpperNav = ({ loginStatus }) => {
       <NavLink to="/">
         <img
           className="shrink-0 w-[196px] h-[82px] relative object-cover"
-          src={logo}
+          src="https://cdn.discordapp.com/attachments/1325677272572891136/1334006138638958713/docshund.png?ex=679af588&is=6799a408&hm=29441a9c35dd323776e3a367f2cc18daea6dd7883f1cfef1a225f3b6a1bb63cb&"
           alt="로고 이미지"
         />
       </NavLink>
@@ -72,7 +72,11 @@ const UpperNav = ({ loginStatus }) => {
       <div className="rounded-[5px] flex flex-row gap-[20px] items-center justify-start shrink-0 relative">
         {loginStatus ? (
           <div>
-            <img src={notification} alt="알림 아이콘" />
+            <img
+              className="cursor-pointer"
+              src={notification}
+              alt="알림 아이콘"
+            />
           </div>
         ) : null}
 
@@ -88,7 +92,7 @@ const UpperNav = ({ loginStatus }) => {
             onClick={() => {
               navigate("/myPage/profile");
             }}
-            className="box-border w-[64px] h-[64px] relative object-cover"
+            className="box-border w-[64px] h-[64px] relative object-cover cursor-pointer"
             src={SampleProfileImg}
           />
         ) : null}
