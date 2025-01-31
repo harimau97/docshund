@@ -47,9 +47,9 @@ function AppRoutes() {
       {/* 번역 관련 주소 */}
       <Route path="/translate" element={<TranslatePage />}></Route>
       <Route
-          path="translate/viewer/:docsName"
-          element={<TranslateViewer />}
-        ></Route>
+        path="translate/viewer/:docsName"
+        element={<TranslateViewer />}
+      ></Route>
 
       {/* 커뮤니티 관련 주소 */}
       <Route path="/community" element={<CommunityPage />} />

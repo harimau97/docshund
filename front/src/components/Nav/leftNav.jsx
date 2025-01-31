@@ -8,7 +8,7 @@ import docsList from "../../assets/icon/docsList.png";
 import notification from "../../assets/icon/notification.png";
 import memo from "../../assets/icon/memo.png";
 import navToggle from "../../assets/icon/navToggle.png";
-import RectBtn from "../button/roundCornerBtn.jsx";
+import RoundCornerBtn from "../button/roundCornerBtn.jsx";
 
 const LeftNav = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -149,7 +149,10 @@ const LeftNav = () => {
           </div>
         </div>
         <div className="items-center justify-center flex mb-10">
-          <RectBtn onClick={() => navigate("/translate")} text="뷰어 나가기" />
+          <RoundCornerBtn
+            onClick={() => navigate("/translate")}
+            text="뷰어 나가기"
+          />
         </div>
       </div>
       <EditorModal

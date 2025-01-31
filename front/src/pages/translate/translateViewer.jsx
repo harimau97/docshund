@@ -1,6 +1,10 @@
 import { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { initDB, addData, loadData } from "./indexedDB/indexedDB.jsx";
+import useButtonStore from "./store/buttonStore.jsx";
+import TranslateEditor from "./components/translateEditor.jsx";
+import TranslatePoll from "./components/translatePoll.jsx";
+import RoundCornerBtn from "../../components/button/roundCornerBtn.jsx";
 import loadingGif from "../../assets/loading.gif";
 import axios from "axios";
 
@@ -20,6 +24,9 @@ const TranslateViewer = () => {
   const dbName = "docs"; //DB 이름
   const objectStoreName = docsName; //객체저장소(테이블) 이름
   const [isDbInitialized, setIsDbInitialized] = useState(false);
+
+  //ui 관련
+  const buttonStore = useButtonStore();
 
   useEffect(() => {
     async function checkDB() {
@@ -128,11 +135,17 @@ const TranslateViewer = () => {
 
   return (
     <div className="h-[99%] border-black border-2 w-[70%] absolute top-1/2 left-1/2 -translate-1/2 overflow-x-hidden overflow-y-scroll p-4 flex flex-col">
+      {buttonStore.isButtonShown && (
+        <div>
+          <RoundCornerBtn onClick={() => alert("번역하기")} text="번역하기" />
+          <RoundCornerBtn onClick={() => alert("번역기록")} text="번역기록" />
+        </div>
+      )}
       <div className="flex flex-col gap-4">
         {docParts.map((part, index) => (
           <div
             key={index}
-            onClick={() => alert(part.porder)}
+            onClick={buttonStore.toggleButton}
             dangerouslySetInnerHTML={{ __html: part.content }}
             className="bg-[#E4DCD4] cursor-pointer p-2 rounded-md text-[#424242] hover:bg-[#BCB2A8]flex flex-col"
           />
