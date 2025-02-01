@@ -1,8 +1,9 @@
 import { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { initDB, addData, loadData } from "./indexedDB/indexedDB.jsx";
+import useModalStore from "./store/modalStore.jsx";
 import TranslateEditor from "./components/translateEditor.jsx";
-import TranslatePoll from "./components/translatePoll.jsx";
+import TranslateArchive from "./components/translateArchive.jsx";
 import RoundCornerBtn from "../../components/button/roundCornerBtn.jsx";
 import loadingGif from "../../assets/loading.gif";
 import { IoCloseCircleOutline } from "react-icons/io5";
@@ -24,6 +25,9 @@ const TranslateViewer = () => {
   const dbName = "docs";
   const objectStoreName = docsName;
   const [isDbInitialized, setIsDbInitialized] = useState(false);
+
+  //번역 에디터, 투표 관련 모달
+  const { openEditor, openArchive } = useModalStore();
 
   //ui 관련
   const toggleButton = (partId, e) => {
@@ -155,7 +159,7 @@ const TranslateViewer = () => {
   }, [isDbInitialized]);
 
   return (
-    <div className="h-[99%] border-black border-2 w-[70%] absolute top-1/2 left-1/2 -translate-1/2 overflow-x-auto overflow-y-scroll p-4 flex flex-col">
+    <div className="h-[99%] border-black border-2 w-[70%] absolute top-1/2 left-1/2 -translate-1/2 overflow-x-auto overflow-y-scroll p-4 flex flex-col z-auto">
       <div className="flex flex-col gap-4">
         {docParts.map((part, index) => (
           <div key={index} className="flex flex-row relative">
@@ -174,18 +178,12 @@ const TranslateViewer = () => {
                   transform: "translate(-128px,-20px)",
                 }}
               >
-                <RoundCornerBtn
-                  onClick={() => alert("번역하기")}
-                  text="번역하기"
-                />
+                <RoundCornerBtn onClick={() => openEditor()} text="번역하기" />
                 <IoCloseCircleOutline
                   className="w-8 h-8 cursor-pointer text-[#bc5b39] mr-2 ml-2 min-w-fit"
                   onClick={(e) => toggleButton(part.id, e)}
                 />
-                <RoundCornerBtn
-                  onClick={() => alert("번역기록")}
-                  text="번역기록"
-                />
+                <RoundCornerBtn onClick={() => openArchive()} text="번역기록" />
               </div>
             )}
           </div>
@@ -204,6 +202,8 @@ const TranslateViewer = () => {
         )}
         {!hasMore && <div>모든 문서를 불러왔습니다.</div>}
       </div>
+      <TranslateEditor className="z-auto" />
+      <TranslateArchive className="z-auto" />
     </div>
   );
 };

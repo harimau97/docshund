@@ -17,8 +17,8 @@ const ProfilePage = () => {
     setEditedProfile(profile); // 취소시 원래 값으로 되돌리기
   };
 
-  const handleSaveClick = () => {
-    setProfile(editedProfile); // API 통신 또는 상태 업데이트
+  const handleSaveClick = async () => {
+    await setProfile(editedProfile); // API 통신 또는 상태 업데이트
     setIsEditing(false);
   };
 
