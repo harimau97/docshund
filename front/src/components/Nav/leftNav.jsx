@@ -17,7 +17,7 @@ const LeftNav = () => {
   const [isNavOpen, setIsNavOpen] = useState(true);
   const [btnToggled, setBtnToggled] = useState("absolute top-25 -right-3");
   const [showNav, setShowNav] = useState(
-    "max-w-[15%] w-60 h-[80%] bg-[#F0EEE5] flex flex-col border-box border-2 border-black fixed top-1/2 -translate-y-1/2 rounded-br-4xl rounded-tr-4xl z-49"
+    "max-w-[15%] min-w-fit w-60 h-[80%] bg-[#F0EEE5] flex flex-col border-box border-2 border-black fixed top-1/2 -translate-y-1/2 rounded-br-4xl rounded-tr-4xl z-49"
   ); // leftNav가 화면 최상위에 오도록 z-index 설정
   const { isOpen, openModal, closeModal } = modalStore();
   const [memoData, setMemoData] = useState({
@@ -48,7 +48,7 @@ const LeftNav = () => {
         "absolute top-25 -right-3 transform transition-transform duration-250 rotate-180"
       );
       setShowNav(
-        "max-w-[15%] w-60 h-[80%] bg-[#F0EEE5] flex flex-col border-box border-2 border-black fixed top-1/2 -translate-y-1/2 rounded-br-4xl rounded-tr-4xl transform transition-transform duration-250 -translate-x-[95%] z-49"
+        "max-w-[15%] min-w-fit w-60 h-[80%] bg-[#F0EEE5] flex flex-col border-box border-2 border-black fixed top-1/2 -translate-y-1/2 rounded-br-4xl rounded-tr-4xl transform transition-transform duration-250 -translate-x-[95%] z-49"
       );
     } else if (isNavOpen === false) {
       console.log("nav 연다.");
@@ -57,7 +57,7 @@ const LeftNav = () => {
         "absolute top-25 -right-3 transform transition-transform duration-250 "
       );
       setShowNav(
-        "max-w-[15%] w-60 h-[80%] bg-[#F0EEE5] flex flex-col border-box border-2 border-black fixed top-1/2 -translate-y-1/2 rounded-br-4xl rounded-tr-4xl transform transition-transform duration-250 z-49"
+        "max-w-[15%] min-w-fit w-60 h-[80%] bg-[#F0EEE5] flex flex-col border-box border-2 border-black fixed top-1/2 -translate-y-1/2 rounded-br-4xl rounded-tr-4xl transform transition-transform duration-250 z-49"
       );
     }
   }
@@ -93,9 +93,9 @@ const LeftNav = () => {
             <img src={docsList} alt="문서목록 아이콘" />
             <span className="ml-5">문서목록</span>
             {isMenuOpen ? (
-              <IoIosArrowUp className="absolute right-0 mr-5" />
+              <IoIosArrowUp className="right-0 mr-5" />
             ) : (
-              <IoIosArrowDown className="absolute right-0 mr-5" />
+              <IoIosArrowDown className="right-0 mr-5" />
             )}
           </div>
           {isMenuOpen && (

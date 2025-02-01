@@ -1,32 +1,53 @@
 import { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { initDB, addData, loadData } from "./indexedDB/indexedDB.jsx";
-import useButtonStore from "./store/buttonStore.jsx";
 import TranslateEditor from "./components/translateEditor.jsx";
 import TranslatePoll from "./components/translatePoll.jsx";
 import RoundCornerBtn from "../../components/button/roundCornerBtn.jsx";
 import loadingGif from "../../assets/loading.gif";
+import { IoCloseCircleOutline } from "react-icons/io5";
 import axios from "axios";
 
-// npm run dev를 했을 경우 useEffect가 두 번 실행되기 때문에 console에서 addData를 실행할 수 없다는 에러가 출력됩니다.
-// 실제 배포했을 때는 발생하지 않습니다.
 const TranslateViewer = () => {
   const { docsName } = useParams();
   const [docParts, setDocParts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [processedCount, setProcessedCount] = useState(0);
+  const [buttonStates, setButtonStates] = useState({});
+  const [mousePositions, setMousePositions] = useState({}); // 마우스 위치를 저장할 state 추가
   const docData = useRef([]);
   const loadingRef = useRef(null);
   const chunk_size = 20;
 
   //indexedDB 관련 변수
-  const dbName = "docs"; //DB 이름
-  const objectStoreName = docsName; //객체저장소(테이블) 이름
+  const dbName = "docs";
+  const objectStoreName = docsName;
   const [isDbInitialized, setIsDbInitialized] = useState(false);
 
   //ui 관련
-  const buttonStore = useButtonStore();
+  const toggleButton = (partId, e) => {
+    // 클릭 이벤트 객체 e를 받도록 수정
+    const rect = e.currentTarget.getBoundingClientRect();
+    setMousePositions((prev) => ({
+      // 클릭한 위치 저장
+      ...prev,
+      [partId]: {
+        x: e.clientX - rect.left,
+        y: e.clientY - rect.top,
+      },
+    }));
+
+    setButtonStates((prev) => ({
+      ...Object.keys(prev).reduce((acc, key) => {
+        if (key !== partId) {
+          acc[key] = false;
+        }
+        return acc;
+      }, {}),
+      [partId]: !prev[partId],
+    }));
+  };
 
   useEffect(() => {
     async function checkDB() {
@@ -134,21 +155,40 @@ const TranslateViewer = () => {
   }, [isDbInitialized]);
 
   return (
-    <div className="h-[99%] border-black border-2 w-[70%] absolute top-1/2 left-1/2 -translate-1/2 overflow-x-hidden overflow-y-scroll p-4 flex flex-col">
-      {buttonStore.isButtonShown && (
-        <div>
-          <RoundCornerBtn onClick={() => alert("번역하기")} text="번역하기" />
-          <RoundCornerBtn onClick={() => alert("번역기록")} text="번역기록" />
-        </div>
-      )}
+    <div className="h-[99%] border-black border-2 w-[70%] absolute top-1/2 left-1/2 -translate-1/2 overflow-x-auto overflow-y-scroll p-4 flex flex-col">
       <div className="flex flex-col gap-4">
         {docParts.map((part, index) => (
-          <div
-            key={index}
-            onClick={buttonStore.toggleButton}
-            dangerouslySetInnerHTML={{ __html: part.content }}
-            className="bg-[#E4DCD4] cursor-pointer p-2 rounded-md text-[#424242] hover:bg-[#BCB2A8]flex flex-col"
-          />
+          <div key={index} className="flex flex-row relative">
+            <div
+              onClick={(e) => toggleButton(part.id, e)} // toggleButton에 e를 전달
+              dangerouslySetInnerHTML={{ __html: part.content }}
+              className="bg-[#E4DCD4] cursor-pointer p-2 rounded-md text-[#424242] hover:bg-[#BCB2A8] flex flex-col w-full"
+            />
+            {buttonStates[part.id] && (
+              <div
+                className="flex flex-row min-w-fit h-fit z-95 items-center"
+                style={{
+                  position: "absolute",
+                  top: mousePositions[part.id]?.y || 0, // 저장된 y좌표 사용
+                  left: mousePositions[part.id]?.x || 0, // 저장된 x좌표 사용
+                  transform: "translate(-128px,-20px)",
+                }}
+              >
+                <RoundCornerBtn
+                  onClick={() => alert("번역하기")}
+                  text="번역하기"
+                />
+                <IoCloseCircleOutline
+                  className="w-8 h-8 cursor-pointer text-[#bc5b39] mr-2 ml-2 min-w-fit"
+                  onClick={(e) => toggleButton(part.id, e)}
+                />
+                <RoundCornerBtn
+                  onClick={() => alert("번역기록")}
+                  text="번역기록"
+                />
+              </div>
+            )}
+          </div>
         ))}
       </div>
 
