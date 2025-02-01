@@ -4,6 +4,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import com.ssafy.docshund.domain.docs.entity.Position;
+import com.ssafy.docshund.domain.forums.dto.ArticleDto;
 import com.ssafy.docshund.domain.forums.dto.ArticleInfo;
 
 public interface ForumService {
@@ -18,4 +19,8 @@ public interface ForumService {
 	Page<ArticleInfo> getArticlesLikedByUserId(Pageable pageable);
 
 	ArticleInfo getArticleDetail(Integer articleId);
+
+	void deleteArticle(Integer articleId);
+
+	void likeArticle(Integer articleId);
 }
