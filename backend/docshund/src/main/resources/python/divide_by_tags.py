@@ -30,7 +30,6 @@ if __name__ == "__main__":
     try:
         print("[Python] Script started", file=sys.stderr)
 
-        # 🔥 JSON 파싱 제거 → HTML 그대로 받기
         html_content = sys.stdin.read().strip()
 
         print(f"[Python] Raw HTML input length: {len(html_content)}", file=sys.stderr)
@@ -39,11 +38,10 @@ if __name__ == "__main__":
         if not html_content:
             raise ValueError("No HTML content received from Java")
 
-        # 🔥 HTML 데이터 그대로 처리
         parsed_data = process_html(html_content)
 
         print("[Python] Processing complete", file=sys.stderr)
-        print(json.dumps(parsed_data, ensure_ascii=False))  # UTF-8 출력 보장
+        print(json.dumps(parsed_data, ensure_ascii=False))
         sys.stdout.flush()
 
     except Exception as e:

@@ -36,7 +36,7 @@ public class TranslatedDocument extends BaseTimeEntityWithUpdatedAt {
 	@Column(name = "report_count", nullable = false)
 	private Integer reportCount;
 
-	@Column(name = "is_hidden", nullable = false)
-	private Boolean isHidden;
+	@Column(name = "status", nullable = false, columnDefinition = "ENUM('VISIBLE', 'INVISIBLE', 'DELETED') DEFAULT 'VISIBLE'")
+	private Status status;
 
 }
