@@ -27,7 +27,8 @@ public class ForumServiceImpl implements ForumService {
 	/* Article */
 
 	@Override
-	public Page<ArticleInfo> getArticles(String sort, Position filter, String keyword, String searchType, Pageable pageable) {
+	public Page<ArticleInfo> getArticles(String sort, Position filterPosition, String filterDocName,
+		String keyword, String searchType, Pageable pageable) {
 
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		User user = null;
@@ -38,7 +39,7 @@ public class ForumServiceImpl implements ForumService {
 
 		Long userId = (user != null) ? user.getUserId() : 0L;
 
-		return articleRepository.findAllArticles(sort, filter, keyword, searchType, pageable, userId);
+		return articleRepository.findAllArticles(sort, filterPosition, filterDocName, keyword, searchType, pageable, userId);
 	}
 
 	@Override

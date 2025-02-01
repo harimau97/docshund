@@ -10,7 +10,8 @@ public interface ForumService {
 
 	/* Article */
 
-	Page<ArticleInfo> getArticles(String sort, Position filter, String keyword, String searchType, Pageable pageable);
+	Page<ArticleInfo> getArticles(String sort, Position filterPosition, String filterDocName,
+		String keyword, String searchType, Pageable pageable);
 
 	Page<ArticleInfo> getArticlesByUserId(Long authorId, Pageable pageable);
 

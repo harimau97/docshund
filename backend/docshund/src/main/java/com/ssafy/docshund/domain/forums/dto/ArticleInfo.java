@@ -3,6 +3,7 @@ package com.ssafy.docshund.domain.forums.dto;
 import java.time.LocalDateTime;
 
 import com.querydsl.core.annotations.QueryProjection;
+import com.ssafy.docshund.domain.docs.entity.Position;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,6 +16,8 @@ public class ArticleInfo{
 
 	private Integer articleId;
 	private Integer docsId;
+	private Position position;
+	private String documentName;
 	private String title;
 	private String content;
 	private LocalDateTime createdAt;
@@ -28,12 +31,14 @@ public class ArticleInfo{
 	private boolean isLiked;
 
 	@QueryProjection
-	public ArticleInfo(Integer articleId, Integer docsId, String title, String content,
-		LocalDateTime createdAt, LocalDateTime updatedAt,
+	public ArticleInfo(Integer articleId, Integer docsId, Position position, String documentName,
+		String title, String content, LocalDateTime createdAt, LocalDateTime updatedAt,
 		Integer viewCount, Integer likesCount, Integer commentsCount,
 		Long userId, String nickname, String profileImage, boolean isLiked) {
 		this.articleId = articleId;
 		this.docsId = docsId;
+		this.position = position;
+		this.documentName = documentName;
 		this.title = title;
 		this.content = content;
 		this.createdAt = createdAt;

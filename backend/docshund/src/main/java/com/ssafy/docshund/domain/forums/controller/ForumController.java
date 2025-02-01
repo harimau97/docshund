@@ -33,10 +33,11 @@ public class ForumController {
 		@RequestParam(required = false) String searchType,
 		@PageableDefault(page = 0, size = 10) Pageable pageable
 	) {
-		Position filterPosition = parseFilter(filter);
+		Object parsedFilter = parseFilter(filter);
 		Page<ArticleInfo> result = forumService.getArticles(
 			Optional.ofNullable(sort).orElse("latest"),
-			filterPosition,
+			(parsedFilter instanceof Position) ? (Position) parsedFilter : null,
+			(parsedFilter instanceof String) ? (String) parsedFilter : "",
 			Optional.ofNullable(keyword).orElse(""),
 			Optional.ofNullable(searchType).orElse(""),
 			pageable
@@ -74,14 +75,15 @@ public class ForumController {
 	}
 
 
-	private Position parseFilter(String filter) {
-		if(filter == null || filter.isEmpty())
+	private Object parseFilter(String filter) {
+		if (filter == null || filter.isEmpty()) {
 			return null;
+		}
 
-		try{
-			return Position.valueOf(filter);
-		}catch(Exception e){
-			throw new IllegalArgumentException("NOT EXISTS FILTER : " + filter);
+		try {
+			return Position.valueOf(filter.toUpperCase());
+		} catch (IllegalArgumentException e) {
+			return filter;
 		}
 	}
 }

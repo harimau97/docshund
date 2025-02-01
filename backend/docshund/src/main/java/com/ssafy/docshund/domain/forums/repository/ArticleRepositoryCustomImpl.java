@@ -32,8 +32,8 @@ public class ArticleRepositoryCustomImpl implements ArticleRepositoryCustom {
 	private final JPAQueryFactory queryFactory;
 
 	@Override
-	public Page<ArticleInfo> findAllArticles(String sort, Position filter, String keyword,
-		String searchType, Pageable pageable, Long userId) {
+	public Page<ArticleInfo> findAllArticles(String sort, Position filterPosition, String filterDocName,
+		String keyword, String searchType, Pageable pageable, Long userId) {
 
 		QArticle article = QArticle.article;
 		QArticleLike articleLike = QArticleLike.articleLike;
@@ -43,8 +43,12 @@ public class ArticleRepositoryCustomImpl implements ArticleRepositoryCustom {
 
 		BooleanBuilder builder = new BooleanBuilder();
 
-		if (filter != null) {
-			builder.and(document.position.eq(filter));
+		if (filterPosition != null) {
+			builder.and(document.position.eq(filterPosition));
+		}
+
+		if (filterDocName != null && !filterDocName.isEmpty()) {
+			builder.and(document.documentName.eq(filterDocName));
 		}
 
 		if ((searchType != null && !searchType.isEmpty()) && (keyword != null && !keyword.isEmpty())) {
@@ -61,6 +65,8 @@ public class ArticleRepositoryCustomImpl implements ArticleRepositoryCustom {
 			.select(new QArticleInfo(
 				article.articleId,
 				document.docsId,
+				document.position,
+				document.documentName,
 				article.title,
 				article.content,
 				article.createdAt,
@@ -86,8 +92,8 @@ public class ArticleRepositoryCustomImpl implements ArticleRepositoryCustom {
 			.leftJoin(articleLike).on(article.articleId.eq(articleLike.article.articleId))
 			.leftJoin(comment).on(article.articleId.eq(comment.article.articleId))
 			.where(builder, article.status.eq(Status.VISIBLE))
-			.groupBy(article.articleId, document.docsId, article.title, article.content,
-				article.createdAt, article.updatedAt, article.viewCount,
+			.groupBy(article.articleId, document.docsId, document.position, document.documentName,
+				article.title, article.content, article.createdAt, article.updatedAt, article.viewCount,
 				article.user.userId, article.user.nickname, article.user.profileImage)
 			.orderBy(orderSpecifier)
 			.offset(pageable.getOffset())
@@ -119,6 +125,8 @@ public class ArticleRepositoryCustomImpl implements ArticleRepositoryCustom {
 			.select(new QArticleInfo(
 				article.articleId,
 				document.docsId,
+				document.position,
+				document.documentName,
 				article.title,
 				article.content,
 				article.createdAt,
@@ -145,8 +153,8 @@ public class ArticleRepositoryCustomImpl implements ArticleRepositoryCustom {
 			.leftJoin(comment).on(article.articleId.eq(comment.article.articleId))
 			.where(article.user.userId.eq(authorId),
 				article.status.eq(Status.VISIBLE))
-			.groupBy(article.articleId, document.docsId, article.title, article.content,
-				article.createdAt, article.updatedAt, article.viewCount,
+			.groupBy(article.articleId, document.docsId, document.position, document.documentName,
+				article.title, article.content, article.createdAt, article.updatedAt, article.viewCount,
 				article.user.userId, article.user.nickname, article.user.profileImage)
 			.orderBy(article.createdAt.desc())
 			.offset(pageable.getOffset())
@@ -178,6 +186,8 @@ public class ArticleRepositoryCustomImpl implements ArticleRepositoryCustom {
 			.select(new QArticleInfo(
 				article.articleId,
 				document.docsId,
+				document.position,
+				document.documentName,
 				article.title,
 				article.content,
 				article.createdAt,
@@ -204,8 +214,8 @@ public class ArticleRepositoryCustomImpl implements ArticleRepositoryCustom {
 			.leftJoin(comment).on(article.articleId.eq(comment.article.articleId))
 			.where(articleLike.user.userId.eq(userId),
 				article.status.eq(Status.VISIBLE))
-			.groupBy(article.articleId, document.docsId, article.title, article.content,
-				article.createdAt, article.updatedAt, article.viewCount,
+			.groupBy(article.articleId, document.docsId, document.position, document.documentName,
+				article.title, article.content, article.createdAt, article.updatedAt, article.viewCount,
 				article.user.userId, article.user.nickname, article.user.profileImage)
 			.orderBy(article.createdAt.desc())
 			.offset(pageable.getOffset())
@@ -238,6 +248,8 @@ public class ArticleRepositoryCustomImpl implements ArticleRepositoryCustom {
 			.select(new QArticleInfo(
 				article.articleId,
 				document.docsId,
+				document.position,
+				document.documentName,
 				article.title,
 				article.content,
 				article.createdAt,
@@ -260,7 +272,7 @@ public class ArticleRepositoryCustomImpl implements ArticleRepositoryCustom {
 				article.articleId.eq(articleId),
 				article.status.eq(Status.VISIBLE)
 			)
-			.groupBy(article.articleId, document.docsId, article.title, article.content,
+			.groupBy(article.articleId, document.docsId, document.position, document.documentName, article.title, article.content,
 				article.createdAt, article.updatedAt, article.viewCount,
 				article.user.userId, article.user.nickname, article.user.profileImage)
 			.fetchOne();
