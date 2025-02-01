@@ -4,7 +4,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import com.ssafy.docshund.domain.docs.entity.Position;
-import com.ssafy.docshund.domain.forums.dto.ArticleDto;
 import com.ssafy.docshund.domain.forums.dto.ArticleInfo;
 
 public interface ForumService {
