@@ -6,6 +6,7 @@ const editorStore = create((set) => ({
   porder: 0,
   docsId: 0,
   originId: 0,
+  currentUserText: "",
   tempSave: "",
   submitData: "",
 
@@ -27,6 +28,12 @@ const editorStore = create((set) => ({
 
   clearOriginId: () => {
     set({ originId: 0 });
+  },
+  setCurrentUserText: (text) => {
+    set({ currentUserText: text });
+  },
+  clearCurrentUserText: () => {
+    set({ currentUserText: "" });
   },
 
   clearTempSave: () => {

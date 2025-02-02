@@ -1,11 +1,15 @@
 import Modal from "react-modal";
+// import { AnimatePresence } from "motion/react";
+import TextContent from "../components/textContent";
+import EditorContent from "../components/editorContent";
 import useModalStore from "../store/modalStore";
 import RoundCornerBtn from "../../../components/button/roundCornerBtn";
 import useEditorStore from "../store/editorStore";
 
 const TranslateEditor = () => {
   const { isEditorOpen, closeEditor } = useModalStore();
-  const { docsPart, bestTrans, porder, docsId, originId } = useEditorStore();
+  const { docsPart, bestTrans, porder, docsId, originId, currentUserText } =
+    useEditorStore();
 
   return (
     <Modal
@@ -20,16 +24,31 @@ const TranslateEditor = () => {
         <div className="flex shrink-0 items-center pb-4 text-xl font-medium text-slate-800 justify-between">
           {porder}번째 문단 번역 중
           <div className="flex space-x-6">
-            <RoundCornerBtn onClick={closeEditor} text="임시저장" />
+            <RoundCornerBtn
+              onClick={async () => {
+                useEditorStore.setState({ tempSave: currentUserText });
+                console.log(useEditorStore.getState().tempSave);
+              }}
+              text="임시저장"
+            />
             <RoundCornerBtn onClick={closeEditor} text="제출" />
             <RoundCornerBtn onClick={closeEditor} text="편집 나가기" />
           </div>
         </div>
-        <div className="relative border-t border-slate-200 py-4 leading-normal text-slate-600 font-light">
+        <div className="relative border-t border-slate-200 py-4 leading-normal text-slate-600 font-light h-full flex flex-col">
           {/* 에디터 모달 안에 들어갈 컨텐츠 */}
-          {docsPart}
+
+          <TextContent
+            tag="공식문서 원본"
+            textContent={docsPart}
+            isHTML={true}
+          />
+          <br />
+          <TextContent tag="베스트 번역" textContent={docsPart} isHTML={true} />
+          <div className="flex flex-col h-full w-full translate-[-50%, -50%] top-0 left-1/2 absolute py-4">
+            <EditorContent />
+          </div>
         </div>
-        <div className="flex shrink-0 flex-wrap items-center pt-4 justify-end"></div>
       </div>
     </Modal>
   );

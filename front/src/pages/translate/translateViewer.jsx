@@ -4,8 +4,8 @@ import { initDB, addData, loadData } from "./indexedDB/indexedDB.jsx";
 import useModalStore from "./store/modalStore.jsx";
 import useEditorStore from "./store/editorStore.jsx";
 import useArchiveStore from "./store/archiveStore.jsx";
-import TranslateEditor from "./components/translateEditor.jsx";
-import TranslateArchive from "./components/translateArchive.jsx";
+import TranslateEditor from "./activity/translateEditor.jsx";
+import TranslateArchive from "./activity/translateArchive.jsx";
 import RoundCornerBtn from "../../components/button/roundCornerBtn.jsx";
 import loadingGif from "../../assets/loading.gif";
 import { IoCloseCircleOutline } from "react-icons/io5";
@@ -30,16 +30,6 @@ const TranslateViewer = () => {
 
   //번역 에디터, 투표 관련 모달
   const { openEditor, openArchive } = useModalStore();
-
-  //번역에디터 데이터 저장 상태 관리
-  const {
-    setDocsPart,
-    setBestTrans,
-    setPorder,
-    setDocsId,
-    setOriginId,
-    clearAll,
-  } = useEditorStore();
 
   //ui 관련
   const toggleButton = (partId, e) => {
@@ -77,7 +67,8 @@ const TranslateViewer = () => {
           setLoading(true);
           try {
             const response = await axios.get(
-              "https://7243e4af-6c62-4494-bb0e-d5d500da1bff.mock.pstmn.io/docs/1/origin?originId="
+              // "https://f1887553-e372-4944-90d7-8fe76ae8d764.mock.pstmn.io/docs/1/origin?originId="
+              `http://localhost:8080/api/docs/docParts`
             );
             const data = response.data;
 
@@ -179,12 +170,6 @@ const TranslateViewer = () => {
               onClick={async (e) => {
                 e.stopPropagation();
                 toggleButton(part.id, e);
-                useEditorStore.setState({
-                  docsPart: part.content,
-                  porder: part.porder,
-                  docsId: part.docsId,
-                  originId: part.originId,
-                });
               }} // toggleButton에 e를 전달
               dangerouslySetInnerHTML={{ __html: part.content }}
               className="bg-[#E4DCD4] cursor-pointer p-2 rounded-md text-[#424242] hover:bg-[#BCB2A8] flex flex-col w-full"
@@ -199,12 +184,34 @@ const TranslateViewer = () => {
                   transform: "translate(-128px,-20px)",
                 }}
               >
-                <RoundCornerBtn onClick={() => openEditor()} text="번역하기" />
+                <RoundCornerBtn
+                  onClick={() => {
+                    openEditor();
+                    useEditorStore.setState({
+                      docsPart: part.content,
+                      porder: part.porder,
+                      docsId: part.docsId,
+                      originId: part.originId,
+                    });
+                  }}
+                  text="번역하기"
+                />
                 <IoCloseCircleOutline
                   className="w-8 h-8 cursor-pointer text-[#bc5b39] mr-2 ml-2 min-w-fit"
                   onClick={(e) => toggleButton(part.id, e)}
                 />
-                <RoundCornerBtn onClick={() => openArchive()} text="번역기록" />
+                <RoundCornerBtn
+                  onClick={() => {
+                    openArchive();
+                    useEditorStore.setState({
+                      docsPart: part.content,
+                      porder: part.porder,
+                      docsId: part.docsId,
+                      originId: part.originId,
+                    });
+                  }}
+                  text="번역기록"
+                />
               </div>
             )}
           </div>
