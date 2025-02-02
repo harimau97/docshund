@@ -285,3 +285,19 @@ $RECYCLE.BIN/
 
 
 /backend/**/generated
+
+# Gradle 캐시
+.gradle/
+
+# IntelliJ IDEA 설정
+.idea/
+
+# IntelliJ 특정 파일
+*.iml
+*.ipr
+*.iws
+
+# 자동 생성 파일
+*.bin
+*.lock
+*.probe
