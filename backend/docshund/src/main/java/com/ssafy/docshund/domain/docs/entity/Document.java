@@ -51,10 +51,10 @@ public class Document extends BaseTimeEntity {
 	@Column(name = "position")
 	private Position position;
 
-	// ✅ 명시적인 생성자 추가
+	// 명시적인 생성자 추가
 	public Document(String documentCategory, String documentName, String documentLogo,
-					String documentVersion, Integer viewCount, Position position,
-					String license, String documentLink) {
+		String documentVersion, Integer viewCount, Position position,
+		String license, String documentLink) {
 		this.documentCategory = documentCategory;
 		this.documentName = documentName;
 		this.documentLogo = documentLogo;

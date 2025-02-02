@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.ssafy.docshund.domain.docs.dto.DocumentDto;
 import com.ssafy.docshund.domain.docs.dto.OriginDocumentDto;
 import com.ssafy.docshund.domain.docs.service.DocsService;
+import com.ssafy.docshund.global.util.user.UserUtil;
 
 import lombok.RequiredArgsConstructor;
 
@@ -23,6 +24,7 @@ import lombok.RequiredArgsConstructor;
 public class DocsController {
 
 	private final DocsService docsService;
+	private final UserUtil userUtil;
 
 	// 문서 목록 조회
 	@GetMapping("")
@@ -45,7 +47,15 @@ public class DocsController {
 		return ResponseEntity.ok(document);
 	}
 
-	// 받은 원본 문서를 파싱하여 생성
+	// 관심 문서 등록 및 해제
+	@PostMapping("/{docsId}/likes")
+	public ResponseEntity<DocumentDto> toggleLikes(@PathVariable Integer docsId) {
+		long currentUserId = userUtil.getUser().getUserId();
+		DocumentDto document = docsService.toggleLikes(docsId, currentUserId);
+		return ResponseEntity.ok(document);
+	}
+
+	// 받은 원본 문서를 파싱하여 원본 생성
 	@PostMapping("/{docsId}/origin")
 	public ResponseEntity<List<OriginDocumentDto>> postOriginDocs(
 		@PathVariable Integer docsId,

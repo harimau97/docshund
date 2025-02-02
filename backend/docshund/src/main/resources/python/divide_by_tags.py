@@ -1,7 +1,17 @@
-from bs4 import BeautifulSoup
-import sys
 import json
+import sys
+from bs4 import BeautifulSoup
 
+
+# HTML에서 <script> 태그를 <p> 태그로 대체
+def sanitize_html(html_doc):
+    soup = BeautifulSoup(html_doc, 'html.parser')
+    for script_tag in soup.find_all('script'):
+        script_tag.replace_with('<p></p>')  # <script> 태그를 <p>로 대체
+    return str(soup)
+
+
+# 태그 별 분리 후 리스트로 저장
 def process_html(html_doc):
     soup = BeautifulSoup(html_doc, 'html.parser')
     elements = soup.find_all(['p', 'ul', 'ol', 'h1', 'h2', 'h3', 'h4', 'code'])
@@ -26,6 +36,7 @@ def process_html(html_doc):
 
     return paragraphs
 
+
 if __name__ == "__main__":
     try:
         print("[Python] Script started", file=sys.stderr)
@@ -38,7 +49,11 @@ if __name__ == "__main__":
         if not html_content:
             raise ValueError("No HTML content received from Java")
 
-        parsed_data = process_html(html_content)
+        # <script> 태그를 <p>로 대체
+        sanitized_html = sanitize_html(html_content)
+
+        # 파싱 처리
+        parsed_data = process_html(sanitized_html)
 
         print("[Python] Processing complete", file=sys.stderr)
         print(json.dumps(parsed_data, ensure_ascii=False))

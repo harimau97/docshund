@@ -97,7 +97,32 @@ public class DocsServiceImpl implements DocsService {
 		);
 
 		Document savedDocument = documentRepository.save(document);
-		return DocumentDto.fromEntity(savedDocument);
+		return DocumentDto.fromEntity(savedDocument, 0);
+	}
+
+	// 관심문서 등록 및 해제
+	@Override
+	public DocumentDto toggleLikes(Integer docsId, long currentUserId) {
+		// 현재 사용자가 해당 문서를 좋아요 했는지 확인
+		boolean isLiked = customDocumentRepository.isLikedByUser(docsId, currentUserId);
+
+		if (isLiked) {
+			// 좋아요 취소
+			customDocumentRepository.removeLike(docsId, currentUserId);
+		} else {
+			// 좋아요 등록
+			customDocumentRepository.addLike(docsId, currentUserId);
+		}
+
+		// 갱신된 좋아요 개수 조회
+		int updatedLikeCount = customDocumentRepository.getLikeCount(docsId);
+
+		// 문서 정보 조회
+		Document targetDocument = documentRepository.findById(docsId)
+			.orElseThrow(() -> new EntityNotFoundException("Document not found with id: " + docsId));
+
+		// `likeCount`를 포함하여 DTO 생성 후 반환
+		return DocumentDto.fromEntity(targetDocument, updatedLikeCount);
 	}
 
 	// 문서 원본(origin_document) 조회
@@ -130,7 +155,7 @@ public class DocsServiceImpl implements DocsService {
 		System.out.println("[Service] Preparing to run Python script...");
 
 		try {
-			// Python 스크립트 경로 설정
+
 			String scriptPath = "src/main/resources/python/divide_by_tags.py";
 			ProcessBuilder processBuilder = new ProcessBuilder("python", scriptPath);
 			processBuilder.environment().put("PYTHONIOENCODING", "UTF-8");
@@ -169,13 +194,11 @@ public class DocsServiceImpl implements DocsService {
 				System.err.println("[Service] Python Script Error: " + errorBuilder.toString());
 			}
 
-			// 프로세스 종료 코드 확인
 			process.waitFor();
 			if (process.exitValue() != 0) {
 				throw new RuntimeException("Python script execution failed with exit code: " + process.exitValue());
 			}
 
-			// JSON 파싱 및 반환
 			String resultJson = resultJsonBuilder.toString();
 			System.out.println(
 				"[Service] Parsed JSON: " + (resultJson.length() > 100 ? resultJson.substring(0, 100) : resultJson));
@@ -183,11 +206,9 @@ public class DocsServiceImpl implements DocsService {
 				new TypeReference<List<OriginDocumentDto>>() {
 				});
 
-			// Document 엔티티 조회
 			Document document = documentRepository.findById(docsId)
 				.orElseThrow(() -> new RuntimeException("Document not found with id: " + docsId));
 
-			// 데이터베이스에 저장
 			return documents.stream().map(dto -> {
 				OriginDocument originDocument = new OriginDocument(
 					document,
