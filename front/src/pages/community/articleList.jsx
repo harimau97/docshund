@@ -13,20 +13,34 @@ import comment from "../../assets/icon/commentCnt.png";
 const ArticleList = () => {
   const navigate = useNavigate();
 
-  //  store에서 데이터를 가져오기 위해 store의 상태와 메소드를 가져옴
+  //  store에서 데이터를 가져오기 위해 store의 상태 정의
   const articles = communityArticleStore((state) => state.articles);
-  const totalPages = communityArticleStore((state) => state.totalPages);
+  const currentPage = communityArticleStore((state) => state.currentPage);
+
+  // set(메소드) 정의
   const setArticles = communityArticleStore((state) => state.setArticles);
   const setTotalPage = communityArticleStore((state) => state.setTotalPage);
+  const setCurrentPage = communityArticleStore((state) => state.setCurrentPage);
   const setLoading = communityArticleStore((state) => state.setLoading);
   const setError = communityArticleStore((state) => state.setError);
 
   const [isLoggedIn] = useState(true); // 임시로 로그인 상태 true로 설정
   const [sortType, setSortBy] = useState("latest");
-  const [pageNumber, setPageNumber] = useState(1);
   const [itemsPerPage, setItmesPerPage] = useState(15);
 
-  // 즉시 store에 접근하여 데이터를 가져오기 위해 useEffect 사용
+  // 정렬 옵션
+  const sortOptions = [
+    { value: "latest", label: "최신순" },
+    { value: "likes", label: "좋아요 순" },
+    { value: "views", label: "조회수순" },
+  ];
+
+  const handleSort = (value) => {
+    setSortBy(value);
+    // TODO: Add your sorting logic here
+  };
+
+  // NOTE: 즉시 store에 접근하여 데이터를 가져오기 위해 useEffect 사용
   useEffect(() => {
     // 비동기 함수를 만들어서 데이터를 가져오는 로직을 작성
     const fetchArticles = async () => {
@@ -41,7 +55,7 @@ const ArticleList = () => {
           "",
           "",
           "title",
-          pageNumber,
+          currentPage,
           itemsPerPage
         );
 
@@ -49,9 +63,11 @@ const ArticleList = () => {
         if (data) {
           setArticles(data.articles);
           setTotalPage(data.totalPages);
-
+          setCurrentPage(data.pageNum);
           setItmesPerPage(data.articles.length);
         }
+
+        console.log(data);
       } catch (error) {
         setError(error);
       } finally {
@@ -63,24 +79,14 @@ const ArticleList = () => {
     fetchArticles();
   }, [
     sortType,
-    pageNumber,
+    currentPage,
     itemsPerPage,
     setArticles,
     setTotalPage,
+    setCurrentPage,
     setLoading,
     setError,
   ]);
-
-  const sortOptions = [
-    { value: "latest", label: "최신순" },
-    { value: "likes", label: "좋아요 순" },
-    { value: "views", label: "조회수순" },
-  ];
-
-  const handleSort = (value) => {
-    setSortBy(value);
-    // Add your sorting logic here
-  };
 
   // 리스트 아이템 렌더링
   const renderItem = (item) => (
@@ -88,7 +94,7 @@ const ArticleList = () => {
       <div className="flex-1 min-w-0 mr-3 flex flex-col justify-between">
         {/* // Link 컴포넌트를 사용하여 글 제목을 클릭하면 해당 글로 이동하도록 설정 */}
         <Link
-          to={`/article/${item.id}`}
+          to={`/article/${item.id}`} // TODO: 게시글 상세 페이지 이동 endpoint 수정 필요
           className="font-semibold line-clamp-1 break-all text-[#7d7c77] hover:text-[#bc5b39]"
         >
           {item.title}
@@ -101,15 +107,15 @@ const ArticleList = () => {
         <div className="flex flex-col justify-between">
           <div className="flex items-center">
             <img className="mr-2" src={like} alt="좋아요수 아이콘" />
-            <p className="w-8 text-right">{item.likesCnt}</p>
+            <p className="w-8 text-right">{item.likesCount}</p>
           </div>
           <div className="flex items-center">
             <img className="mr-2" src={view} alt="조회수 아이콘" />
-            <p className="w-8 text-right">{item.viewCnt}</p>
+            <p className="w-8 text-right">{item.viewCount}</p>
           </div>
           <div className="flex items-center">
             <img className="mr-2" src={comment} alt="댓글수 아이콘" />
-            <p className="w-8 text-right">{item.commentCnt}</p>
+            <p className="w-8 text-right">{item.commentCount}</p>
           </div>
         </div>
       </div>
@@ -118,24 +124,6 @@ const ArticleList = () => {
 
   return (
     <div className="flex">
-      {/* 1. 좌측 네비게이션 */}
-      <nav className="w-[240px] min-h-screen bg-[#F8F8F7] p-4">
-        <ul className="space-y-2">
-          <li className="cursor-pointer p-2 hover:bg-[#bc5b39] hover:text-white rounded">
-            전체
-          </li>
-          <li className="cursor-pointer p-2 hover:bg-[#bc5b39] hover:text-white rounded">
-            질문
-          </li>
-          <li className="cursor-pointer p-2 hover:bg-[#bc5b39] hover:text-white rounded">
-            정보
-          </li>
-          <li className="cursor-pointer p-2 hover:bg-[#bc5b39] hover:text-white rounded">
-            자유
-          </li>
-        </ul>
-      </nav>
-
       {/* 2. 메인 영역 */}
       <main className="flex-1 p-8">
         {/* 2-1. 헤더 영역 */}
@@ -153,20 +141,40 @@ const ArticleList = () => {
 
         {/* 2-2. 글 목록 */}
         {/* 글 목록이 있을 때 */}
-        <div className="pt-4 pl-6 bg-white rounded-tl-xl rounded-tr-xl border-t border-l border-r border-[#E1E1DF]">
+        <div className="pt-4 bg-white rounded-tl-xl rounded-tr-xl border-t border-l border-r border-[#E1E1DF]">
           <div className="flex justify-between items-center">
             {/* 검색 바 */}
             <input
               type="text"
               placeholder="검색어를 입력하세요"
-              className="border p-2 rounded"
-              style={{ width: "800px", height: "30px" }}
+              className="border p-2 ml-10 rounded"
+              style={{ width: "700px", height: "30px" }}
             />
+            {/* TODO: 돋보기 아이콘 위치 조정 */}
+            {/* 돋보기 아이콘 */}
+            <div className="absolute">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                width="24"
+                height="24"
+              >
+                <path
+                  fill="none"
+                  stroke="#bc5b39"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M15.5 15.5L20 20M10 17C13.866 17 17 13.866 17 10C17 6.13401 13.866 3 10 3C6.13401 3 3 6.13401 3 10C3 13.866 6.13401 17 10 17Z"
+                />
+              </svg>
+            </div>
             {/* 정렬 드롭다운 */}
             <select
               value={sortType}
               onChange={(e) => handleSort(e.target.value)}
-              className="px-4 rounded-lg border border-gray-300 bg-white"
+              className="px-2 mr-8 rounded-lg border bg-white"
+              style={{ height: "30px" }}
             >
               {sortOptions.map((option) => (
                 <option key={option.value} value={option.value}>
@@ -178,11 +186,7 @@ const ArticleList = () => {
         </div>
 
         {/* 글 목록, 페이지네이션 */}
-        <ArticleListRender
-          data={articles}
-          renderItem={renderItem}
-          totalPages={totalPages}
-        />
+        <ArticleListRender data={articles} renderItem={renderItem} />
       </main>
     </div>
   );

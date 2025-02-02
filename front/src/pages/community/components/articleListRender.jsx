@@ -1,4 +1,3 @@
-import { useState } from "react";
 import PropTypes from "prop-types";
 
 import ArticleListPagination from "./articleListPagination";
@@ -8,14 +7,12 @@ import ArticleListPagination from "./articleListPagination";
 // renderItem: 각 아이템을 렌더링하는 함수 <- articleList.jsx에서 정의
 // itemsPerPage: 페이지당 아이템 개수
 // totalPages: 전체 페이지 수
-const ArticleListRender = ({ data, renderItem, totalPages }) => {
-  const [currentPage, setCurrentPage] = useState(1);
-
+const ArticleListRender = ({ data, renderItem }) => {
   return (
     // 리스트 아이템 렌더링
     <div className="p-10 bg-white rounded-bl-xl rounded-br-xl border-b border-l border-r border-[#E1E1DF] text-[#7D7C77]">
       {data.length > 0 ? (
-        data.map((item, index) => (
+        data.map((item) => (
           // key 값으로 articleId + 1 사용, unique 보장
           <div
             key={item.articleId + 1}
@@ -31,12 +28,8 @@ const ArticleListRender = ({ data, renderItem, totalPages }) => {
 
       {/* 페이지네이션 */}
       {
-        // 1초과에서 전체 다 뜨는 걸로 변경
-        <ArticleListPagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={(page) => setCurrentPage(page)}
-        />
+        // 페이지 클릭에 따라 currentPage 변경 -> 변경된 currentPage에 따라 axios 요청 필요
+        <ArticleListPagination />
       }
     </div>
   );
@@ -46,7 +39,6 @@ const ArticleListRender = ({ data, renderItem, totalPages }) => {
 ArticleListRender.propTypes = {
   data: PropTypes.array,
   renderItem: PropTypes.func,
-  totalPages: PropTypes.number,
 };
 
 export default ArticleListRender;

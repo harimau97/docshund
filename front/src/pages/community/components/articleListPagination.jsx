@@ -1,4 +1,10 @@
-const Pagination = ({ currentPage, totalPages, onPageChange }) => {
+import communityArticleStore from "../stores/communityArticleStore";
+
+const ArticleListPagination = () => {
+  const totalPages = communityArticleStore((state) => state.totalPages);
+  const currentPage = communityArticleStore((state) => state.currentPage);
+  const setCurrentPage = communityArticleStore((state) => state.setCurrentPage);
+
   const getPageNumbers = () => {
     let pages = [];
     let startPage, endPage;
@@ -25,6 +31,7 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
       }
     }
 
+    // 페이지 버튼 배열 채우기
     for (let i = startPage; i <= endPage; i++) {
       pages.push(i);
     }
@@ -33,39 +40,43 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
   };
 
   return (
+    // TODO: 페이지 클릭에 따라 onPageeChange 함수 호출됨 -> articleListRender에서 state변경 -> 페이지 이동에 따른 axios 요청 필요
+
+    // < 버튼 (이전 페이지 이동)
     <div className="flex justify-center items-center space-x-2 mt-6">
       <button
         className={`text-gray-500 hover:text-gray-800 ${
           currentPage === 1 ? "opacity-50 cursor-not-allowed" : "cursor-pointer"
         }`}
-        onClick={() => onPageChange(currentPage - 1)}
+        onClick={() => setCurrentPage(currentPage - 1)}
         disabled={currentPage === 1}
       >
         &lt;
       </button>
 
+      {/* 페이지 숫자 버튼들 */}
       {getPageNumbers().map((page) => (
         <button
           key={page}
           className={`px-3 py-1 rounded-md cursor-pointer ${
             page === currentPage
               ? "bg-[#bc5b39] text-white font-bold"
-              : "text-gray-500 hover:text-gray-800"
+              : "text-gray-500 hover:text-[#bc5b39]"
           }`}
-          onClick={() => onPageChange(page)}
+          onClick={() => setCurrentPage(page)}
         >
           {page}
         </button>
       ))}
 
-      {/* 다음 페이지 버튼 */}
+      {/* > 버튼 (다음 페이지 이동) */}
       <button
         className={`text-gray-500 hover:text-gray-800 ${
           currentPage === totalPages
             ? "opacity-50 cursor-not-allowed"
             : "cursor-pointer"
         }`}
-        onClick={() => onPageChange(currentPage + 1)}
+        onClick={() => setCurrentPage(currentPage + 1)}
         disabled={currentPage === totalPages}
       >
         &gt;
@@ -74,4 +85,4 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
   );
 };
 
-export default Pagination;
+export default ArticleListPagination;

@@ -1,8 +1,10 @@
 import ArticleList from "./articleList";
+import CommunityLeftNav from "./components/communityLeftNav";
 
 const community = () => {
   return (
-    <div>
+    <div className="flex">
+      <CommunityLeftNav />
       <ArticleList />
     </div>
   );
