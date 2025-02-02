@@ -14,10 +14,12 @@ const LeftNav = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [docs, setDocs] = useState([]);
   const [memos, setMemo] = useState([]);
-  const [isNavOpen, setIsNavOpen] = useState(true);
-  const [btnToggled, setBtnToggled] = useState("absolute top-25 -right-3");
+  const [isNavOpen, setIsNavOpen] = useState(false);
+  const [btnToggled, setBtnToggled] = useState(
+    "absolute top-25 -right-3 transform rotate-180"
+  );
   const [showNav, setShowNav] = useState(
-    "max-w-[15%] min-w-fit w-60 h-[80%] bg-[#F0EEE5] flex flex-col border-box border-2 border-black absolute top-1/2 -translate-y-1/2 rounded-br-4xl rounded-tr-4xl z-10"
+    "max-w-[15%] min-w-fit w-60 h-[80%] bg-[#F0EEE5] flex flex-col border-box border-2 border-black absolute top-1/2 -translate-y-1/2 rounded-br-4xl rounded-tr-4xl transform transition-transform duration-250 -translate-x-[95%] z-[1500]"
   ); // leftNav가 화면 최상위에 오도록 z-index 설정
   const { isOpen, openModal, closeModal } = modalStore();
   const [memoData, setMemoData] = useState({
@@ -45,31 +47,31 @@ const LeftNav = () => {
       console.log("nav 닫는다.");
       setIsNavOpen(false);
       setBtnToggled(
-        "absolute top-25 -right-3 transform transition-transform duration-250 rotate-180"
+        "absolute top-25 -right-3 transform transition-transform duration-300 rotate-180"
       );
       setShowNav(
-        "max-w-[15%] min-w-fit w-60 h-[80%] bg-[#F0EEE5] flex flex-col border-box border-2 border-black absolute top-1/2 -translate-y-1/2 rounded-br-4xl rounded-tr-4xl transform transition-transform duration-250 -translate-x-[95%] z-49"
+        "max-w-[15%] min-w-fit w-60 h-[80%] bg-[#F0EEE5] flex flex-col border-box border-2 border-black absolute top-1/2 -translate-y-1/2 rounded-br-4xl rounded-tr-4xl transform transition-transform duration-400 -translate-x-[90%] z-[1500]"
       );
     } else if (isNavOpen === false) {
       console.log("nav 연다.");
       setIsNavOpen(true);
       setBtnToggled(
-        "absolute top-25 -right-3 transform transition-transform duration-250 "
+        "absolute top-25 -right-3 transform transition-transform duration-300 "
       );
       setShowNav(
-        "max-w-[15%] min-w-fit w-60 h-[80%] bg-[#F0EEE5] flex flex-col border-box border-2 border-black absolute top-1/2 -translate-y-1/2 rounded-br-4xl rounded-tr-4xl transform transition-transform duration-250 z-10"
+        "max-w-[15%] min-w-fit w-60 h-[80%] bg-[#F0EEE5] flex flex-col border-box border-2 border-black absolute top-1/2 -translate-y-1/2 rounded-br-4xl rounded-tr-4xl transform transition-transform duration-400 z-[1500]"
       );
     }
   }
 
-  // useEffect(() => {
-  //   setIsNavOpen(false);
-  // }, []);
-
   return (
     <div className="h-screen">
-      <div className={showNav}>
-        <button onClick={() => toggleNav()} className={btnToggled}>
+      <div
+        className={showNav}
+        onMouseLeave={() => toggleNav()}
+        onMouseEnter={() => toggleNav()}
+      >
+        <button className={btnToggled}>
           <img
             className="w-[24px] h-[24px] cursor-pointer"
             src={navToggle}

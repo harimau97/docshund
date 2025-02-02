@@ -9,9 +9,9 @@ const UpperNav = ({ loginStatus }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const activeLink =
-    "relative inset-[-16.67%] w-fit h-[133.33%] flex items-center justify-center text-center font-bold text-[20px] tracking-[0.2px] text-[#bc5b39]";
+    "relative inset-[-16.67%] w-fit h-full mx-2 flex flex-wrap items-center justify-center text-center font-bold text-[20px] tracking-[0.2px] text-[#bc5b39]";
   const inactiveLink =
-    "relative inset-[-16.67%] w-fit h-[133.33%] flex items-center justify-center text-center text-[20px] tracking-[0.2px] text-[#424242]";
+    "relative inset-[-16.67%] w-fit h-full mx-2 flex flex-wrap items-center justify-center text-center text-[20px] tracking-[0.2px] text-[#424242]";
 
   return (
     <div className=" bg-[#f0eee5] pl-[120px] pr-[64px] py-[22px] flex flex-row items-center justify-between relative shadow-[0px_-1px_1px_0px_rgba(0, 0, 0, 0.10)]">

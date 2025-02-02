@@ -4,6 +4,9 @@ import AppRouter from "./router.jsx";
 import Footer from "./components/footer/footer.jsx";
 import UpperNav from "./components/Nav/upperNav.jsx";
 import LeftNav from "./components/Nav/leftNav.jsx";
+import Modal from "react-modal";
+
+Modal.setAppElement("#root");
 
 function App() {
   const location = useLocation();
@@ -16,9 +19,11 @@ function App() {
   console.log("isTranslateViewerPage:", isTranslateViewerPage);
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen min-w-[1200px]">
       {isTranslateViewerPage ? (
-        <LeftNav />
+        <div>
+          <LeftNav />
+        </div>
       ) : (
         <div>
           <UpperNav loginStatus={true} />

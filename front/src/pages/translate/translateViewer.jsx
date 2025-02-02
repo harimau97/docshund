@@ -2,6 +2,8 @@ import { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { initDB, addData, loadData } from "./indexedDB/indexedDB.jsx";
 import useModalStore from "./store/modalStore.jsx";
+import useEditorStore from "./store/editorStore.jsx";
+import useArchiveStore from "./store/archiveStore.jsx";
 import TranslateEditor from "./components/translateEditor.jsx";
 import TranslateArchive from "./components/translateArchive.jsx";
 import RoundCornerBtn from "../../components/button/roundCornerBtn.jsx";
@@ -28,6 +30,16 @@ const TranslateViewer = () => {
 
   //번역 에디터, 투표 관련 모달
   const { openEditor, openArchive } = useModalStore();
+
+  //번역에디터 데이터 저장 상태 관리
+  const {
+    setDocsPart,
+    setBestTrans,
+    setPorder,
+    setDocsId,
+    setOriginId,
+    clearAll,
+  } = useEditorStore();
 
   //ui 관련
   const toggleButton = (partId, e) => {
@@ -159,12 +171,21 @@ const TranslateViewer = () => {
   }, [isDbInitialized]);
 
   return (
-    <div className="h-[99%] border-black border-2 w-[70%] absolute top-1/2 left-1/2 -translate-1/2 overflow-x-auto overflow-y-scroll p-4 flex flex-col z-auto">
+    <div className="h-[99%] min-w-[800px] border-black border-2 w-[70%] absolute top-1/2 left-1/2 -translate-1/2 overflow-x-auto overflow-y-scroll p-4 flex flex-col z-[1000]">
       <div className="flex flex-col gap-4">
         {docParts.map((part, index) => (
           <div key={index} className="flex flex-row relative">
             <div
-              onClick={(e) => toggleButton(part.id, e)} // toggleButton에 e를 전달
+              onClick={async (e) => {
+                e.stopPropagation();
+                toggleButton(part.id, e);
+                useEditorStore.setState({
+                  docsPart: part.content,
+                  porder: part.porder,
+                  docsId: part.docsId,
+                  originId: part.originId,
+                });
+              }} // toggleButton에 e를 전달
               dangerouslySetInnerHTML={{ __html: part.content }}
               className="bg-[#E4DCD4] cursor-pointer p-2 rounded-md text-[#424242] hover:bg-[#BCB2A8] flex flex-col w-full"
             />
