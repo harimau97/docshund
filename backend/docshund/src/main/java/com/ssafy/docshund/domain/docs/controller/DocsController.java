@@ -65,7 +65,7 @@ public class DocsController {
 	// 유저 관심 문서 조회 (현재 특정 유저 관심문서 조회만 구현)
 	@GetMapping("/likes")
 	public ResponseEntity<List<DocumentDto>> getLikes(
-		@RequestParam Integer userId
+		@RequestParam(required = false) Long userId
 	) {
 		if (userId == null) {
 			// 유저 아이디가 없을 시 에러 반환

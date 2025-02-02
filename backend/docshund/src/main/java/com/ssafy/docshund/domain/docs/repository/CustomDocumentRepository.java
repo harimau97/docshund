@@ -16,6 +16,9 @@ public interface CustomDocumentRepository {
 	// 좋아요 추가
 	void addLike(Integer docsId, long currentUserId);
 
+	// 특정유저의 관심문서 조회
+	List<DocumentDto> findLikedDocumentsByUser(Long userId);
+
 	// 전체 번역본 조회 (좋아요 개수 포함)
 	List<TranslatedDocumentDto> findAllTransWithLikes(Integer docsId);
 
@@ -24,4 +27,5 @@ public interface CustomDocumentRepository {
 
 	// 특정 유저의 번역본 조회 (좋아요 개수 포함)
 	List<TranslatedDocumentDto> findUserTransWithLikes(long userId);
+
 }

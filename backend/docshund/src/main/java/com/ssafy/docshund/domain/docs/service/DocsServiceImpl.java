@@ -113,7 +113,7 @@ public class DocsServiceImpl implements DocsService {
 
 	// 관심문서 등록 및 해제
 	@Override
-	public DocumentDto toggleLikes(Integer docsId, long currentUserId) {
+	public DocumentDto toggleLikes(Integer docsId, Long currentUserId) {
 		// 현재 사용자가 해당 문서를 좋아요 했는지 확인
 		boolean isLiked = documentLikeRepository.existsByDocument_DocsIdAndUser_UserId(docsId, currentUserId);
 
@@ -135,9 +135,10 @@ public class DocsServiceImpl implements DocsService {
 		return DocumentDto.fromEntity(targetDocument, updatedLikeCount);
 	}
 
+	// 유저 관심 문서 조회
 	@Override
-	public List<DocumentDto> getLikesDocument(Integer userId) {
-		return documentRepository.findLikesDocument(userId);
+	public List<DocumentDto> getLikesDocument(Long userId) {
+		return customDocumentRepository.findLikedDocumentsByUser(userId);
 	}
 
 	// 문서 원본(origin_document) 조회
@@ -278,7 +279,7 @@ public class DocsServiceImpl implements DocsService {
 
 	// 유저 번역 조회하기
 	@Override
-	public List<TranslatedDocumentDto> getUserTransDocument(long userId) {
+	public List<TranslatedDocumentDto> getUserTransDocument(Long userId) {
 		return customDocumentRepository.findUserTransWithLikes(userId);
 	}
 
@@ -302,7 +303,7 @@ public class DocsServiceImpl implements DocsService {
 	public void deleteTranslatedDocument(Integer docsId, Integer transId) {
 		translatedDocumentRepository.deleteById(transId);
 	}
-	
+
 	// 번역 투표 / 투표해제
 	@Override
 	public void toggleVotes(Integer docsId, Integer transId, Long userId) {

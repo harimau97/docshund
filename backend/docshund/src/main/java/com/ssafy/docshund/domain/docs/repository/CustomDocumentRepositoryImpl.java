@@ -130,6 +130,34 @@ public class CustomDocumentRepositoryImpl implements CustomDocumentRepository {
 		}
 	}
 
+	// 특정 유저의 관심문서 조회
+	@Override
+	public List<DocumentDto> findLikedDocumentsByUser(Long userId) {
+		QDocument document = QDocument.document;
+		QDocumentLike documentLike = QDocumentLike.documentLike;
+
+		return queryFactory
+			.select(Projections.constructor(DocumentDto.class,
+				document.docsId,
+				document.documentCategory,
+				document.documentName,
+				document.documentLogo,
+				document.documentVersion,
+				document.viewCount,
+				documentLike.countDistinct().intValue(),  // 좋아요 개수
+				document.position,
+				document.license,
+				document.documentLink,
+				document.createdAt
+			))
+			.from(documentLike)
+			.join(document).on(documentLike.document.docsId.eq(document.docsId))
+			.where(documentLike.user.userId.eq(userId))
+			.groupBy(document.docsId)
+			.orderBy(document.createdAt.desc()) // 최신순 정렬
+			.fetch();
+	}
+
 	// 번역본 조회 공통 로직
 	private List<TranslatedDocumentDto> getTranslatedDocuments(List<Long> transIds, Integer docsId, Long userId) {
 		QTranslatedDocument translatedDocument = QTranslatedDocument.translatedDocument;
