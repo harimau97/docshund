@@ -18,4 +18,8 @@ public interface ForumService {
 	Page<ArticleInfo> getArticlesLikedByUserId(Pageable pageable);
 
 	ArticleInfo getArticleDetail(Integer articleId);
+
+	void deleteArticle(Integer articleId);
+
+	void likeArticle(Integer articleId);
 }
