@@ -1,6 +1,9 @@
 package com.ssafy.docshund.domain.forums.service;
 
+import java.util.List;
+import java.util.Optional;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -12,9 +15,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.ssafy.docshund.domain.docs.entity.Position;
 import com.ssafy.docshund.domain.forums.dto.ArticleInfo;
+import com.ssafy.docshund.domain.forums.dto.CommentInfo;
 import com.ssafy.docshund.domain.forums.entity.Article;
+import com.ssafy.docshund.domain.forums.entity.Comment;
 import com.ssafy.docshund.domain.forums.repository.ArticleLikeRepository;
 import com.ssafy.docshund.domain.forums.repository.ArticleRepository;
+import com.ssafy.docshund.domain.forums.repository.CommentRepository;
 import com.ssafy.docshund.domain.users.entity.User;
 import com.ssafy.docshund.global.util.user.UserUtil;
 
@@ -27,6 +33,7 @@ public class ForumServiceImpl implements ForumService {
 	private final ArticleRepository articleRepository;
 	private final ArticleLikeRepository articleLikeRepository;
 	private final UserUtil userUtil;
+	private final CommentRepository commentRepository;
 
 	/* Article */
 
@@ -112,4 +119,29 @@ public class ForumServiceImpl implements ForumService {
 			articleLikeRepository.insertLike(userId, articleId);
 		}
 	}
+
+	/* Comment */
+
+	@Override
+	public List<CommentInfo> getCommentsByArticleId(Integer articleId) {
+
+		List<Comment> comments = commentRepository.findAllByArticleId(articleId);
+
+		return comments.stream()
+			.map(CommentInfo::from)
+			.flatMap(Optional::stream)
+			.collect(Collectors.toList());
+	}
+
+	@Override
+	public List<CommentInfo> getCommentsByUserId(Long userId) {
+
+		List<Comment> comments = commentRepository.findAllByUserId(userId);
+
+		return comments.stream()
+			.map(CommentInfo::from)
+			.flatMap(Optional::stream)
+			.collect(Collectors.toList());
+	}
+
 }

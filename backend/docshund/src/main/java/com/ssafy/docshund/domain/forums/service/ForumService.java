@@ -1,10 +1,13 @@
 package com.ssafy.docshund.domain.forums.service;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import com.ssafy.docshund.domain.docs.entity.Position;
 import com.ssafy.docshund.domain.forums.dto.ArticleInfo;
+import com.ssafy.docshund.domain.forums.dto.CommentInfo;
 
 public interface ForumService {
 
@@ -22,4 +25,10 @@ public interface ForumService {
 	void deleteArticle(Integer articleId);
 
 	void likeArticle(Integer articleId);
+
+	/* Comment */
+
+	List<CommentInfo> getCommentsByArticleId(Integer articleId);
+
+	List<CommentInfo> getCommentsByUserId(Long userId);
 }

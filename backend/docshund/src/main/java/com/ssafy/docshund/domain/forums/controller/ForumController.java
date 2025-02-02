@@ -1,5 +1,6 @@
 package com.ssafy.docshund.domain.forums.controller;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ssafy.docshund.domain.docs.entity.Position;
 import com.ssafy.docshund.domain.forums.dto.ArticleInfo;
+import com.ssafy.docshund.domain.forums.dto.CommentInfo;
 import com.ssafy.docshund.domain.forums.service.ForumService;
 
 import lombok.RequiredArgsConstructor;
@@ -26,6 +28,8 @@ import lombok.RequiredArgsConstructor;
 public class ForumController {
 
 	private final ForumService forumService;
+
+	/* Article */
 
 	@GetMapping("/")
 	public ResponseEntity<Page<ArticleInfo>> getArticleList(
@@ -102,5 +106,25 @@ public class ForumController {
 		} catch (IllegalArgumentException e) {
 			return filter;
 		}
+	}
+
+	/* Comment */
+
+	@GetMapping("{articleId}/comments")
+	public ResponseEntity<List<CommentInfo>> getCommentsByArticle(
+		@PathVariable Integer articleId
+	) {
+		List<CommentInfo> result = forumService.getCommentsByArticleId(articleId);
+
+		return ResponseEntity.ok(result);
+	}
+
+	@GetMapping("/comments/user/{userId}")
+	public ResponseEntity<List<CommentInfo>> getCommentsByUser(
+		@PathVariable Long userId
+	) {
+		List<CommentInfo> result = forumService.getCommentsByUserId(userId);
+
+		return ResponseEntity.ok(result);
 	}
 }
