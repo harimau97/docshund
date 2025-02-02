@@ -218,7 +218,7 @@ public class DocsServiceImpl implements DocsService {
 				);
 
 				OriginDocument savedEntity = originDocumentRepository.save(originDocument);
-				return OriginDocumentDto.fromEntity(savedEntity); // 엔티티를 DTO로 변환
+				return OriginDocumentDto.fromEntity(savedEntity);
 			}).toList();
 
 		} catch (Exception e) {
