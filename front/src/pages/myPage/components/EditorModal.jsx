@@ -11,7 +11,8 @@ const EditorModal = ({
   onSubmit,
   isOpen,
   closeModal,
-  memoData, // 수정 모드일 때 memo 데이터를 받음
+  memoData,
+  onDelete,
 }) => {
   const [formData, setFormData] = useState(
     fields.reduce((acc, field) => {
@@ -24,24 +25,22 @@ const EditorModal = ({
   useEffect(() => {
     if (isOpen) {
       if (memoData) {
-        // 수정 모드일 때 memoData로 폼 채우기
         setFormData({
           title: memoData.title,
           content: memoData.content,
         });
-        editorRef.current.getInstance().setMarkdown(memoData.content);
+        editorRef.current?.getInstance().setMarkdown(memoData.content || "");
       } else {
-        // 새 메모일 경우 초기화
         setFormData(
           fields.reduce((acc, field) => {
-            acc[field.name] = field.value || ""; // 기본값으로 리셋
+            acc[field.name] = field.value || "";
             return acc;
           }, {})
         );
-        editorRef.current.getInstance().setMarkdown("내용을 입력해주세요"); // 에디터 초기화
+        editorRef.current.getInstance().setMarkdown(""); // 에디터 초기화
       }
     }
-  }, [isOpen, memoData, fields]); // 의존성 배열 수정
+  }, [isOpen, memoData]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -58,13 +57,30 @@ const EditorModal = ({
     closeModal();
   };
 
+  const handleDelete = () => {
+    if (memoData && onDelete) {
+      onDelete(memoData.memo_id); // Delete memo
+      closeModal();
+    }
+  };
+
+  const handleBackdropClick = (e) => {
+    if (e.target === e.currentTarget) {
+      closeModal();
+    }
+  };
+
   return (
     <div
       className={`fixed inset-0 flex items-center justify-center z-50 ${
         !isOpen ? "hidden" : ""
       } backdrop-blur-xs backdrop-brightness-50`}
+      onClick={handleBackdropClick}
     >
-      <div className="h-[75vh] bg-white w-3/5 rounded-lg border-1 border-[#E1E1DF] shadow-lg overflow-hidden flex flex-col">
+      <div
+        className="h-[75vh] bg-white w-3/5 rounded-lg border-1 border-[#E1E1DF] shadow-lg overflow-hidden flex flex-col"
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="flex justify-between p-4 border-b">
           <button onClick={closeModal}>
             <img src={back} alt="뒤로가기" />
@@ -97,7 +113,6 @@ const EditorModal = ({
           ))}
           <div className="flex-grow">
             <Editor
-              initialValue="내용을 작성해주세요."
               ref={editorRef}
               height="100%"
               previewStyle="tab"
@@ -105,13 +120,15 @@ const EditorModal = ({
             />
           </div>
           <div className="flex justify-end space-x-3">
-            <button
-              type="button"
-              onClick={closeModal}
-              className="text-sm rounded-[12px] px-[20px] w-fit h-10 relative hover:bg-[#bc5b39] hover:text-[#ffffff]"
-            >
-              취소
-            </button>
+            {memoData && (
+              <button
+                type="button"
+                onClick={handleDelete}
+                className="text-sm rounded-[12px] px-[20px] w-fit h-10 relative hover:bg-[#bc5b39] hover:text-[#ffffff]"
+              >
+                삭제
+              </button>
+            )}
             <button className="text-sm bg-[#bc5b39] rounded-[12px] px-[20px] w-fit h-10 relative text-[#ffffff] hover:bg-[#C96442]">
               {buttonText}
             </button>
@@ -124,23 +141,13 @@ const EditorModal = ({
 
 EditorModal.propTypes = {
   title: PropTypes.string.isRequired,
-  fields: PropTypes.arrayOf(
-    PropTypes.shape({
-      label: PropTypes.string.isRequired,
-      name: PropTypes.string.isRequired,
-      type: PropTypes.string.isRequired,
-      placeholder: PropTypes.string.isRequired,
-      required: PropTypes.bool,
-    })
-  ).isRequired,
+  fields: PropTypes.array.isRequired,
   buttonText: PropTypes.string.isRequired,
   onSubmit: PropTypes.func.isRequired,
   isOpen: PropTypes.bool.isRequired,
   closeModal: PropTypes.func.isRequired,
-  memoData: PropTypes.shape({
-    title: PropTypes.string.isRequired,
-    content: PropTypes.string.isRequired,
-  }), // memoData 추가
+  memoData: PropTypes.object,
+  onDelete: PropTypes.func,
 };
 
 export default EditorModal;

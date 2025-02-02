@@ -1,6 +1,10 @@
 import PropTypes from "prop-types";
 
-const Setting = ({ profile, toggleDarkMode }) => {
+const Setting = ({ profile, handleDarkModeToggle }) => {
+  if (!profile) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <div className="w-auto bg-white p-10 rounded-xl border-1 border-[#E1E1DF] text-[#424242]">
       <div className="flex mb-4">
@@ -13,8 +17,9 @@ const Setting = ({ profile, toggleDarkMode }) => {
           <input
             type="radio"
             className="mr-2"
-            checked={!profile.is_darkmode}
-            onChange={toggleDarkMode}
+            name="theme"
+            checked={!profile.isDarkmode}
+            onChange={handleDarkModeToggle}
           />
           라이트 모드
         </label>
@@ -22,8 +27,9 @@ const Setting = ({ profile, toggleDarkMode }) => {
           <input
             type="radio"
             className="mr-2"
-            checked={profile.is_darkmode}
-            onChange={toggleDarkMode}
+            name="theme"
+            checked={profile.isDarkmode}
+            onChange={handleDarkModeToggle}
           />
           다크 모드
         </label>
@@ -34,10 +40,10 @@ const Setting = ({ profile, toggleDarkMode }) => {
 
 Setting.propTypes = {
   profile: PropTypes.shape({
-    email: PropTypes.string.isRequired,
-    is_darkmode: PropTypes.bool.isRequired,
-  }).isRequired,
-  toggleDarkMode: PropTypes.func.isRequired,
+    email: PropTypes.string,
+    isDarkmode: PropTypes.bool,
+  }),
+  handleDarkModeToggle: PropTypes.func.isRequired,
 };
 
 export default Setting;

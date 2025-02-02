@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
-import myCommentStore from "../stores/myCommentStore";
-import ListRender from "../components/ListRender";
+import myCommentStore from "../../store/myCommentStore";
+import ListRender from "../../components/ListRender";
 
 const MyCommentPage = () => {
   const comments = myCommentStore((state) => state.comments);

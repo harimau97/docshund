@@ -1,13 +1,13 @@
 import { useNavigate } from "react-router-dom";
-import viewModalStore from "./stores/viewModalStore";
-import inquiryStore from "./stores/inquiryStore";
-import InquiryModal from "./components/InquiryModal";
-import ListRender from "./components/ListRender";
+import modalStore from "../store/modalStore";
+import inquiryStore from "../store/inquiryStore";
+import InquiryModal from "../components/InquiryModal";
+import ListRender from "../components/ListRender";
 
 const InquiryPage = () => {
   const navigate = useNavigate();
   const inquiries = inquiryStore((state) => state.inquiries);
-  const { setOpenId, closeModal } = viewModalStore();
+  const { setOpenId, openId, closeModal } = modalStore();
 
   const renderInquiry = (item) => {
     return (
@@ -28,19 +28,15 @@ const InquiryPage = () => {
 
             <button
               onClick={() => {
-                setOpenId(
-                  item.id === viewModalStore.getState().openId ? null : item.id
-                );
+                setOpenId(item.id === openId ? null : item.id);
               }}
               className="cursor-pointer"
             >
-              <span>
-                {viewModalStore.getState().openId === item.id ? "⋏" : "⋎"}
-              </span>
+              <span>{openId === item.id ? "⋏" : "⋎"}</span>
             </button>
           </div>
         </div>
-        {item.id === viewModalStore.getState().openId && (
+        {item.id === openId && (
           <InquiryModal item={item} closeModal={closeModal} />
         )}
       </div>
