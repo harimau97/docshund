@@ -12,9 +12,13 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "translated_document")
+@Getter
+@NoArgsConstructor
 public class TranslatedDocument extends BaseTimeEntityWithUpdatedAt {
 
 	@Id
@@ -38,5 +42,15 @@ public class TranslatedDocument extends BaseTimeEntityWithUpdatedAt {
 
 	@Column(name = "status", nullable = false, columnDefinition = "ENUM('VISIBLE', 'INVISIBLE', 'DELETED') DEFAULT 'VISIBLE'")
 	private Status status;
+
+	// 생성자
+	public TranslatedDocument(OriginDocument originDocument, User user, String content, Integer reportCount,
+		Status status) {
+		this.originDocument = originDocument;
+		this.user = user;
+		this.content = content;
+		this.reportCount = reportCount != null ? reportCount : 0;
+		this.status = status != null ? status : Status.VISIBLE;
+	}
 
 }

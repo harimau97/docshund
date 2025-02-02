@@ -7,7 +7,9 @@ from bs4 import BeautifulSoup
 def sanitize_html(html_doc):
     soup = BeautifulSoup(html_doc, 'html.parser')
     for script_tag in soup.find_all('script'):
-        script_tag.replace_with('<p></p>')  # <script> 태그를 <p>로 대체
+        new_p = soup.new_tag('p')
+        new_p.string = script_tag.get_text()
+        script_tag.replace_with(new_p)
     return str(soup)
 
 
@@ -20,12 +22,10 @@ def process_html(html_doc):
 
     for element in elements:
         tag = element.name
-        if tag == 'p':
-            content = str(element)
-        elif element.find_parent('p'):
+        if not element.text.strip():
             continue
-        else:
-            content = str(element)
+
+        content = str(element)
 
         paragraphs.append({
             "pOrder": pOrder,
@@ -49,10 +49,8 @@ if __name__ == "__main__":
         if not html_content:
             raise ValueError("No HTML content received from Java")
 
-        # <script> 태그를 <p>로 대체
         sanitized_html = sanitize_html(html_content)
 
-        # 파싱 처리
         parsed_data = process_html(sanitized_html)
 
         print("[Python] Processing complete", file=sys.stderr)

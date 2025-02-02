@@ -3,7 +3,9 @@ package com.ssafy.docshund.domain.docs.controller;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -13,13 +15,15 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ssafy.docshund.domain.docs.dto.DocumentDto;
 import com.ssafy.docshund.domain.docs.dto.OriginDocumentDto;
+import com.ssafy.docshund.domain.docs.dto.TranslatedDocumentDto;
 import com.ssafy.docshund.domain.docs.service.DocsService;
+import com.ssafy.docshund.domain.users.entity.User;
 import com.ssafy.docshund.global.util.user.UserUtil;
 
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/docs")
+@RequestMapping("/api/v1/docshund/docs")
 @RequiredArgsConstructor
 public class DocsController {
 
@@ -28,8 +32,11 @@ public class DocsController {
 
 	// 문서 목록 조회
 	@GetMapping("")
-	public ResponseEntity<List<DocumentDto>> getDocs() {
-		List<DocumentDto> documents = docsService.getAllDocuments();
+	public ResponseEntity<List<DocumentDto>> getDocs(
+		@RequestParam(value = "sort", defaultValue = "name") String sort, // 기본 정렬: name
+		@RequestParam(value = "order", defaultValue = "asc") String order // 기본 정렬 순서: asc
+	) {
+		List<DocumentDto> documents = docsService.getAllDocuments(sort, order);
 		return ResponseEntity.ok(documents);
 	}
 
@@ -53,6 +60,19 @@ public class DocsController {
 		long currentUserId = userUtil.getUser().getUserId();
 		DocumentDto document = docsService.toggleLikes(docsId, currentUserId);
 		return ResponseEntity.ok(document);
+	}
+
+	// 유저 관심 문서 조회 (현재 특정 유저 관심문서 조회만 구현)
+	@GetMapping("/likes")
+	public ResponseEntity<List<DocumentDto>> getLikes(
+		@RequestParam Integer userId
+	) {
+		if (userId == null) {
+			// 유저 아이디가 없을 시 에러 반환
+			throw new IllegalArgumentException("User not found");
+		}
+		List<DocumentDto> documents = docsService.getLikesDocument(userId);
+		return ResponseEntity.ok(documents);
 	}
 
 	// 받은 원본 문서를 파싱하여 원본 생성
@@ -84,4 +104,106 @@ public class DocsController {
 			return ResponseEntity.ok(originDocument);
 		}
 	}
+
+	// 특정 문서의 번역 조회하기 (전체, 베스트 번역)
+	@GetMapping("/{docsId}/trans")
+	public ResponseEntity<?> getTransDocs(
+		@PathVariable Integer docsId,
+		@RequestParam String status
+	) {
+		List<TranslatedDocumentDto> translatedDocuments;
+
+		if (status == null || !status.equalsIgnoreCase("best")) {
+			// 전체 번역 조회
+			translatedDocuments = docsService.getAllTranslatedDocuments(docsId);
+		} else {
+			// 베스트 번역 조회
+			translatedDocuments = docsService.getBestTranslatedDocuments(docsId);
+		}
+
+		return ResponseEntity.ok().body(translatedDocuments);
+	}
+
+	// 번역 조회하기 (현재 특정 유저 번역만 조회하게 구현)
+	@GetMapping("/trans")
+	public ResponseEntity<?> getTransDocs(
+		@RequestParam(required = false) Long userId
+	) {
+		List<TranslatedDocumentDto> translatedDocuments;
+
+		if (userId == null) {
+			// 유저 아이디가 없을 시 에러 반환
+			throw new IllegalArgumentException("User not found");
+		} else {
+			// 해당 유저의 번역본 조희
+			translatedDocuments = docsService.getUserTransDocument(userId);
+		}
+
+		return ResponseEntity.ok().body(translatedDocuments);
+	}
+
+	// 번역 작성하기
+	@PostMapping("/{docsId}/trans/{originId}")
+	public ResponseEntity<?> postTransDocs(
+		@PathVariable Integer docsId,
+		@PathVariable Integer originId,
+		@RequestParam String content
+	) {
+		User user = userUtil.getUser();
+		if (user == null) {
+			throw new IllegalArgumentException("User not found");
+		}
+		if (content == null || content.trim().isEmpty()) {
+			throw new IllegalArgumentException("Content is empty or null");
+		}
+
+		TranslatedDocumentDto createdTrans = docsService.createTranslatedDocument(docsId, originId, user, content);
+		return ResponseEntity.ok(createdTrans);
+	}
+
+	// 번역 상세보기
+	@GetMapping("/{docsId}/trans/paragraph/{transId}")
+	public ResponseEntity<?> getTransDetail(
+		@PathVariable Integer docsId,
+		@PathVariable Integer transId
+	) {
+		TranslatedDocumentDto transDocument = docsService.getTranslatedDocumentDetail(docsId, transId);
+		return ResponseEntity.ok(transDocument);
+	}
+
+	// 번역 수정하기
+	@PatchMapping("/{docsId}/trans/paragraph/{transId}")
+	public ResponseEntity<?> patchTrans(
+		@PathVariable Integer docsId,
+		@PathVariable Integer transId
+	) {
+		TranslatedDocumentDto updatedTrans = docsService.updateTranslatedDocument(docsId, transId);
+		return ResponseEntity.ok(updatedTrans);
+	}
+
+	// 번역 삭제하기
+	@DeleteMapping("/{docsId}/trans/paragraph/{transId}")
+	public ResponseEntity<?> deleteTrans(
+		@PathVariable Integer docsId,
+		@PathVariable Integer transId
+	) {
+		docsService.deleteTranslatedDocument(docsId, transId);
+		return ResponseEntity.ok().build();
+	}
+
+	// 번역 좋아요 하기
+	@PostMapping("/{docsId}/trans/paragraph/{transId}/votes")
+	public ResponseEntity<?> postTransVotes(
+		@PathVariable Integer docsId,
+		@PathVariable Integer transId
+	) {
+		User user = userUtil.getUser();
+		if (user == null) {
+			throw new IllegalArgumentException("User not found");
+		}
+
+		docsService.toggleVotes(docsId, transId, user.getUserId());
+		return ResponseEntity.ok().build();
+	}
+
 }

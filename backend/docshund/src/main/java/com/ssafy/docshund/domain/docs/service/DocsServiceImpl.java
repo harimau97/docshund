@@ -15,11 +15,17 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssafy.docshund.domain.docs.dto.DocumentDto;
 import com.ssafy.docshund.domain.docs.dto.OriginDocumentDto;
+import com.ssafy.docshund.domain.docs.dto.TranslatedDocumentDto;
 import com.ssafy.docshund.domain.docs.entity.Document;
 import com.ssafy.docshund.domain.docs.entity.OriginDocument;
+import com.ssafy.docshund.domain.docs.entity.Status;
+import com.ssafy.docshund.domain.docs.entity.TranslatedDocument;
 import com.ssafy.docshund.domain.docs.repository.CustomDocumentRepository;
+import com.ssafy.docshund.domain.docs.repository.DocumentLikeRepository;
 import com.ssafy.docshund.domain.docs.repository.DocumentRepository;
 import com.ssafy.docshund.domain.docs.repository.OriginDocumentRepository;
+import com.ssafy.docshund.domain.docs.repository.TranslatedDocumentRepository;
+import com.ssafy.docshund.domain.users.entity.User;
 
 import jakarta.persistence.EntityNotFoundException;
 
@@ -29,22 +35,27 @@ public class DocsServiceImpl implements DocsService {
 	private final DocumentRepository documentRepository;
 	private final OriginDocumentRepository originDocumentRepository;
 	private final CustomDocumentRepository customDocumentRepository;
+	private final DocumentLikeRepository documentLikeRepository;
+	private final TranslatedDocumentRepository translatedDocumentRepository;
 	private final ObjectMapper objectMapper = new ObjectMapper();
 
 	@Autowired
 	public DocsServiceImpl(DocumentRepository documentRepository,
 		OriginDocumentRepository originDocumentRepository,
-		CustomDocumentRepository customDocumentRepository) {
+		CustomDocumentRepository customDocumentRepository,
+		DocumentLikeRepository documentLikeRepository, TranslatedDocumentRepository translatedDocumentRepository) {
 		this.documentRepository = documentRepository;
 		this.originDocumentRepository = originDocumentRepository;
 		this.customDocumentRepository = customDocumentRepository;
+		this.translatedDocumentRepository = translatedDocumentRepository;
+		this.documentLikeRepository = documentLikeRepository;
 	}
 
 	// 전체 문서 목록 조회
 	@Override
 	@Transactional(readOnly = true)
-	public List<DocumentDto> getAllDocuments() {
-		return customDocumentRepository.findAllDocumentsWithLikes();
+	public List<DocumentDto> getAllDocuments(String sort, String order) {
+		return customDocumentRepository.findAllDocumentsWithLikes(sort, order);
 	}
 
 	// 특정 문서 상세 조회
@@ -104,25 +115,29 @@ public class DocsServiceImpl implements DocsService {
 	@Override
 	public DocumentDto toggleLikes(Integer docsId, long currentUserId) {
 		// 현재 사용자가 해당 문서를 좋아요 했는지 확인
-		boolean isLiked = customDocumentRepository.isLikedByUser(docsId, currentUserId);
+		boolean isLiked = documentLikeRepository.existsByDocument_DocsIdAndUser_UserId(docsId, currentUserId);
 
 		if (isLiked) {
 			// 좋아요 취소
-			customDocumentRepository.removeLike(docsId, currentUserId);
+			documentLikeRepository.deleteByDocument_DocsIdAndUser_UserId(docsId, currentUserId);
 		} else {
 			// 좋아요 등록
 			customDocumentRepository.addLike(docsId, currentUserId);
 		}
 
 		// 갱신된 좋아요 개수 조회
-		int updatedLikeCount = customDocumentRepository.getLikeCount(docsId);
+		int updatedLikeCount = documentLikeRepository.countByDocument_DocsId(docsId);
 
 		// 문서 정보 조회
 		Document targetDocument = documentRepository.findById(docsId)
 			.orElseThrow(() -> new EntityNotFoundException("Document not found with id: " + docsId));
 
-		// `likeCount`를 포함하여 DTO 생성 후 반환
 		return DocumentDto.fromEntity(targetDocument, updatedLikeCount);
+	}
+
+	@Override
+	public List<DocumentDto> getLikesDocument(Integer userId) {
+		return documentRepository.findLikesDocument(userId);
 	}
 
 	// 문서 원본(origin_document) 조회
@@ -224,6 +239,74 @@ public class DocsServiceImpl implements DocsService {
 		} catch (Exception e) {
 			throw new RuntimeException("Failed to process HTML content: " + e.getMessage(), e);
 		}
+	}
+
+	// 특정 문서에 대한 번역 전체 조회
+	@Override
+	public List<TranslatedDocumentDto> getAllTranslatedDocuments(Integer docsId) {
+		return customDocumentRepository.findAllTransWithLikes(docsId);
+	}
+
+	// 특정 문서에 대한 베스트 번역 조회하기
+	@Override
+	public List<TranslatedDocumentDto> getBestTranslatedDocuments(Integer docsId) {
+		return customDocumentRepository.findBestTransWithLikes(docsId);
+	}
+
+	// 번역 작성하기
+	@Override
+	@Transactional
+	public TranslatedDocumentDto createTranslatedDocument(Integer docsId, Integer originId, User user,
+		String content) {
+		// 원본 문서 조회
+		OriginDocument originDocument = originDocumentRepository.findById(originId)
+			.orElseThrow(() -> new EntityNotFoundException("OriginDocument not found with id: " + originId));
+
+		// 번역 문서 생성
+		TranslatedDocument translatedDocument = new TranslatedDocument(
+			originDocument,
+			user,
+			content,
+			0,
+			Status.VISIBLE
+		);
+
+		TranslatedDocument savedDocument = translatedDocumentRepository.save(translatedDocument);
+
+		return TranslatedDocumentDto.fromEntity(savedDocument, 0);
+	}
+
+	// 유저 번역 조회하기
+	@Override
+	public List<TranslatedDocumentDto> getUserTransDocument(long userId) {
+		return customDocumentRepository.findUserTransWithLikes(userId);
+	}
+
+	// 번역 상세 조회
+	@Override
+	public TranslatedDocumentDto getTranslatedDocumentDetail(Integer docsId, Integer transId) {
+		TranslatedDocument translatedDocument = translatedDocumentRepository.findById(transId)
+			.orElseThrow(() -> new EntityNotFoundException("TranslatedDocument not found with id: " + transId));
+		return TranslatedDocumentDto.fromEntity(translatedDocument, 0);
+	}
+
+	// 번역 수정하기
+	@Override
+	public TranslatedDocumentDto updateTranslatedDocument(Integer docsId, Integer transId) {
+		return null;
+
+	}
+
+	// 번역 삭제하기
+	@Override
+	public void deleteTranslatedDocument(Integer docsId, Integer transId) {
+		translatedDocumentRepository.deleteById(transId);
+	}
+	
+	// 번역 투표 / 투표해제
+	@Override
+	public void toggleVotes(Integer docsId, Integer transId, Long userId) {
+
 	}
 
 }
