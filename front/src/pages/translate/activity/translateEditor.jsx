@@ -3,7 +3,7 @@ import Modal from "react-modal";
 import TextContent from "../components/textContent";
 import EditorContent from "../components/editorContent";
 import useModalStore from "../store/modalStore";
-import RoundCornerBtn from "../../../components/button/roundCornerBtn";
+import RectBtn from "../../../components/button/rectBtn";
 import useEditorStore from "../store/editorStore";
 
 const TranslateEditor = () => {
@@ -24,15 +24,15 @@ const TranslateEditor = () => {
         <div className="flex shrink-0 items-center pb-4 text-xl font-medium text-slate-800 justify-between">
           {porder}번째 문단 번역 중
           <div className="flex space-x-6">
-            <RoundCornerBtn
+            <RectBtn
               onClick={async () => {
                 useEditorStore.setState({ tempSave: currentUserText });
                 console.log(useEditorStore.getState().tempSave);
               }}
               text="임시저장"
             />
-            <RoundCornerBtn onClick={closeEditor} text="제출" />
-            <RoundCornerBtn onClick={closeEditor} text="편집 나가기" />
+            <RectBtn onClick={closeEditor} text="제출" />
+            <RectBtn onClick={closeEditor} text="편집 나가기" />
           </div>
         </div>
         <div className="relative border-t border-slate-200 py-4 leading-normal text-slate-600 font-light h-full flex flex-col">
@@ -44,7 +44,11 @@ const TranslateEditor = () => {
             isHTML={true}
           />
           <br />
-          <TextContent tag="베스트 번역" textContent={docsPart} isHTML={true} />
+          <TextContent
+            tag="베스트 번역"
+            textContent={bestTrans}
+            isHTML={true}
+          />
           <div className="flex flex-col h-full w-full translate-[-50%, -50%] top-0 left-1/2 absolute py-4">
             <EditorContent />
           </div>

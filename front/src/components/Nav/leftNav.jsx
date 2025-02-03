@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 import { FaPlus } from "react-icons/fa6";
 import { NavLink, useNavigate } from "react-router-dom";
-import modalStore from "../../pages/myPage/stores/modalStore.jsx";
+import modalStore from "../../pages/myPage/store/modalStore.jsx";
 import EditorModal from "../../pages/myPage/components/EditorModal.jsx";
 import docsList from "../../assets/icon/docsList.png";
 import notification from "../../assets/icon/notification.png";
@@ -157,24 +157,26 @@ const LeftNav = () => {
           />
         </div>
       </div>
-      <EditorModal
-        title="새 메모"
-        fields={[
-          {
-            label: "제목",
-            name: "title",
-            type: "text",
-            placeholder: "제목을 입력하세요",
-            value: memoData.title,
-            onChange: handleInputChange,
-            required: true,
-          },
-        ]}
-        buttonText="작성 완료"
-        isOpen={isOpen}
-        closeModal={closeModal}
-        onSubmit={handleSubmit}
-      />
+      <div className="absolute z-[2500]">
+        <EditorModal
+          title="새 메모"
+          fields={[
+            {
+              label: "제목",
+              name: "title",
+              type: "text",
+              placeholder: "제목을 입력하세요",
+              value: memoData.title,
+              onChange: handleInputChange,
+              required: true,
+            },
+          ]}
+          buttonText="작성 완료"
+          isOpen={isOpen}
+          closeModal={closeModal}
+          onSubmit={handleSubmit}
+        />
+      </div>
     </div>
   );
 };

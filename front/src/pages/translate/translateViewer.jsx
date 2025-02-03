@@ -6,7 +6,8 @@ import useEditorStore from "./store/editorStore.jsx";
 import useArchiveStore from "./store/archiveStore.jsx";
 import TranslateEditor from "./activity/translateEditor.jsx";
 import TranslateArchive from "./activity/translateArchive.jsx";
-import RoundCornerBtn from "../../components/button/roundCornerBtn.jsx";
+import ToastViewer from "./components/toastViewer.jsx";
+import RectBtn from "../../components/button/rectBtn.jsx";
 import loadingGif from "../../assets/loading.gif";
 import { IoCloseCircleOutline } from "react-icons/io5";
 import axios from "axios";
@@ -171,9 +172,10 @@ const TranslateViewer = () => {
                 e.stopPropagation();
                 toggleButton(part.id, e);
               }} // toggleButton에 e를 전달
-              dangerouslySetInnerHTML={{ __html: part.content }}
               className="bg-[#E4DCD4] cursor-pointer p-2 rounded-md text-[#424242] hover:bg-[#BCB2A8] flex flex-col w-full"
-            />
+            >
+              <ToastViewer content={part.content} />
+            </div>
             {buttonStates[part.id] && (
               <div
                 className="flex flex-row min-w-fit h-fit z-95 items-center"
@@ -184,7 +186,7 @@ const TranslateViewer = () => {
                   transform: "translate(-128px,-20px)",
                 }}
               >
-                <RoundCornerBtn
+                <RectBtn
                   onClick={() => {
                     openEditor();
                     useEditorStore.setState({
@@ -195,12 +197,13 @@ const TranslateViewer = () => {
                     });
                   }}
                   text="번역하기"
+                  className="opacity-70"
                 />
                 <IoCloseCircleOutline
                   className="w-8 h-8 cursor-pointer text-[#bc5b39] mr-2 ml-2 min-w-fit"
                   onClick={(e) => toggleButton(part.id, e)}
                 />
-                <RoundCornerBtn
+                <RectBtn
                   onClick={() => {
                     openArchive();
                     useEditorStore.setState({
@@ -211,6 +214,7 @@ const TranslateViewer = () => {
                     });
                   }}
                   text="번역기록"
+                  className="opacity-70"
                 />
               </div>
             )}
