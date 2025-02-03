@@ -1,12 +1,15 @@
 package com.ssafy.docshund.global.util.oauth2;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssafy.docshund.domain.users.dto.auth.CustomOAuth2User;
 import com.ssafy.docshund.global.util.jwt.JwtUtil;
 
@@ -39,8 +42,13 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 		String token = jwtUtil.createJwt(personalId, role, TOKEN_EXPIRATION);
 		log.info("Token: " + token);
 
-		response.addHeader("Authorization", "Bearer " + token);
-		response.sendRedirect("http://localhost:3000/");
+		// JSON 객체 생성
+		Map<String, String> responseBody = new HashMap<>();
+		responseBody.put("token", token);
+
+		// JSON 반환
+		ObjectMapper objectMapper = new ObjectMapper();
+		response.getWriter().write(objectMapper.writeValueAsString(responseBody));
 	}
 
 }
