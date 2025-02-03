@@ -24,10 +24,10 @@ const ArticleList = () => {
   const setLoading = communityArticleStore((state) => state.setLoading);
   const setError = communityArticleStore((state) => state.setError);
 
-  const [isLoggedIn] = useState(true); // 임시로 로그인 상태 true로 설정
-  const [sortType, setSortBy] = useState("latest");
-  const [itemsPerPage, setItmesPerPage] = useState(15);
+  const [isLoggedIn] = useState(true); // 임시로 로그인 상태 true로 설정. TODO: 로그인 상태 확인 로직 추가 필요
+  const [itemsPerPage, setItmesPerPage] = useState(15); // 페이지당 보여줄 게시글 수
 
+  const [sortType, setSortBy] = useState("latest"); // 정렬 기준
   // 정렬 옵션
   const sortOptions = [
     { value: "latest", label: "최신순" },
@@ -35,9 +35,9 @@ const ArticleList = () => {
     { value: "views", label: "조회수순" },
   ];
 
+  // 정렬 상태 변경
   const handleSort = (value) => {
     setSortBy(value);
-    // TODO: Add your sorting logic here
   };
 
   // NOTE: 즉시 store에 접근하여 데이터를 가져오기 위해 useEffect 사용
@@ -77,16 +77,7 @@ const ArticleList = () => {
 
     // fetchArticles 함수를 실행
     fetchArticles();
-  }, [
-    sortType,
-    currentPage,
-    itemsPerPage,
-    setArticles,
-    setTotalPage,
-    setCurrentPage,
-    setLoading,
-    setError,
-  ]);
+  }, [sortType, currentPage, itemsPerPage]); // sortType, currentPage, itemsPerPage가 변경될 때마다 useEffect 실행
 
   // 리스트 아이템 렌더링
   const renderItem = (item) => (

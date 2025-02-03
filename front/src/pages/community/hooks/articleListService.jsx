@@ -36,6 +36,13 @@ const articleListService = {
       } else {
         return null;
       }
+
+      // NOTE: 정렬 기준에 따라 다른 tmp 데이터 반환
+      // if (sortType === "latest") {
+      //   return tmpData1;
+      // } else if (sortType === "likes") {
+      //   return tmpData2;
+      // }
     } catch (error) {
       console.error(error);
       return null;

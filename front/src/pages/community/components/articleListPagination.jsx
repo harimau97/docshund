@@ -40,8 +40,6 @@ const ArticleListPagination = () => {
   };
 
   return (
-    // TODO: 페이지 클릭에 따라 onPageeChange 함수 호출됨 -> articleListRender에서 state변경 -> 페이지 이동에 따른 axios 요청 필요
-
     // < 버튼 (이전 페이지 이동)
     <div className="flex justify-center items-center space-x-2 mt-6">
       <button

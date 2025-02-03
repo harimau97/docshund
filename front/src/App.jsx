@@ -24,7 +24,7 @@ function App() {
           <UpperNav loginStatus={true} />
         </div>
       )}
-      <div className="flex-grow">
+      <div className="flex-grow ">
         <AppRouter />
       </div>
       {isTranslateViewerPage ? null : <Footer />}
