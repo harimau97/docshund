@@ -14,8 +14,8 @@ import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.ssafy.docshund.domain.docs.entity.Position;
 import com.ssafy.docshund.domain.docs.entity.QDocument;
-import com.ssafy.docshund.domain.forums.dto.ArticleInfo;
-import com.ssafy.docshund.domain.forums.dto.QArticleInfo;
+import com.ssafy.docshund.domain.forums.dto.ArticleInfoDto;
+import com.ssafy.docshund.domain.forums.dto.QArticleInfoDto;
 import com.ssafy.docshund.domain.forums.entity.QArticle;
 import com.ssafy.docshund.domain.forums.entity.QArticleLike;
 import com.ssafy.docshund.domain.forums.entity.QComment;
@@ -31,8 +31,8 @@ public class ArticleRepositoryCustomImpl implements ArticleRepositoryCustom {
 	private final JPAQueryFactory queryFactory;
 
 	@Override
-	public Page<ArticleInfo> findAllArticles(String sort, Position filterPosition, String filterDocName,
-		String keyword, String searchType, Pageable pageable, Long userId) {
+	public Page<ArticleInfoDto> findAllArticles(String sort, Position filterPosition, String filterDocName,
+                                                String keyword, String searchType, Pageable pageable, Long userId) {
 
 		QArticle article = QArticle.article;
 		QArticleLike articleLike = QArticleLike.articleLike;
@@ -60,8 +60,8 @@ public class ArticleRepositoryCustomImpl implements ArticleRepositoryCustom {
 
 		OrderSpecifier<?> orderSpecifier = getSortOrder(article, articleLike, sort);
 
-		List<ArticleInfo> result = queryFactory
-			.select(new QArticleInfo(
+		List<ArticleInfoDto> result = queryFactory
+			.select(new QArticleInfoDto(
 				article.articleId,
 				document.docsId,
 				document.position,
@@ -112,7 +112,7 @@ public class ArticleRepositoryCustomImpl implements ArticleRepositoryCustom {
 	}
 
 	@Override
-	public Page<ArticleInfo> findArticlesByAuthorId(Long authorId, Pageable pageable, Long userId) {
+	public Page<ArticleInfoDto> findArticlesByAuthorId(Long authorId, Pageable pageable, Long userId) {
 
 		QArticle article = QArticle.article;
 		QArticleLike articleLike = QArticleLike.articleLike;
@@ -120,8 +120,8 @@ public class ArticleRepositoryCustomImpl implements ArticleRepositoryCustom {
 		QDocument document = QDocument.document;
 		QUser user = QUser.user;
 
-		List<ArticleInfo> result = queryFactory
-			.select(new QArticleInfo(
+		List<ArticleInfoDto> result = queryFactory
+			.select(new QArticleInfoDto(
 				article.articleId,
 				document.docsId,
 				document.position,
@@ -173,7 +173,7 @@ public class ArticleRepositoryCustomImpl implements ArticleRepositoryCustom {
 	}
 
 	@Override
-	public Page<ArticleInfo> findArticlesLikedByUserId(Long userId, Pageable pageable) {
+	public Page<ArticleInfoDto> findArticlesLikedByUserId(Long userId, Pageable pageable) {
 
 		QArticle article = QArticle.article;
 		QArticleLike articleLike = QArticleLike.articleLike;
@@ -181,8 +181,8 @@ public class ArticleRepositoryCustomImpl implements ArticleRepositoryCustom {
 		QDocument document = QDocument.document;
 		QUser user = QUser.user;
 
-		List<ArticleInfo> result = queryFactory
-			.select(new QArticleInfo(
+		List<ArticleInfoDto> result = queryFactory
+			.select(new QArticleInfoDto(
 				article.articleId,
 				document.docsId,
 				document.position,
@@ -235,7 +235,7 @@ public class ArticleRepositoryCustomImpl implements ArticleRepositoryCustom {
 	}
 
 	@Override
-	public ArticleInfo findArticleById(Integer articleId, Long userId) {
+	public ArticleInfoDto findArticleById(Integer articleId, Long userId) {
 
 		QArticle article = QArticle.article;
 		QArticleLike articleLike = QArticleLike.articleLike;
@@ -244,7 +244,7 @@ public class ArticleRepositoryCustomImpl implements ArticleRepositoryCustom {
 		QUser user = QUser.user;
 
 		return queryFactory
-			.select(new QArticleInfo(
+			.select(new QArticleInfoDto(
 				article.articleId,
 				document.docsId,
 				document.position,
