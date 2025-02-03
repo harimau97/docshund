@@ -1,12 +1,7 @@
-import communityArticleStore from "../stores/communityArticleStore";
+import PropTypes from "prop-types";
 
 // 페이지네이션 컴포넌트
-const ArticleListPagination = () => {
-  // store에서 데이터를 가져오기 위해 store의 상태 정의
-  const totalPages = communityArticleStore((state) => state.totalPages);
-  const currentPage = communityArticleStore((state) => state.currentPage);
-  const setCurrentPage = communityArticleStore((state) => state.setCurrentPage);
-
+const ListPagination = ({ totalPages, currentPage, setCurrentPage }) => {
   // 페이지 버튼 배열 생성 함수
   const getPageNumbers = () => {
     let pages = [];
@@ -86,4 +81,11 @@ const ArticleListPagination = () => {
   );
 };
 
-export default ArticleListPagination;
+// props 타입 설정
+ListPagination.propTypes = {
+  totalPages: PropTypes.number,
+  currentPage: PropTypes.number,
+  setCurrentPage: PropTypes.func,
+};
+
+export default ListPagination;

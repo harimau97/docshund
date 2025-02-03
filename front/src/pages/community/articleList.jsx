@@ -2,9 +2,9 @@ import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 
 import articleListService from "./hooks/articleListService";
-import ArticleListRender from "./components/articleListRender.jsx";
+import ArticleListRender from "../../components/pagination/listRender.jsx";
 import RectBtn from "../../components/button/rectBtn";
-import communityArticleStore from "./stores/communityArticleStore.jsx";
+import communityArticleStore from "../../store/communityStore/communityArticleStore.jsx";
 
 import like from "../../assets/icon/heartFilled24.png";
 import view from "../../assets/icon/viewCnt.png";
@@ -15,11 +15,12 @@ const ArticleList = () => {
 
   //  store에서 데이터를 가져오기 위해 store의 상태 정의
   const articles = communityArticleStore((state) => state.articles);
+  const totalPages = communityArticleStore((state) => state.totalPages);
   const currentPage = communityArticleStore((state) => state.currentPage);
 
   // set(메소드) 정의
   const setArticles = communityArticleStore((state) => state.setArticles);
-  const setTotalPage = communityArticleStore((state) => state.setTotalPage);
+  const setTotalPages = communityArticleStore((state) => state.setTotalPages);
   const setCurrentPage = communityArticleStore((state) => state.setCurrentPage);
   const setLoading = communityArticleStore((state) => state.setLoading);
   const setError = communityArticleStore((state) => state.setError);
@@ -66,12 +67,12 @@ const ArticleList = () => {
         // 가져온 데이터를 store에 저장
         if (data) {
           setArticles(data.articles);
-          setTotalPage(data.totalPages);
+          setTotalPages(data.totalPages);
           setCurrentPage(data.pageNum);
           setItmesPerPage(data.articles.length);
         }
 
-        console.log(data);
+        console.log("data", data);
       } catch (error) {
         setError(error);
       } finally {
@@ -192,7 +193,13 @@ const ArticleList = () => {
         </div>
 
         {/* 글 목록, 페이지네이션 */}
-        <ArticleListRender renderItem={renderItem} />
+        <ArticleListRender
+          data={articles}
+          renderItem={renderItem}
+          totalPages={totalPages}
+          currentPage={currentPage}
+          setCurrentPage={setCurrentPage}
+        />
       </main>
     </div>
   );

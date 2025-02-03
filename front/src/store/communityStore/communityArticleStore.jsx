@@ -12,7 +12,7 @@ const communityArticleStore = create((set) => ({
 
   // store의 메소드 설정
   setArticles: (articles) => set({ articles }),
-  setTotalPage: (totalPages) => set({ totalPages }),
+  setTotalPages: (totalPages) => set({ totalPages }),
   setCurrentPage: (currentPage) => set({ currentPage }),
   setLoading: (isLoading) => set({ isLoading }),
   setError: (error) => set({ error }),

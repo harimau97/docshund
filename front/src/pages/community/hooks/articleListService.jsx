@@ -1,7 +1,7 @@
 import axios from "axios";
 
-import tmpData1 from "../stores/tmpData1";
-import tmpData2 from "../stores/tmpData2";
+import tmpData1 from "../../../store/communityStore/tmpData1";
+import tmpData2 from "../../../store/communityStore/tmpData2";
 
 const articleListService = {
   // fetchArticles 함수는 filter, keyword, page, size를 인자로 받아서 데이터를 가져오는 함수
@@ -29,13 +29,13 @@ const articleListService = {
       console.log(sortType, filter, keyword, searchType, page, itemsPerPage);
 
       // NOTE: page(현재 페이지)에 따라 종속된 tmp 데이터 반환
-      // if (page == 1) {
-      //   return tmpData1;
-      // } else if (page == 2) {
-      //   return tmpData2;
-      // } else {
-      //   return null;
-      // }
+      if (page == 1) {
+        return tmpData1;
+      } else if (page == 2) {
+        return tmpData2;
+      } else {
+        return null;
+      }
 
       // NOTE: 정렬 기준에 따라 다른 tmp 데이터 반환
       // if (sortType === "latest") {
@@ -45,11 +45,11 @@ const articleListService = {
       // }
 
       // NOTE: 검색어에 따라 다른 tmp 데이터 반환
-      if (keyword === "test") {
-        return tmpData1;
-      } else {
-        return tmpData2;
-      }
+      // if (keyword === "test") {
+      //   return tmpData1;
+      // } else {
+      //   return tmpData2;
+      // }
     } catch (error) {
       console.error(error);
       return null;

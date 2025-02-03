@@ -1,14 +1,16 @@
 import PropTypes from "prop-types";
 
-import ArticleListPagination from "./articleListPagination";
-import communityArticleStore from "../stores/communityArticleStore";
+import ArticleListPagination from "./listPagination";
 
 // 게시글 리스트 렌더링 컴포넌트
 // renderItem: 각 아이템을 렌더링하는 함수 <- articleList.jsx에서 정의
-const ArticleListRender = ({ renderItem }) => {
-  // store에서 데이터를 가져오기 위해 store의 상태 정의
-  const data = communityArticleStore((state) => state.articles);
-
+const ListRender = ({
+  data,
+  renderItem,
+  totalPages,
+  currentPage,
+  setCurrentPage,
+}) => {
   return (
     // 리스트 아이템 렌더링
     <div className="p-10 bg-white rounded-bl-xl rounded-br-xl border-b border-l border-r border-[#E1E1DF] text-[#7D7C77]">
@@ -31,15 +33,23 @@ const ArticleListRender = ({ renderItem }) => {
       {/* 페이지네이션 */}
       {
         // 페이지 클릭에 따라 currentPage 변경 -> 변경된 currentPage에 따라 axios 요청 필요
-        <ArticleListPagination />
+        <ArticleListPagination
+          totalPages={totalPages}
+          currentPage={currentPage}
+          setCurrentPage={setCurrentPage}
+        />
       }
     </div>
   );
 };
 
 // props 타입 설정
-ArticleListRender.propTypes = {
+ListRender.propTypes = {
+  data: PropTypes.array,
   renderItem: PropTypes.func,
+  totalPages: PropTypes.number,
+  currentPage: PropTypes.number,
+  setCurrentPage: PropTypes.func,
 };
 
-export default ArticleListRender;
+export default ListRender;
