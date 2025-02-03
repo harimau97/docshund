@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CommentDto {
+public class ArticleDto {
+    private String title;
     private String content;
+    private String category;
 }
