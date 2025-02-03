@@ -47,4 +47,8 @@ public class TranslatedDocument extends BaseTimeEntityWithUpdatedAt {
 		this.status = status != null ? status : Status.VISIBLE;
 	}
 
+	public void updateContent(String newContent) {
+		this.content = newContent;
+	}
+
 }
