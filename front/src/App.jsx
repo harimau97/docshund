@@ -29,6 +29,7 @@ function App() {
           <UpperNav loginStatus={true} />
         </div>
       )}
+
       <div className="flex-grow w-full max-w-screen-xl mx-auto">
         <AppRouter />
       </div>

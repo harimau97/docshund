@@ -9,6 +9,7 @@ const ListRender = ({ data = [], renderItem = () => null, itemsPerPage }) => {
   const currentData = data.slice(startIndex, startIndex + itemsPerPage);
 
   return (
+    // 리스트 아이템 렌더링
     <div className="p-10 bg-white rounded-bl-xl rounded-br-xl border-b border-l border-r border-[#E1E1DF] text-[#7D7C77]">
       {currentData.length > 0 ? (
         currentData.map((item, index) => (
@@ -19,7 +20,10 @@ const ListRender = ({ data = [], renderItem = () => null, itemsPerPage }) => {
       ) : (
         <p className="text-gray-500 text-center">데이터가 없습니다.</p>
       )}
-      {totalPages > 1 && (
+
+      {/* 페이지네이션 */}
+      {(
+        // 1초과에서 전체 다 뜨는 걸로 변경
         <Pagination
           currentPage={currentPage}
           totalPages={totalPages}
