@@ -39,16 +39,18 @@ public class ArticleServiceImpl implements ArticleService {
 		User user = userUtil.getUser();
 
 		Document document = documentRepository.findByDocumentName(articleDto.getCategory())
-				.orElseThrow(() -> new NoSuchElementException("NOT EXISTS CATEGORY"));
+			.orElseThrow(() -> new NoSuchElementException("NOT EXISTS CATEGORY"));
 
-		Article savedArticle = articleRepository.save(new Article(user, document, articleDto.getTitle(), articleDto.getContent()));
+		Article savedArticle = articleRepository.save(
+			new Article(user, document, articleDto.getTitle(), articleDto.getContent()));
 
 		return new ArticleInfoDto(
-				savedArticle.getArticleId(), savedArticle.getDocument().getDocsId(), savedArticle.getDocument().getPosition(),
-				savedArticle.getDocument().getDocumentName(), savedArticle.getTitle(), savedArticle.getContent(),
-				savedArticle.getCreatedAt(), savedArticle.getUpdatedAt(), 0, 0, 0,
-				savedArticle.getUser().getUserId(), savedArticle.getUser().getNickname(),
-				savedArticle.getUser().getProfileImage(), false
+			savedArticle.getArticleId(), savedArticle.getDocument().getDocsId(),
+			savedArticle.getDocument().getPosition(),
+			savedArticle.getDocument().getDocumentName(), savedArticle.getTitle(), savedArticle.getContent(),
+			savedArticle.getCreatedAt(), savedArticle.getUpdatedAt(), 0, 0, 0,
+			savedArticle.getUser().getUserId(), savedArticle.getUser().getNickname(),
+			savedArticle.getUser().getProfileImage(), false
 		);
 	}
 
@@ -59,23 +61,23 @@ public class ArticleServiceImpl implements ArticleService {
 		User user = userUtil.getUser();
 
 		Article article = articleRepository.findById(articleId)
-				.orElseThrow(() -> new NoSuchElementException("NOT EXISTS ARTICLE"));
+			.orElseThrow(() -> new NoSuchElementException("NOT EXISTS ARTICLE"));
 
-		if(!article.getUser().getUserId().equals(user.getUserId())) {
+		if (!article.getUser().getUserId().equals(user.getUserId())) {
 			throw new AccessDeniedException("NO PERMISSION FOR THIS ARTICLE");
 		}
 
-		if(articleDto.getTitle() != null) {
+		if (articleDto.getTitle() != null) {
 			article.modifyTitle(articleDto.getTitle());
 		}
 
-		if(articleDto.getContent() != null) {
+		if (articleDto.getContent() != null) {
 			article.modifyContent(articleDto.getContent());
 		}
 
-		if(articleDto.getCategory() != null) {
+		if (articleDto.getCategory() != null) {
 			Document document = documentRepository.findByDocumentName(articleDto.getCategory())
-					.orElseThrow(() -> new NoSuchElementException("NOT EXISTS CATEGORY"));
+				.orElseThrow(() -> new NoSuchElementException("NOT EXISTS CATEGORY"));
 
 			article.modifyDocument(document);
 		}
@@ -83,18 +85,20 @@ public class ArticleServiceImpl implements ArticleService {
 
 	@Override
 	public Page<ArticleInfoDto> getArticles(String sort, Position filterPosition, String filterDocName,
-											String keyword, String searchType, Pageable pageable) {
+		String keyword, String searchType, Pageable pageable) {
 
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		User user = null;
 
-		if (authentication != null && authentication.isAuthenticated() && !(authentication.getPrincipal() instanceof String)) {
+		if (authentication != null && authentication.isAuthenticated()
+			&& !(authentication.getPrincipal() instanceof String)) {
 			user = userUtil.getUser();
 		}
 
 		Long userId = (user != null) ? user.getUserId() : 0L;
 
-		return articleRepository.findAllArticles(sort, filterPosition, filterDocName, keyword, searchType, pageable, userId);
+		return articleRepository.findAllArticles(sort, filterPosition, filterDocName, keyword, searchType, pageable,
+			userId);
 	}
 
 	@Override
@@ -146,7 +150,7 @@ public class ArticleServiceImpl implements ArticleService {
 		Article article = articleRepository.findById(articleId)
 			.orElseThrow(() -> new NoSuchElementException("NOT EXISTS ARTICLE"));
 
-		if(!article.getUser().getUserId().equals(userUtil.getUser().getUserId())) {
+		if (!article.getUser().getUserId().equals(userUtil.getUser().getUserId())) {
 			throw new AccessDeniedException("NO PERMISSION FOR THIS ARTICLE");
 		}
 

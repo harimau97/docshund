@@ -16,7 +16,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ssafy.docshund.domain.users.dto.page.UserAndInfoDto;
+import com.ssafy.docshund.domain.users.dto.page.UserProfileDto;
 import com.ssafy.docshund.domain.users.dto.page.UserSearchCondition;
 import com.ssafy.docshund.domain.users.dto.profile.ProfileRequestDto;
 import com.ssafy.docshund.domain.users.entity.Hobby;
@@ -62,7 +62,7 @@ class UserControllerTest {
 	void getProfileUser() throws Exception {
 		// given
 		Long userId = 1L;
-		UserAndInfoDto dto = new UserAndInfoDto();  // 적절한 데이터 셋팅
+		UserProfileDto dto = new UserProfileDto();  // 적절한 데이터 셋팅
 		dto.setEmail("test@example.com");
 		when(userService.getUserProfile(userId)).thenReturn(dto);
 
