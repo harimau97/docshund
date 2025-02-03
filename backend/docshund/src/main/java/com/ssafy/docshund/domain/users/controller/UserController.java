@@ -38,7 +38,7 @@ public class UserController {
 		Pageable pageable) {
 
 		if (!userUtil.isAdmin(userUtil.getUser())) {
-			return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
 		}
 
 		UserSearchCondition condition = new UserSearchCondition(nickname, email, category);

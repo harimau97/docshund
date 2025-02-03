@@ -40,7 +40,7 @@ public class UserServiceImpl implements UserService {
 	@Transactional
 	public void modifyUserProfile(User user, ProfileRequestDto profileRequestDto) {
 		UserInfo userInfo = userInfoRepository.findByUser(user).get();
-		user.modifyUserProfile(profileRequestDto.getProfileUrl());
+		user.modifyUserProfile(profileRequestDto.getProfileUrl(), profileRequestDto.getNickname());
 		userInfo.modifyInfo(profileRequestDto);
 	}
 
