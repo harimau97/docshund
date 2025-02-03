@@ -42,10 +42,12 @@ function AppRoutes() {
       </Route>
 
       {/* 번역 관련 주소 */}
-      <Route path="/translate" element={<TranslatePage />}>
-        <Route path="viewer/:docsName" element={<TranslateViewer />}></Route>
-      </Route>
-
+      <Route path="/translate" element={<TranslatePage />}></Route>
+      {/* 하위 항목으로 작성하면 인식이 안되서 수정함 */}
+      <Route
+        path="translate/viewer/:docsName"
+        element={<TranslateViewer />}
+      ></Route>
       {/* 커뮤니티 관련 주소 */}
       <Route path="/community" element={<CommunityPage />} />
 

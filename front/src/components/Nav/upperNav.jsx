@@ -13,7 +13,6 @@ const UpperNav = ({ loginStatus }) => {
   const activeLink = "font-bold text-[clamp(16px,1.5vw,20px)] text-[#bc5b39]";
   const inactiveLink =
     "text-[clamp(16px,1.5vw,20px)] text-[#424242] hover:text-[#bc5b39]";
-
   return (
     <div className="bg-[#f0eee5] flex justify-center px-9 py-3 shadow-[0px_-1px_1px_0px_rgba(0, 0, 0, 0.10)]">
       <div className="w-full max-w-screen-xl mx-auto gap-3 flex items-center justify-between">
