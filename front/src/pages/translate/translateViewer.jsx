@@ -1,25 +1,59 @@
 import { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { initDB, addData, loadData } from "./indexedDB/indexedDB.jsx";
+import useModalStore from "./store/modalStore.jsx";
+import useEditorStore from "./store/editorStore.jsx";
+import useArchiveStore from "./store/archiveStore.jsx";
+import TranslateEditor from "./activity/translateEditor.jsx";
+import TranslateArchive from "./activity/translateArchive.jsx";
+import RoundCornerBtn from "../../components/button/roundCornerBtn.jsx";
 import loadingGif from "../../assets/loading.gif";
+import { IoCloseCircleOutline } from "react-icons/io5";
 import axios from "axios";
 
-// npm run dev를 했을 경우 useEffect가 두 번 실행되기 때문에 console에서 addData를 실행할 수 없다는 에러가 출력됩니다.
-// 실제 배포했을 때는 발생하지 않습니다.
 const TranslateViewer = () => {
   const { docsName } = useParams();
   const [docParts, setDocParts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [processedCount, setProcessedCount] = useState(0);
+  const [buttonStates, setButtonStates] = useState({});
+  const [mousePositions, setMousePositions] = useState({}); // 마우스 위치를 저장할 state 추가
   const docData = useRef([]);
   const loadingRef = useRef(null);
   const chunk_size = 20;
 
   //indexedDB 관련 변수
-  const dbName = "docs"; //DB 이름
-  const objectStoreName = docsName; //객체저장소(테이블) 이름
+  const dbName = "docs";
+  const objectStoreName = docsName;
   const [isDbInitialized, setIsDbInitialized] = useState(false);
+
+  //번역 에디터, 투표 관련 모달
+  const { openEditor, openArchive } = useModalStore();
+
+  //ui 관련
+  const toggleButton = (partId, e) => {
+    // 클릭 이벤트 객체 e를 받도록 수정
+    const rect = e.currentTarget.getBoundingClientRect();
+    setMousePositions((prev) => ({
+      // 클릭한 위치 저장
+      ...prev,
+      [partId]: {
+        x: e.clientX - rect.left,
+        y: e.clientY - rect.top,
+      },
+    }));
+
+    setButtonStates((prev) => ({
+      ...Object.keys(prev).reduce((acc, key) => {
+        if (key !== partId) {
+          acc[key] = false;
+        }
+        return acc;
+      }, {}),
+      [partId]: !prev[partId],
+    }));
+  };
 
   useEffect(() => {
     async function checkDB() {
@@ -33,9 +67,11 @@ const TranslateViewer = () => {
           setLoading(true);
           try {
             const response = await axios.get(
-              "http://localhost:8080/api/docs/docParts"
+              // "https://f1887553-e372-4944-90d7-8fe76ae8d764.mock.pstmn.io/docs/1/origin?originId="
+              `http://localhost:8080/api/docs/docParts`
             );
             const data = response.data;
+
             docData.current = data;
             if (data && Array.isArray(data)) {
               await addData(data, objectStoreName);
@@ -70,7 +106,7 @@ const TranslateViewer = () => {
       setLoading(true);
 
       // 인위적인 지연 추가 (개발용)
-      await new Promise((resolve) => setTimeout(resolve, 450));
+      await new Promise((resolve) => setTimeout(resolve, 600));
 
       const data = docData.current;
       // console.log("Current processedCount:", processedCount);
@@ -126,15 +162,59 @@ const TranslateViewer = () => {
   }, [isDbInitialized]);
 
   return (
-    <div className="h-[99%] border-black border-2 w-[70%] absolute top-1/2 left-1/2 -translate-1/2 overflow-x-hidden overflow-y-scroll p-4 flex flex-col">
+    <div className="h-[99%] min-w-[800px] border-black border-2 w-[70%] absolute top-1/2 left-1/2 -translate-1/2 overflow-x-auto overflow-y-scroll p-4 flex flex-col z-[1000]">
       <div className="flex flex-col gap-4">
         {docParts.map((part, index) => (
-          <div
-            key={index}
-            onClick={() => alert(part.porder)}
-            dangerouslySetInnerHTML={{ __html: part.content }}
-            className="bg-[#E4DCD4] cursor-pointer p-2 rounded-md text-[#424242] hover:bg-[#BCB2A8]flex flex-col"
-          />
+          <div key={index} className="flex flex-row relative">
+            <div
+              onClick={async (e) => {
+                e.stopPropagation();
+                toggleButton(part.id, e);
+              }} // toggleButton에 e를 전달
+              dangerouslySetInnerHTML={{ __html: part.content }}
+              className="bg-[#E4DCD4] cursor-pointer p-2 rounded-md text-[#424242] hover:bg-[#BCB2A8] flex flex-col w-full"
+            />
+            {buttonStates[part.id] && (
+              <div
+                className="flex flex-row min-w-fit h-fit z-95 items-center"
+                style={{
+                  position: "absolute",
+                  top: mousePositions[part.id]?.y || 0, // 저장된 y좌표 사용
+                  left: mousePositions[part.id]?.x || 0, // 저장된 x좌표 사용
+                  transform: "translate(-128px,-20px)",
+                }}
+              >
+                <RoundCornerBtn
+                  onClick={() => {
+                    openEditor();
+                    useEditorStore.setState({
+                      docsPart: part.content,
+                      porder: part.porder,
+                      docsId: part.docsId,
+                      originId: part.originId,
+                    });
+                  }}
+                  text="번역하기"
+                />
+                <IoCloseCircleOutline
+                  className="w-8 h-8 cursor-pointer text-[#bc5b39] mr-2 ml-2 min-w-fit"
+                  onClick={(e) => toggleButton(part.id, e)}
+                />
+                <RoundCornerBtn
+                  onClick={() => {
+                    openArchive();
+                    useEditorStore.setState({
+                      docsPart: part.content,
+                      porder: part.porder,
+                      docsId: part.docsId,
+                      originId: part.originId,
+                    });
+                  }}
+                  text="번역기록"
+                />
+              </div>
+            )}
+          </div>
         ))}
       </div>
 
@@ -142,7 +222,7 @@ const TranslateViewer = () => {
         {loading && (
           <div className="flex justify-center items-center" role="status">
             <img
-              className="w-[200px] h-[200px]"
+              className="w-[300px] h-[300px]"
               src={loadingGif}
               alt="로딩 애니메이션"
             />
@@ -150,6 +230,8 @@ const TranslateViewer = () => {
         )}
         {!hasMore && <div>모든 문서를 불러왔습니다.</div>}
       </div>
+      <TranslateEditor className="z-auto" />
+      <TranslateArchive className="z-auto" />
     </div>
   );
 };
