@@ -9,10 +9,12 @@ import com.ssafy.docshund.domain.users.entity.Role;
 import com.ssafy.docshund.domain.users.entity.Status;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
+@NoArgsConstructor
 public class UserAndInfoDto {
 
 	private Long userId;

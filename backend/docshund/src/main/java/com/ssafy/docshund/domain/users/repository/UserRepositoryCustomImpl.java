@@ -67,4 +67,22 @@ public class UserRepositoryCustomImpl implements UserRepositoryCustom {
 
 		return new PageImpl<>(results, pageable, total);
 	}
+
+	@Override
+	public UserAndInfoDto getProfileUser(Long userId) {
+		return queryFactory
+			.select(
+				new QUserAndInfoDto(
+					user.userId, user.email, user.profileImage, user.nickname,
+					user.role, user.provider, user.personalId, user.status,
+					user.lastLogin, user.createdAt, user.updatedAt,
+					userInfo.userInfoId, userInfo.isDarkmode, userInfo.hobby,
+					userInfo.introduce, userInfo.reportCount
+				)
+			)
+			.from(user)
+			.join(userInfo).on(user.userId.eq(userInfo.user.userId))
+			.where(user.userId.eq(userId))
+			.fetchOne();
+	}
 }
