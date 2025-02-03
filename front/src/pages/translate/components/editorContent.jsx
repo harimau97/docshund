@@ -16,11 +16,11 @@ const EditorContent = () => {
   };
 
   return (
-    <div className="flex flex-col h-full w-1/2">
+    <div className="flex flex-col h-full w-full">
       <Editor
         ref={editorRef}
         initialValue={docsPart}
-        height="95%"
+        height="100%"
         initialEditType="markdown" // or 'wysiwyg'
         previewStyle="tab" // or 'tab'
         onChange={handleEditorChange}

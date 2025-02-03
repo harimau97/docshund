@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
+import { fetchBestTranslate } from "../hooks/translateService.jsx";
 import Modal from "react-modal";
 import useModalStore from "../store/modalStore";
 import GoBack from "../../../assets/icon/goBack.png";
@@ -21,7 +21,6 @@ const TranslateArchive = () => {
     setTransList,
     clearTransList,
   } = useArchiveStore();
-  let cnt = 0;
 
   const toggleTransContent = (transId) => {
     setTransStates((prev) => ({
@@ -36,45 +35,22 @@ const TranslateArchive = () => {
   };
 
   useEffect(() => {
-    const fetchTransList = async () => {
-      try {
-        // const response = await axios.get(
-        //   `https://f1887553-e372-4944-90d7-8fe76ae8d764.mock.pstmn.io/docs/${docsId}/trans/${porder}?sort=${orderBy}&order=desc&size=&page=`
-        // );
-
-        // PostMan 사용량 절약을 위해 데이터를 하드코딩함
-        let data = [
-          {
-            transId: 2,
-            originId: 2,
-            pOrder: 2,
-            userId: 2,
-            nickname: "고양이",
-            content:
-              "Spring은 Java 엔터프라이즈 애플리케이션을 쉽게 만들 수 있게 해줍니다. 기업 환경에서 Java 언어를 수용하는 데 필요한 모든 것을 제공하며, JVM에서 대체 언어로 Groovy와 Kotlin을 지원하고 애플리케이션의 필요에 따라 다양한 종류의 아키텍처를 유연하게 만들 수 있습니다. Spring Framework 6.0부터 Spring에는 Java 17+가 필요합니다.",
-            likeCount: 5,
-            likeUser: [3, 4, 5, 6, 7],
-            createdAt: "2024-12-04 18:56:44",
-            updatedAt: "2024-12-04 18:56:44",
-          },
-          {
-            transId: 6,
-            originId: 2,
-            pOrder: 2,
-            userId: 3,
-            nickname: "닥스훈트",
-            content:
-              "스프링은 자바 엔터프라이즈 애플리케이션을 쉽게 만들 수 있게 해줍니다. 기업 환경에서 자바를 수용하는 데 필요한 모든 것을 제공하며, JVM에서 대체 언어로 Groovy와 Kotlin을 지원하고, 애플리케이션의 필요에 따라 다양한 종류의 아키텍처를 유연하게 만들 수 있습니다. Spring Framework 6.0부터는 Java 17 이상이 필요합니다.",
-            likeCount: 1,
-            likeUser: [2],
-            createdAt: "2024-12-15 20:15:27",
-            updatedAt: "2024-12-18 22:33:12",
-          },
-        ];
-        setTransList(data);
-      } catch (error) {}
+    const fetchData = async () => {
+      const data = await fetchBestTranslate(
+        docsId,
+        originId,
+        orderBy,
+        10,
+        1,
+        true
+      );
+      setTransList(data);
     };
-    fetchTransList();
+    console.log(
+      "검색 기준이 변경되었습니다. 다시 검색합니다. 현재 검색 기준: ",
+      orderBy
+    );
+    fetchData();
   }, [orderBy]);
 
   return (

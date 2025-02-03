@@ -1,13 +1,13 @@
 import PropTypes from "prop-types";
 import ToastViewer from "./toastViewer";
 
-const TextContent = ({ tag, textContent, isHTML }) => {
+const TextContent = ({ tag, textContent }) => {
   return (
-    <div className="flex flex-col h-[44%] w-full">
-      <div className="border-black border-1 w-1/12 min-w-[150px] flex justify-center items-center pt-2 pr-2 pl-2 rounded-tl-xl rounded-tr-xl max-h-[33px]">
+    <div className="flex flex-col h-[calc(50%)] min-h-0 w-full">
+      <div className="border-black border-1 min-w-[150px] flex items-center p-2 rounded-tl-xl rounded-tr-xl h-8">
         {tag}
       </div>
-      <div className="box-border w-9/20 min-h-9/10 flex-1 bg-white rounded-br-xl rounded-bl-xl border-solid border-[87867F] border-1 relative overflow-y-scroll p-4">
+      <div className="flex-1 bg-white rounded-br-xl rounded-bl-xl border-solid border-[87867F] border-1 overflow-y-auto p-4">
         <ToastViewer content={textContent} />
       </div>
     </div>

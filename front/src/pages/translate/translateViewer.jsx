@@ -1,6 +1,10 @@
 import { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
-import { initDB, addData, loadData } from "./indexedDB/indexedDB.jsx";
+import { initDB, addData, loadData } from "./hooks/indexedDbService.jsx";
+import {
+  fetchTranslateData,
+  fetchBestTranslate,
+} from "./hooks/translateService.jsx";
 import * as motion from "motion/react-client";
 import useModalStore from "./store/modalStore.jsx";
 import useEditorStore from "./store/editorStore.jsx";
@@ -9,8 +13,6 @@ import TranslateArchive from "./activity/translateArchive.jsx";
 import ToastViewer from "./components/toastViewer.jsx";
 import RectBtn from "../../components/button/rectBtn.jsx";
 import loadingGif from "../../assets/loading.gif";
-import { IoCloseCircleOutline } from "react-icons/io5";
-import axios from "axios";
 
 const TranslateViewer = () => {
   const { docsName } = useParams();
@@ -56,6 +58,38 @@ const TranslateViewer = () => {
     }));
   };
 
+  // 문서 내용 전부 가져오기
+  const loadMore = async () => {
+    if (loading || !hasMore) return;
+    try {
+      setLoading(true);
+      // 인위적인 지연 추가 (개발용)
+      await new Promise((resolve) => setTimeout(resolve, 600));
+      const data = docData.current;
+      if (!data || data.length === 0) {
+        console.log("오류 발생 : 데이터 없음");
+        return;
+      }
+      const newChunk = data.slice(processedCount, processedCount + chunk_size);
+      if (!newChunk || newChunk.length === 0) {
+        setHasMore(false);
+        return;
+      }
+      //element.content가 null이나 undefined일 경우 ""로 대체 ==> React의 불변성 패턴
+      const processedChunk = newChunk.map((element) => ({
+        ...element,
+        content: element.content || "",
+      }));
+      //전개 연산자 사용 : 두 객체들을 쉽게 합칠 수 있음.
+      setDocParts((prev) => [...prev, ...processedChunk]);
+      setProcessedCount((prev) => prev + chunk_size);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     async function checkDB() {
       setLoading(true);
@@ -67,12 +101,7 @@ const TranslateViewer = () => {
           console.log("db에 데이터가 없습니다. 데이터 가져오기 시작...");
           setLoading(true);
           try {
-            const response = await axios.get(
-              "https://f1887553-e372-4944-90d7-8fe76ae8d764.mock.pstmn.io/docs/1/origin?originId="
-              // `http://localhost:8080/api/docs/docParts`
-            );
-            const data = response.data;
-
+            const data = await fetchTranslateData(1, null, false);
             docData.current = data;
             if (data && Array.isArray(data)) {
               await addData(data, objectStoreName);
@@ -98,48 +127,6 @@ const TranslateViewer = () => {
     }
     checkDB();
   }, []);
-
-  // 문서 내용 전부 가져오기
-  const loadMore = async () => {
-    if (loading || !hasMore) return;
-
-    try {
-      setLoading(true);
-
-      // 인위적인 지연 추가 (개발용)
-      await new Promise((resolve) => setTimeout(resolve, 600));
-
-      const data = docData.current;
-      // console.log("Current processedCount:", processedCount);
-      // console.log("Loading data from index:", processedCount, "to", processedCount + chunk_size);
-
-      if (!data || data.length === 0) {
-        console.log("오류 발생 : 데이터 없음");
-        return;
-      }
-
-      const newChunk = data.slice(processedCount, processedCount + chunk_size);
-      // console.log("New chunk length:", newChunk.length);
-
-      if (!newChunk || newChunk.length === 0) {
-        setHasMore(false);
-        return;
-      }
-      //element.content가 null이나 undefined일 경우 ""로 대체 ==> React의 불변성 패턴
-      const processedChunk = newChunk.map((element) => ({
-        ...element,
-        content: element.content || "",
-      }));
-
-      //전개 연산자 사용 : 두 배열을 쉽게 합칠 수 있음.
-      setDocParts((prev) => [...prev, ...processedChunk]);
-      setProcessedCount((prev) => prev + chunk_size);
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -172,7 +159,7 @@ const TranslateViewer = () => {
                 e.stopPropagation();
                 toggleButton(part.id, e);
               }} // toggleButton에 e를 전달
-              className="bg-[#E4DCD4] cursor-pointer p-2 rounded-md text-[#424242] hover:bg-[#BCB2A8] flex flex-col w-full"
+              className="cursor-pointer p-3 rounded-md text-[#424242] bg-[#E4DCD4] hover:bg-[#cfccc9] transition duration-150 ease-in-out flex flex-col w-full"
             >
               <ToastViewer content={part.content} />
             </div>
@@ -182,7 +169,11 @@ const TranslateViewer = () => {
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{
                   duration: 0.4,
-                  scale: { type: "spring", visualDuration: 0.4, bounce: 0.5 },
+                  scale: {
+                    type: "spring",
+                    visualDuration: 0.2,
+                    bounce: 0.2,
+                  },
                 }}
               >
                 <div
@@ -202,9 +193,17 @@ const TranslateViewer = () => {
                         docsId: part.docsId,
                         originId: part.originId,
                       });
+                      fetchBestTranslate(
+                        part.docsId,
+                        part.originId,
+                        "like",
+                        1,
+                        1,
+                        true
+                      );
                     }}
                     text="번역하기"
-                    className="opacity-70"
+                    className="opacity-70 w-full"
                   />
                   <RectBtn
                     onClick={() => {
