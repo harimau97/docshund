@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ssafy.docshund.domain.docs.entity.Position;
+import com.ssafy.docshund.domain.forums.dto.ArticleDto;
 import com.ssafy.docshund.domain.forums.dto.ArticleInfoDto;
 import com.ssafy.docshund.domain.forums.dto.CommentDto;
 import com.ssafy.docshund.domain.forums.dto.CommentInfoDto;
@@ -35,6 +36,25 @@ public class ForumController {
 	private final CommentService commentService;
 
 	/* Article */
+
+	@PostMapping
+	public ResponseEntity<ArticleInfoDto> postArticle(
+			@RequestBody ArticleDto articleDto
+	) {
+		ArticleInfoDto result = articleService.createArticle(articleDto);
+
+		return ResponseEntity.ok(result);
+	}
+
+	@PatchMapping("/{articleId}")
+	public ResponseEntity<Void> patchArticle(
+			@PathVariable Integer articleId,
+			@RequestBody ArticleDto articleDto
+	) {
+		articleService.updateArticle(articleId, articleDto);
+
+		return ResponseEntity.noContent().build();
+	}
 
 	@GetMapping
 	public ResponseEntity<Page<ArticleInfoDto>> getArticleList(

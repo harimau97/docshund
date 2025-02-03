@@ -4,9 +4,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import com.ssafy.docshund.domain.docs.entity.Position;
+import com.ssafy.docshund.domain.forums.dto.ArticleDto;
 import com.ssafy.docshund.domain.forums.dto.ArticleInfoDto;
 
 public interface ArticleService {
+
+	ArticleInfoDto createArticle(ArticleDto articleDto);
+
+	void updateArticle(Integer articleId, ArticleDto articleDto);
 
 	Page<ArticleInfoDto> getArticles(String sort, Position filterPosition, String filterDocName,
                                      String keyword, String searchType, Pageable pageable);
