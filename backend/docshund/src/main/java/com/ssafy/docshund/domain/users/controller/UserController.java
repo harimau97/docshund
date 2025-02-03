@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ssafy.docshund.domain.users.dto.page.UserAndInfoDto;
+import com.ssafy.docshund.domain.users.dto.page.UserProfileDto;
 import com.ssafy.docshund.domain.users.dto.page.UserSearchCondition;
 import com.ssafy.docshund.domain.users.dto.profile.ProfileRequestDto;
 import com.ssafy.docshund.domain.users.entity.Hobby;
@@ -37,7 +38,9 @@ public class UserController {
 		@RequestParam(required = false) String email, @RequestParam(required = false) Hobby category,
 		Pageable pageable) {
 
-		if (!userUtil.isAdmin(userUtil.getUser())) {
+		User user = userUtil.getUser();
+
+		if (user == null || !userUtil.isAdmin(user)) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
 		}
 
@@ -48,14 +51,19 @@ public class UserController {
 	}
 
 	@GetMapping("/profile/{userId}")
-	public ResponseEntity<UserAndInfoDto> getProfileUser(@PathVariable Long userId) {
-		return ResponseEntity.ok(userService.getUserProfile(userId));
+	public ResponseEntity<UserProfileDto> getProfileUser(@PathVariable Long userId) {
+		UserProfileDto userProfile = userService.getUserProfile(userId);
+
+		if (userProfile == null)
+			return ResponseEntity.badRequest().build();
+
+		return ResponseEntity.ok(userProfile);
 	}
 
 	@PatchMapping("/profile/{userId}")
 	public ResponseEntity<String> modifyProfile(@PathVariable Long userId, @RequestBody ProfileRequestDto request) {
 		User user = userUtil.getUser();
-		if (!userUtil.isMine(userId, user))
+		if (user == null || !userUtil.isMine(userId, user))
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("자신의 프로필이 아닙니다.");
 
 		userService.modifyUserProfile(user, request);

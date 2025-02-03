@@ -12,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.ssafy.docshund.domain.users.dto.page.UserAndInfoDto;
+import com.ssafy.docshund.domain.users.dto.page.UserProfileDto;
 import com.ssafy.docshund.domain.users.dto.page.UserSearchCondition;
 import com.ssafy.docshund.domain.users.dto.profile.ProfileRequestDto;
 import com.ssafy.docshund.domain.users.entity.Hobby;
@@ -109,7 +110,7 @@ class UserServiceImplTest {
 		User user = userUtil.getUser();
 
 		//when
-		UserAndInfoDto userProfile = userService.getUserProfile(user.getUserId());
+		UserProfileDto userProfile = userService.getUserProfile(user.getUserId());
 
 		//then
 		Assertions.assertThat(userProfile.getNickname()).isEqualTo(user.getNickname());
