@@ -1,5 +1,6 @@
 package com.ssafy.docshund.domain.forums.controller;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -15,8 +16,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ssafy.docshund.domain.docs.entity.Position;
-import com.ssafy.docshund.domain.forums.dto.ArticleInfo;
-import com.ssafy.docshund.domain.forums.service.ForumService;
+import com.ssafy.docshund.domain.forums.dto.ArticleInfoDto;
+import com.ssafy.docshund.domain.forums.dto.CommentInfoDto;
+import com.ssafy.docshund.domain.forums.service.ArticleService;
+import com.ssafy.docshund.domain.forums.service.CommentService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -25,10 +28,13 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api/v1/docshund/forums")
 public class ForumController {
 
-	private final ForumService forumService;
+	private final ArticleService articleService;
+	private final CommentService commentService;
+
+	/* Article */
 
 	@GetMapping("/")
-	public ResponseEntity<Page<ArticleInfo>> getArticleList(
+	public ResponseEntity<Page<ArticleInfoDto>> getArticleList(
 		@RequestParam(required = false) String sort,
 		@RequestParam(required = false) String filter,
 		@RequestParam(required = false) String keyword,
@@ -36,7 +42,7 @@ public class ForumController {
 		@PageableDefault(page = 0, size = 10) Pageable pageable
 	) {
 		Object parsedFilter = parseFilter(filter);
-		Page<ArticleInfo> result = forumService.getArticles(
+		Page<ArticleInfoDto> result = articleService.getArticles(
 			Optional.ofNullable(sort).orElse("latest"),
 			(parsedFilter instanceof Position) ? (Position) parsedFilter : null,
 			(parsedFilter instanceof String) ? (String) parsedFilter : "",
@@ -49,29 +55,29 @@ public class ForumController {
 	}
 
 	@GetMapping("/user/{userId}")
-	public ResponseEntity<Page<ArticleInfo>> getArticleListByUser(
+	public ResponseEntity<Page<ArticleInfoDto>> getArticleListByUser(
 		@PathVariable(name = "userId") Long userId,
 		@PageableDefault(page = 0, size = 10) Pageable pageable
 	) {
-		Page<ArticleInfo> result = forumService.getArticlesByUserId(userId, pageable);
+		Page<ArticleInfoDto> result = articleService.getArticlesByUserId(userId, pageable);
 
 		return ResponseEntity.ok(result);
 	}
 
 	@GetMapping("/likes")
-	public ResponseEntity<Page<ArticleInfo>> getArticleLikes(
+	public ResponseEntity<Page<ArticleInfoDto>> getArticleLikes(
 		@PageableDefault(page = 0, size = 10) Pageable pageable
 	) {
-		Page<ArticleInfo> result = forumService.getArticlesLikedByUserId(pageable);
+		Page<ArticleInfoDto> result = articleService.getArticlesLikedByUserId(pageable);
 
 		return ResponseEntity.ok(result);
 	}
 
 	@GetMapping("/{articleId}")
-	public ResponseEntity<ArticleInfo> getArticle(
+	public ResponseEntity<ArticleInfoDto> getArticle(
 		@PathVariable(name = "articleId") Integer articleId
 	) {
-		ArticleInfo result = forumService.getArticleDetail(articleId);
+		ArticleInfoDto result = articleService.getArticleDetail(articleId);
 
 		return ResponseEntity.ok(result);
 	}
@@ -80,7 +86,7 @@ public class ForumController {
 	public ResponseEntity<Void> deleteArticle(
 		@PathVariable Integer articleId
 	) {
-		forumService.deleteArticle(articleId);
+		articleService.deleteArticle(articleId);
 		return ResponseEntity.noContent().build();
 	}
 
@@ -88,7 +94,7 @@ public class ForumController {
 	public ResponseEntity<Void> likeArticle(
 		@PathVariable Integer articleId
 	) {
-		forumService.likeArticle(articleId);
+		articleService.likeArticle(articleId);
 		return ResponseEntity.noContent().build();
 	}
 
@@ -102,5 +108,25 @@ public class ForumController {
 		} catch (IllegalArgumentException e) {
 			return filter;
 		}
+	}
+
+	/* Comment */
+
+	@GetMapping("{articleId}/comments")
+	public ResponseEntity<List<CommentInfoDto>> getCommentsByArticle(
+		@PathVariable Integer articleId
+	) {
+		List<CommentInfoDto> result = commentService.getCommentsByArticleId(articleId);
+
+		return ResponseEntity.ok(result);
+	}
+
+	@GetMapping("/comments/user/{userId}")
+	public ResponseEntity<List<CommentInfoDto>> getCommentsByUser(
+		@PathVariable Long userId
+	) {
+		List<CommentInfoDto> result = commentService.getCommentsByUserId(userId);
+
+		return ResponseEntity.ok(result);
 	}
 }

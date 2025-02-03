@@ -12,7 +12,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class ArticleInfo{
+public class ArticleInfoDto {
 
 	private Integer articleId;
 	private Integer docsId;
@@ -23,18 +23,18 @@ public class ArticleInfo{
 	private LocalDateTime createdAt;
 	private LocalDateTime updatedAt;
 	private Integer viewCount;
-	private Integer likesCount;
-	private Integer commentsCount;
+	private Integer likeCount;
+	private Integer commentCount;
 	private Long userId;
 	private String nickname;
 	private String profileImage;
 	private boolean isLiked;
 
 	@QueryProjection
-	public ArticleInfo(Integer articleId, Integer docsId, Position position, String documentName,
-		String title, String content, LocalDateTime createdAt, LocalDateTime updatedAt,
-		Integer viewCount, Integer likesCount, Integer commentsCount,
-		Long userId, String nickname, String profileImage, boolean isLiked) {
+	public ArticleInfoDto(Integer articleId, Integer docsId, Position position, String documentName,
+						  String title, String content, LocalDateTime createdAt, LocalDateTime updatedAt,
+						  Integer viewCount, Integer likeCount, Integer commentCount,
+						  Long userId, String nickname, String profileImage, boolean isLiked) {
 		this.articleId = articleId;
 		this.docsId = docsId;
 		this.position = position;
@@ -44,8 +44,8 @@ public class ArticleInfo{
 		this.createdAt = createdAt;
 		this.updatedAt = updatedAt;
 		this.viewCount = viewCount;
-		this.likesCount = likesCount;
-		this.commentsCount = commentsCount;
+		this.likeCount = likeCount;
+		this.commentCount = commentCount;
 		this.userId = userId;
 		this.nickname = nickname;
 		this.profileImage = profileImage;

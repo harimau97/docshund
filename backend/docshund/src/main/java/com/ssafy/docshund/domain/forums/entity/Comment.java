@@ -1,26 +1,40 @@
 package com.ssafy.docshund.domain.forums.entity;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.ssafy.docshund.domain.users.entity.User;
 import com.ssafy.docshund.global.audit.BaseTimeEntityWithUpdatedAt;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "comment")
+@Getter
+@NoArgsConstructor
 public class Comment extends BaseTimeEntityWithUpdatedAt {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "comment_id")
 	private Integer commentId;
+
+	@OneToMany(mappedBy = "parentComment", cascade = CascadeType.ALL)
+	private List<Comment> replies = new ArrayList<>(); // 자식 댓글
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "parent_id")
@@ -40,7 +54,16 @@ public class Comment extends BaseTimeEntityWithUpdatedAt {
 	@Column(name = "report_cnt", nullable = false)
 	private Integer reportCount;  // 신고 횟수
 
-	@Column(name = "is_hidden", nullable = false)
-	private Boolean isHidden;  // 신고당한 댓글 여부
+	@Enumerated(EnumType.STRING)
+	@Column(name = "status", nullable = false, columnDefinition = "ENUM('VISIBLE', 'INVISIBLE', 'DELETED') DEFAULT 'VISIBLE'")
+	private Status status;
+
+	public void modifyToDelete() {
+		this.status = Status.DELETED;
+	}
+
+	public void modifyToInvisible() {
+		this.status = Status.INVISIBLE;
+	}
 
 }
