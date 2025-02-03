@@ -1,6 +1,7 @@
 package com.ssafy.docshund.domain.docs.dto;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import com.ssafy.docshund.domain.docs.entity.Status;
 import com.ssafy.docshund.domain.docs.entity.TranslatedDocument;
@@ -14,9 +15,11 @@ public record TranslatedDocumentDto(
 	Status status,
 	LocalDateTime createdAt,
 	LocalDateTime updatedAt,
-	Integer likeCount
+	Integer likeCount,
+	List<Long> likeUserIds
 ) {
-	public static TranslatedDocumentDto fromEntity(TranslatedDocument translatedDocument, Integer likeCount) {
+	public static TranslatedDocumentDto fromEntity(TranslatedDocument translatedDocument,
+												   Integer likeCount, List<Long> likeUserIds) {
 		return new TranslatedDocumentDto(
 			translatedDocument.getTransId(),
 			translatedDocument.getOriginDocument().getOriginId(),
@@ -26,7 +29,8 @@ public record TranslatedDocumentDto(
 			translatedDocument.getStatus(),
 			translatedDocument.getCreatedAt(),
 			translatedDocument.getUpdatedAt(),
-			likeCount
+			likeCount,
+			likeUserIds
 		);
 	}
 }

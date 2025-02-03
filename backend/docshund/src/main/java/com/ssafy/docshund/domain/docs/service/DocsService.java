@@ -30,7 +30,7 @@ public interface DocsService {
 	List<OriginDocumentDto> createOriginDocuments(Integer docsId, String content, User user);
 
 	// 관심문서 등록/취소
-	DocumentDto toggleLikes(Integer docsId, Long currentUserId);
+	DocumentDto toggleLikes(Integer docsId, User user);
 
 	// 특정 유저 관심 문서 조회
 	List<DocumentDto> getLikesDocument(Long userId);

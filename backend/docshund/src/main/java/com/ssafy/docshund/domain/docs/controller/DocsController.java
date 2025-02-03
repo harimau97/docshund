@@ -1,5 +1,6 @@
 package com.ssafy.docshund.domain.docs.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -38,6 +39,7 @@ public class DocsController {
 		@RequestParam(value = "order", defaultValue = "asc") String order // 기본 정렬 순서: asc
 	) {
 		List<DocumentDto> documents = docsService.getAllDocuments(sort, order);
+
 		return ResponseEntity.ok(documents);
 	}
 
@@ -62,8 +64,8 @@ public class DocsController {
 	// 관심 문서 등록 및 해제
 	@PostMapping("/{docsId}/likes")
 	public ResponseEntity<DocumentDto> toggleLikes(@PathVariable Integer docsId) {
-		long currentUserId = userUtil.getUser().getUserId();
-		DocumentDto document = docsService.toggleLikes(docsId, currentUserId);
+		User user = userUtil.getUser();
+		DocumentDto document = docsService.toggleLikes(docsId, user);
 		return ResponseEntity.ok(document);
 	}
 

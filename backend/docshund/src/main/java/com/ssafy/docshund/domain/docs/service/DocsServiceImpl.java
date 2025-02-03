@@ -5,12 +5,15 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.ssafy.docshund.domain.docs.entity.*;
 import com.ssafy.docshund.domain.docs.repository.*;
 import com.ssafy.docshund.global.util.user.UserUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,39 +43,78 @@ public class DocsServiceImpl implements DocsService {
 	// 전체 문서 목록 조회
 	@Override
 	public List<DocumentDto> getAllDocuments(String sort, String order) {
-		return customDocumentRepository.findAllDocumentsWithLikes(sort, order);
+		
+		// 정렬 방식 설정
+		Sort.Direction direction = order.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
+
+		// 정렬 기준 설정
+		Sort sortOption = switch (sort.toLowerCase()) {
+			case "newest" -> Sort.by(direction, "createdAt");
+			case "view" -> Sort.by(direction, "viewCount");
+			default -> Sort.by(direction, "documentName");
+		};
+
+		// 문서 목록 조회
+		List<Document> documents = documentRepository.findAll(sortOption);
+
+		// 문서 ID 목록 추출
+		List<Integer> documentIds = documents.stream().map(Document::getDocsId).toList();
+
+		// 다수의 문서 좋아요 정보 가져오기
+		Map<Integer, List<Long>> likeUsersMap = documentLikeRepository.findLikedUserIdsByDocumentIds(documentIds)
+				.stream()
+				.collect(Collectors.groupingBy(
+						result -> (Integer) result[0],  // 첫 번째 값 = 문서 ID
+						Collectors.mapping(result -> (Long) result[1], Collectors.toList()) // 두 번째 값 = 유저 ID
+				));
+
+		return documents.stream().map(document -> {
+			List<Long> likeUserIds = likeUsersMap.getOrDefault(document.getDocsId(), List.of());
+			return new DocumentDto(
+					document.getDocsId(),
+					document.getDocumentCategory(),
+					document.getDocumentName(),
+					document.getDocumentLogo(),
+					document.getDocumentVersion(),
+					document.getViewCount(),
+					likeUserIds.size(),
+					document.getPosition(),
+					document.getLicense(),
+					document.getDocumentLink(),
+					document.getCreatedAt(),
+					likeUserIds
+			);
+		}).toList();
 	}
 
 	// 특정 문서 상세 조회
 	@Override
 	@Transactional
 	public DocumentDto getDocumentDetail(Integer docsId) {
-		// 좋아요 수 포함된 문서 조회
-		DocumentDto documentDto = customDocumentRepository.findDocumentWithLikes(docsId);
-		if (documentDto == null) {
-			throw new EntityNotFoundException("Document not found with id: " + docsId);
-		}
-
-		Document document = documentRepository.findByDocsId(docsId);
-		if (document == null) {
-			throw new EntityNotFoundException("Document entity not found with id: " + docsId);
-		}
+		// 문서 조회 (Optional 사용)
+		Document document = documentRepository.findById(docsId)
+				.orElseThrow(() -> new EntityNotFoundException("Document not found with id: " + docsId));
 
 		// 조회수 증가
 		document.setViewCount(document.getViewCount() + 1);
 
+		// 좋아요한 유저들 조회
+		List<Long> likeUserIds = documentLikeRepository.findLikedUserIdsByDocumentId(docsId);
+
+		// DocumentDto 생성 후 반환
 		return new DocumentDto(
-			documentDto.docsId(),
-			documentDto.documentCategory(),
-			documentDto.documentName(),
-			documentDto.documentLogo(),
-			documentDto.documentVersion(),
-			document.getViewCount(),
-			documentDto.likeCount(),
-			documentDto.position(),
-			documentDto.license(),
-			documentDto.documentLink(),
-			documentDto.createdAt()
+				document.getDocsId(),
+				document.getDocumentCategory(),
+				document.getDocumentName(),
+				document.getDocumentLogo(),
+				document.getDocumentVersion(),
+				document.getViewCount(),
+				likeUserIds.size(), // ✅ likeCount = likeUserIds.size()
+				document.getPosition(),
+				document.getLicense(),
+				document.getDocumentLink(),
+				document.getCreatedAt(),
+				likeUserIds
 		);
 	}
 
@@ -96,32 +138,33 @@ public class DocsServiceImpl implements DocsService {
 		);
 
 		Document savedDocument = documentRepository.save(document);
-		return DocumentDto.fromEntity(savedDocument, 0);
+		return DocumentDto.fromEntity(savedDocument, 0, List.of());
 	}
 
 	// 관심문서 등록 및 해제
 	@Override
 	@Transactional
-	public DocumentDto toggleLikes(Integer docsId, Long currentUserId) {
+	public DocumentDto toggleLikes(Integer docsId, User user) {
 		// 현재 사용자가 해당 문서를 좋아요 했는지 확인
-		boolean isLiked = documentLikeRepository.existsByDocument_DocsIdAndUser_UserId(docsId, currentUserId);
+		boolean isLiked = documentLikeRepository.existsByDocument_DocsIdAndUser_UserId(docsId, user.getUserId());
 
 		if (isLiked) {
 			// 좋아요 취소
-			documentLikeRepository.deleteByDocument_DocsIdAndUser_UserId(docsId, currentUserId);
+			documentLikeRepository.deleteByDocument_DocsIdAndUser_UserId(docsId, user.getUserId());
 		} else {
 			// 좋아요 등록
-			customDocumentRepository.addLike(docsId, currentUserId);
+			customDocumentRepository.createByDocument_DocsIdAndUser_UserId(docsId, user.getUserId());
 		}
-
-		// 갱신된 좋아요 개수 조회
-		int updatedLikeCount = documentLikeRepository.countByDocument_DocsId(docsId);
 
 		// 문서 정보 조회
 		Document targetDocument = documentRepository.findById(docsId)
 			.orElseThrow(() -> new EntityNotFoundException("Document not found with id: " + docsId));
 
-		return DocumentDto.fromEntity(targetDocument, updatedLikeCount);
+		// 갱신된 좋아요 유저들 조회
+		List<Long> likeUserIds = documentLikeRepository.findLikedUserIdsByDocumentId(docsId);
+		int updatedLikeCount = likeUserIds.size();
+
+		return DocumentDto.fromEntity(targetDocument, updatedLikeCount, likeUserIds);
 	}
 
 	// 유저 관심 문서 조회
@@ -237,19 +280,87 @@ public class DocsServiceImpl implements DocsService {
 	// 특정 문서에 대한 번역 전체 조회
 	@Override
 	public List<TranslatedDocumentDto> getAllTranslatedDocuments(Integer docsId) {
-		return customDocumentRepository.findAllTransWithLikes(docsId);
+
+		// 모든 번역 조회 (좋아요 개수 포함)
+		List<TranslatedDocumentDto> documents = customDocumentRepository.findAllTrans(docsId);
+
+		// 각 별 좋아요한 유저 ID 조회 후 추가
+		for (int i = 0; i < documents.size(); i++) {
+			List<Long> likeUserIds = translatedDocumentLikeRepository.findLikedUserIdsByTransId(documents.get(i).transId());
+			Integer likeCount = likeUserIds.size();
+			// 기존 DocumentDto를 새로 생성하여 likeUserIds 추가
+			documents.set(i, new TranslatedDocumentDto(
+					documents.get(i).transId(),
+					documents.get(i).originId(),
+					documents.get(i).userId(),
+					documents.get(i).content(),
+					documents.get(i).reportCount(),
+					documents.get(i).status(),
+					documents.get(i).createdAt(),
+					documents.get(i).updatedAt(),
+					likeCount,
+					likeUserIds
+			));
+		}
+
+		return documents;
 	}
 
 	// 특정 문서에 대한 베스트 번역 조회하기
 	@Override
 	public List<TranslatedDocumentDto> getBestTranslatedDocuments(Integer docsId) {
-		return customDocumentRepository.findBestTransWithLikes(docsId);
+		List<TranslatedDocumentDto> documents = customDocumentRepository.findBestTrans(docsId);
+
+		// 각 문서별 좋아요한 유저 ID 조회 후 추가
+		for (int i = 0; i < documents.size(); i++) {
+			List<Long> likeUserIds = translatedDocumentLikeRepository.findLikedUserIdsByTransId(documents.get(i).transId());
+
+			// 기존 DocumentDto를 새로 생성하여 likeUserIds 추가
+			documents.set(i, new DocumentDto(
+					documents.get(i).transId(),
+					documents.get(i).originId(),
+					documents.get(i).userId(),
+					documents.get(i).content(),
+					documents.get(i).reportCount(),
+					documents.get(i).status(),
+					documents.get(i).likeCount(),
+					documents.get(i).createdAt(),
+					documents.get(i).updatedAt(),
+					likeCount,
+					likeUserIds
+			));
+		}
+
+		return documents;
 	}
 
 	// 특정 문단에 대한 번역 전체 조회하기 (+좋아요)
 	@Override
 	public List<TranslatedDocumentDto> getTranslatedDocuments(Integer docsId, Integer originId, String sort, String order) {
-		return customDocumentRepository.findTranslatedDocsWithLikes(docsId, originId, sort, order);
+
+		List<TranslatedDocumentDto> documents = customDocumentRepository.findTranslatedDocs(docsId, originId, sort, order);
+
+		// 각 문서별 좋아요한 유저 ID 조회 후 추가
+		for (int i = 0; i < documents.size(); i++) {
+			List<Long> likeUserIds = translatedDocumentLikeRepository.findLikedUserIdsByTransId(documents.get(i).transId());
+
+			// 기존 DocumentDto를 새로 생성하여 likeUserIds 추가
+			documents.set(i, new DocumentDto(
+					documents.get(i).transId(),
+					documents.get(i).originId(),
+					documents.get(i).userId(),
+					documents.get(i).content(),
+					documents.get(i).reportCount(),
+					documents.get(i).status(),
+					documents.get(i).likeCount(),
+					documents.get(i).createdAt(),
+					documents.get(i).updatedAt(),
+					likeCount,
+					likeUserIds
+			));
+		}
+
+		return documents;
 	}
 
 	// 번역 작성하기
@@ -265,19 +376,41 @@ public class DocsServiceImpl implements DocsService {
 		TranslatedDocument translatedDocument = new TranslatedDocument(originDocument, user, content, 0, Status.VISIBLE);
 		translatedDocumentRepository.save(translatedDocument);
 
-		return TranslatedDocumentDto.fromEntity(translatedDocument, 0);
+		return TranslatedDocumentDto.fromEntity(translatedDocument, 0, List.of());
 	}
 
 	// 유저 번역 조회하기
 	@Override
 	public List<TranslatedDocumentDto> getUserTransDocument(Long userId) {
-		return customDocumentRepository.findUserTransWithLikes(userId);
+		List<TranslatedDocumentDto> documents = customDocumentRepository.findUserTrans(userId);
+
+		// 각 문서별 좋아요한 유저 ID 조회 후 추가
+		for (int i = 0; i < documents.size(); i++) {
+			List<Long> likeUserIds = translatedDocumentLikeRepository.findLikedUserIdsByTransId(documents.get(i).transId());
+
+			// 기존 DocumentDto를 새로 생성하여 likeUserIds 추가
+			documents.set(i, new DocumentDto(
+					documents.get(i).transId(),
+					documents.get(i).originId(),
+					documents.get(i).userId(),
+					documents.get(i).content(),
+					documents.get(i).reportCount(),
+					documents.get(i).status(),
+					documents.get(i).likeCount(),
+					documents.get(i).createdAt(),
+					documents.get(i).updatedAt(),
+					likeCount,
+					likeUserIds
+			));
+		}
+
+		return documents;
 	}
 
 	// 번역 상세 조회
 	@Override
 	public TranslatedDocumentDto getTranslatedDocumentDetail(Integer docsId, Integer transId) {
-		TranslatedDocumentDto translatedDocumentDto = customDocumentRepository.findTransWithLikes(transId);
+		TranslatedDocumentDto translatedDocumentDto = customDocumentRepository.findTrans(transId);
 
 		// docsId와 transId가 같은 문서에 속하는지 확인
 		if (translatedDocumentDto == null || !translatedDocumentDto.originId().equals(docsId)) {
@@ -332,7 +465,7 @@ public class DocsServiceImpl implements DocsService {
 		// 번역 삭제
 		translatedDocumentRepository.delete(translatedDocument);
 	}
-	
+
 	// 번역 투표 / 투표해제
 	@Override
 	@Transactional
@@ -355,9 +488,32 @@ public class DocsServiceImpl implements DocsService {
 		return !hasVoted;
 	}
 
+
+	// 특정 유저가 좋아한 번역본 목록 조회
 	@Override
 	public List<TranslatedDocumentDto> getUserLikedTrans(Long userId) {
-		return customDocumentRepository.findUserLikedTrans(userId);
+		List<TranslatedDocumentDto> documents = customDocumentRepository.findUserLikedTrans(userId);
+		// 각 문서별 좋아요한 유저 ID 조회 후 추가
+		for (int i = 0; i < documents.size(); i++) {
+			List<Long> likeUserIds = translatedDocumentLikeRepository.findLikedUserIdsByTransId(documents.get(i).transId());
+
+			// 기존 DocumentDto를 새로 생성하여 likeUserIds 추가
+			documents.set(i, new DocumentDto(
+					documents.get(i).transId(),
+					documents.get(i).originId(),
+					documents.get(i).userId(),
+					documents.get(i).content(),
+					documents.get(i).reportCount(),
+					documents.get(i).status(),
+					documents.get(i).likeCount(),
+					documents.get(i).createdAt(),
+					documents.get(i).updatedAt(),
+					likeCount,
+					likeUserIds
+			));
+		}
+
+		return documents;
 	}
 
 }
