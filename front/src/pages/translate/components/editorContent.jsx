@@ -25,6 +25,14 @@ const EditorContent = () => {
         previewStyle="tab" // or 'tab'
         onChange={handleEditorChange}
         theme="dark" // 필요에 따라 테마 설정
+        toolbarItems={[
+          ["heading", "bold", "italic", "strike"], // 기본 버튼만 추가
+          ["hr", "quote"],
+          ["ul", "ol", "task"],
+          ["table", "link"], // 이미지 버튼 제외
+          ["code", "codeblock"],
+        ]}
+        useImageUpload={false}
       />
     </div>
   );
