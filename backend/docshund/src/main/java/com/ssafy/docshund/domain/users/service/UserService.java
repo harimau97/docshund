@@ -8,7 +8,7 @@ import com.ssafy.docshund.domain.users.dto.page.UserSearchCondition;
 import com.ssafy.docshund.domain.users.dto.profile.ProfileRequestDto;
 import com.ssafy.docshund.domain.users.entity.User;
 
-public interface UserQueryService {
+public interface UserService {
 
 	public Page<UserAndInfoDto> searchUsers(UserSearchCondition condition, Pageable pageable);
 

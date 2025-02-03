@@ -19,7 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class UserQueryServiceImpl implements UserQueryService {
+public class UserServiceImpl implements UserService {
 
 	private final UserRepository userRepository;
 	private final UserInfoRepository userInfoRepository;

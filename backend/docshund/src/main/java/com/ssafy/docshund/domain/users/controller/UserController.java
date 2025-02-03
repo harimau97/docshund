@@ -17,8 +17,7 @@ import com.ssafy.docshund.domain.users.dto.page.UserSearchCondition;
 import com.ssafy.docshund.domain.users.dto.profile.ProfileRequestDto;
 import com.ssafy.docshund.domain.users.entity.Hobby;
 import com.ssafy.docshund.domain.users.entity.User;
-import com.ssafy.docshund.domain.users.service.UserQueryService;
-import com.ssafy.docshund.domain.users.service.UserQueryServiceImpl;
+import com.ssafy.docshund.domain.users.service.UserService;
 import com.ssafy.docshund.global.util.user.UserUtil;
 
 import lombok.RequiredArgsConstructor;
@@ -30,9 +29,8 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/api/v1/docshund/users")
 public class UserController {
 
-	private final UserQueryService userQueryService;
+	private final UserService userService;
 	private final UserUtil userUtil;
-	private final UserQueryServiceImpl userQueryServiceImpl;
 
 	@GetMapping
 	public ResponseEntity<Page<UserAndInfoDto>> searchUsers(@RequestParam(required = false) String nickname,
@@ -44,14 +42,14 @@ public class UserController {
 		}
 
 		UserSearchCondition condition = new UserSearchCondition(nickname, email, category);
-		Page<UserAndInfoDto> users = userQueryService.searchUsers(condition, pageable);
+		Page<UserAndInfoDto> users = userService.searchUsers(condition, pageable);
 
 		return ResponseEntity.ok(users);
 	}
 
 	@GetMapping("/profile/{userId}")
 	public ResponseEntity<UserAndInfoDto> getProfileUser(@PathVariable Long userId) {
-		return ResponseEntity.ok(userQueryService.getUserProfile(userId));
+		return ResponseEntity.ok(userService.getUserProfile(userId));
 	}
 
 	@PatchMapping("/profile/{userId}")
@@ -60,7 +58,7 @@ public class UserController {
 		if (!userUtil.isMine(userId, user))
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("자신의 프로필이 아닙니다.");
 
-		userQueryServiceImpl.modifyUserProfile(user, request);
+		userService.modifyUserProfile(user, request);
 
 		return ResponseEntity.ok("프로필이 수정되었습니다.");
 	}
