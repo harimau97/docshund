@@ -2,6 +2,7 @@ package com.ssafy.docshund.domain.docs.repository;
 
 import java.util.List;
 
+import com.querydsl.core.types.dsl.NumberExpression;
 import org.springframework.stereotype.Repository;
 
 import com.querydsl.core.types.Order;
@@ -226,9 +227,132 @@ public class CustomDocumentRepositoryImpl implements CustomDocumentRepository {
 		return getTranslatedDocuments(bestTransIds, docsId, null);
 	}
 
+	// 특정 문단에 대한 번역본 전체 조회 (좋아요 포함)
+	@Override
+	public List<TranslatedDocumentDto> findTranslatedDocsWithLikes(Integer docsId, Integer originId, String sort, String order) {
+		QTranslatedDocument t = QTranslatedDocument.translatedDocument;
+		QTranslatedDocumentLike l = QTranslatedDocumentLike.translatedDocumentLike;
+		QOriginDocument o = QOriginDocument.originDocument;
+
+		// 좋아요 개수 집계 (null 방지)
+		NumberExpression<Integer> likeCount = l.tlikeId.count().coalesce(0L).intValue();
+
+		// 정렬 기준 설정
+		OrderSpecifier<?> orderSpecifier;
+		if (sort.equalsIgnoreCase("newest")) {
+			orderSpecifier = order.equalsIgnoreCase("asc") ? t.createdAt.asc() : t.createdAt.desc();
+		} else {
+			orderSpecifier = order.equalsIgnoreCase("asc") ? likeCount.asc() : likeCount.desc();
+		}
+
+		return queryFactory
+				.select(Projections.constructor(TranslatedDocumentDto.class,
+						t.transId,
+						o.originId,
+						t.user.userId,
+						t.content,
+						t.reportCount,
+						t.status,
+						t.createdAt,
+						t.updatedAt,
+						likeCount
+				))
+				.from(t)
+				.leftJoin(l).on(l.translatedDocument.transId.eq(t.transId))
+				.join(t.originDocument, o)
+				.where(o.document.docsId.eq(docsId), o.originId.eq(originId))
+				.groupBy(t.transId, o.originId)
+				.orderBy(orderSpecifier)
+				.fetch();
+	}
+
 	// 특정 유저의 번역 조회 (좋아요 포함)
 	@Override
 	public List<TranslatedDocumentDto> findUserTransWithLikes(long userId) {
 		return getTranslatedDocuments(null, null, userId); // 특정 유저의 번역 조회
+	}
+
+	// 번역 상세 조회 (좋아요 포함)
+	@Override
+	public TranslatedDocumentDto findTransWithLikes(Integer transId) {
+		QTranslatedDocument translatedDocument = QTranslatedDocument.translatedDocument;
+		QTranslatedDocumentLike translatedDocumentLike = QTranslatedDocumentLike.translatedDocumentLike;
+		QOriginDocument originDocument = QOriginDocument.originDocument;
+		QUser user = QUser.user;
+
+		// 좋아요 개수를 포함한 번역 상세 정보 조회
+		return queryFactory
+				.select(Projections.constructor(TranslatedDocumentDto.class,
+						translatedDocument.transId,
+						originDocument.originId,
+						user.userId,
+						translatedDocument.content,
+						translatedDocument.reportCount,
+						translatedDocument.status,
+						translatedDocument.createdAt,
+						translatedDocument.updatedAt,
+						translatedDocumentLike.countDistinct().intValue() // 좋아요 개수
+				))
+				.from(translatedDocument)
+				.leftJoin(translatedDocumentLike)
+				.on(translatedDocument.transId.eq(translatedDocumentLike.translatedDocument.transId))
+				.join(translatedDocument.originDocument, originDocument)
+				.join(translatedDocument.user, user)
+				.where(translatedDocument.transId.eq(Long.valueOf(transId)))
+				.groupBy(
+						translatedDocument.transId,
+						originDocument.originId,
+						user.userId,
+						translatedDocument.content,
+						translatedDocument.reportCount,
+						translatedDocument.status,
+						translatedDocument.createdAt,
+						translatedDocument.updatedAt
+				)
+				.fetchOne();
+	}
+
+	// 유저가 좋아한 번역본 목록 조회 (좋아요 개수 포함)
+	@Override
+	public List<TranslatedDocumentDto> findUserLikedTrans(Long userId) {
+		QTranslatedDocument t = QTranslatedDocument.translatedDocument;
+		QTranslatedDocumentLike l = QTranslatedDocumentLike.translatedDocumentLike;
+		QOriginDocument o = QOriginDocument.originDocument;
+		QUser u = QUser.user;
+
+		// 유저가 좋아한 번역본 ID 목록 조회
+		List<Long> likedTransIds = queryFactory
+				.select(l.translatedDocument.transId)
+				.from(l)
+				.where(l.user.userId.eq(userId))
+				.fetch();
+
+		if (likedTransIds.isEmpty()) {
+			return List.of(); // 좋아한 번역이 없으면 빈 리스트 반환
+		}
+
+		// 좋아요한 번역 ID 목록으로 번역 정보 조회
+		NumberExpression<Integer> likeCount = l.tlikeId.count().coalesce(0L).intValue();
+
+		return queryFactory
+				.select(Projections.constructor(TranslatedDocumentDto.class,
+						t.transId,
+						o.originId,
+						u.userId,
+						t.content,
+						t.reportCount,
+						t.status,
+						t.createdAt,
+						t.updatedAt,
+						likeCount
+				))
+				.from(t)
+				.leftJoin(l).on(l.translatedDocument.transId.eq(t.transId)) // 좋아요 개수 조회를 위한 조인
+				.join(t.originDocument, o)
+				.join(t.user, u)
+				.where(t.transId.in(likedTransIds)) // 유저가 좋아한 번역 ID 리스트 필터링
+				.groupBy(t.transId, o.originId, u.userId)
+				.orderBy(likeCount.desc()) // 좋아요 개수가 많은 순 정렬
+				.fetch();
 	}
 }

@@ -18,7 +18,7 @@ public interface DocsService {
 	DocumentDto getDocumentDetail(Integer docsId);
 
 	// 문서 생성하기
-	DocumentDto createDocument(DocumentDto documentdto);
+	DocumentDto createDocument(DocumentDto documentdto, User user);
 
 	// 원본 조회하기
 	List<OriginDocumentDto> getAllOriginDocuments(Integer docsId);
@@ -27,7 +27,7 @@ public interface DocsService {
 	OriginDocumentDto getOriginDocumentDetail(Integer originId);
 
 	// 원본 생성하기
-	List<OriginDocumentDto> createOriginDocuments(Integer docsId, String content);
+	List<OriginDocumentDto> createOriginDocuments(Integer docsId, String content, User user);
 
 	// 관심문서 등록/취소
 	DocumentDto toggleLikes(Integer docsId, Long currentUserId);
@@ -41,6 +41,9 @@ public interface DocsService {
 	// 특정 문서 베스트 번역 조회
 	List<TranslatedDocumentDto> getBestTranslatedDocuments(Integer docsId);
 
+	// 특정 문단에 대한 번역본 전체 조회
+	List<TranslatedDocumentDto> getTranslatedDocuments(Integer docsId, Integer originId, String sort, String order);
+
 	// 번역 작성하기
 	TranslatedDocumentDto createTranslatedDocument(Integer docsId, Integer originId, User user, String content);
 
@@ -51,11 +54,14 @@ public interface DocsService {
 	TranslatedDocumentDto getTranslatedDocumentDetail(Integer docsId, Integer transId);
 
 	// 번역 수정하기
-	TranslatedDocumentDto updateTranslatedDocument(Integer docsId, Integer transId);
+	TranslatedDocumentDto updateTranslatedDocument(Integer docsId, Integer transId, User user, String content);
 
 	// 번역 삭제하기
-	void deleteTranslatedDocument(Integer docsId, Integer transId);
+	void deleteTranslatedDocument(Integer docsId, Integer transId, User user);
 
 	// 번역 투표 / 투표해제
-	void toggleVotes(Integer docsId, Integer transId, Long userId);
+	boolean toggleVotes(Integer docsId, Integer transId, User user);
+	
+	// 유저가 좋아한 번역본 목록 조회
+	List<TranslatedDocumentDto> getUserLikedTrans(Long userId);
 }

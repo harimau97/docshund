@@ -1,5 +1,6 @@
 package com.ssafy.docshund.global.config;
 
+import com.ssafy.docshund.global.util.jwt.JwtFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -14,6 +15,7 @@ import com.ssafy.docshund.global.util.jwt.JwtUtil;
 import com.ssafy.docshund.global.util.oauth2.CustomSuccessHandler;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -29,11 +31,11 @@ public class SecurityConfig {
 		http.csrf((auth) -> auth.disable());
 		http.formLogin((auth) -> auth.disable());
 		http.httpBasic((auth) -> auth.disable());
-		// http.addFilterBefore(new JwtFilter(jwtUtil, userRepository), UsernamePasswordAuthenticationFilter.class);
-		// http.oauth2Login((oauth2) -> oauth2
-		// 	.userInfoEndpoint((userInfoEndpointConfig) -> userInfoEndpointConfig
-		// 		.userService(userAuthServiceImpl))
-		// 	.successHandler(customSuccessHandler));
+//		 http.addFilterBefore(new JwtFilter(jwtUtil, userRepository), UsernamePasswordAuthenticationFilter.class);
+//		 http.oauth2Login((oauth2) -> oauth2
+//		 	.userInfoEndpoint((userInfoEndpointConfig) -> userInfoEndpointConfig
+//		 		.userService(userAuthServiceImpl))
+//		 	.successHandler(customSuccessHandler));
 		http.authorizeHttpRequests((auth) -> auth
 			.anyRequest().permitAll());
 		http.sessionManagement((session) -> session
