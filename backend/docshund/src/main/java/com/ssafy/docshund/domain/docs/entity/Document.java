@@ -10,9 +10,14 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "document")
+@Getter
+@NoArgsConstructor
 public class Document extends BaseTimeEntity {
 
 	@Id
@@ -33,6 +38,7 @@ public class Document extends BaseTimeEntity {
 	private String documentLink;
 
 	@Column(name = "view_count", nullable = false)
+	@Setter
 	private Integer viewCount;
 
 	@Column(name = "document_version", nullable = false)
@@ -44,4 +50,19 @@ public class Document extends BaseTimeEntity {
 	@Enumerated(EnumType.STRING)
 	@Column(name = "position")
 	private Position position;
+
+	// 명시적인 생성자 추가
+	public Document(String documentCategory, String documentName, String documentLogo,
+		String documentVersion, Integer viewCount, Position position,
+		String license, String documentLink) {
+		this.documentCategory = documentCategory;
+		this.documentName = documentName;
+		this.documentLogo = documentLogo;
+		this.documentVersion = documentVersion;
+		this.viewCount = viewCount;
+		this.position = position;
+		this.license = license;
+		this.documentLink = documentLink;
+	}
+
 }

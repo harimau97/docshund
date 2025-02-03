@@ -11,9 +11,13 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "origin_document")
+@Getter
+@NoArgsConstructor
 public class OriginDocument extends BaseTimeEntity {
 
 	@Id
@@ -34,4 +38,10 @@ public class OriginDocument extends BaseTimeEntity {
 	@Column(name = "content", nullable = false, columnDefinition = "LONGTEXT")
 	private String content;  // 문단의 내용
 
+	public OriginDocument(Document document, Integer pOrder, String tag, String content) {
+		this.document = document;
+		this.pOrder = pOrder;
+		this.tag = tag;
+		this.content = content;
+	}
 }
