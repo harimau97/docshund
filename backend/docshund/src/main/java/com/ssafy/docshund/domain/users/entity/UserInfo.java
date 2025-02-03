@@ -1,5 +1,6 @@
 package com.ssafy.docshund.domain.users.entity;
 
+import com.ssafy.docshund.domain.users.dto.profile.ProfileRequestDto;
 import com.ssafy.docshund.global.audit.BaseTimeEntityWithUpdatedAt;
 
 import jakarta.persistence.Column;
@@ -50,6 +51,12 @@ public class UserInfo extends BaseTimeEntityWithUpdatedAt {
 		userInfo.introduce = INTRODUCE_TEXT;
 
 		return userInfo;
+	}
+
+	public void modifyInfo(ProfileRequestDto profileRequestDto) {
+		this.introduce = profileRequestDto.getIntroduce();
+		this.isDarkmode = profileRequestDto.getIsDarkmode();
+		this.hobby = profileRequestDto.getHobbyEnum();
 	}
 
 }
