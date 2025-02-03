@@ -1,9 +1,9 @@
 import { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { initDB, addData, loadData } from "./indexedDB/indexedDB.jsx";
+import * as motion from "motion/react-client";
 import useModalStore from "./store/modalStore.jsx";
 import useEditorStore from "./store/editorStore.jsx";
-import useArchiveStore from "./store/archiveStore.jsx";
 import TranslateEditor from "./activity/translateEditor.jsx";
 import TranslateArchive from "./activity/translateArchive.jsx";
 import ToastViewer from "./components/toastViewer.jsx";
@@ -68,8 +68,8 @@ const TranslateViewer = () => {
           setLoading(true);
           try {
             const response = await axios.get(
-              // "https://f1887553-e372-4944-90d7-8fe76ae8d764.mock.pstmn.io/docs/1/origin?originId="
-              `http://localhost:8080/api/docs/docParts`
+              "https://f1887553-e372-4944-90d7-8fe76ae8d764.mock.pstmn.io/docs/1/origin?originId="
+              // `http://localhost:8080/api/docs/docParts`
             );
             const data = response.data;
 
@@ -163,10 +163,10 @@ const TranslateViewer = () => {
   }, [isDbInitialized]);
 
   return (
-    <div className="h-[99%] min-w-[800px] border-black border-2 w-[70%] absolute top-1/2 left-1/2 -translate-1/2 overflow-x-auto overflow-y-scroll p-4 flex flex-col z-[1000]">
-      <div className="flex flex-col gap-4">
+    <div className="h-[99%] min-w-[800px]  w-[70%] absolute top-1/2 left-1/2 -translate-1/2 overflow-x-auto overflow-y-scroll p-4 flex flex-col z-[1000]">
+      <div className="flex flex-col gap-3">
         {docParts.map((part, index) => (
-          <div key={index} className="flex flex-row relative">
+          <div key={index} className="flex flex-row gap-3 relative">
             <div
               onClick={async (e) => {
                 e.stopPropagation();
@@ -177,46 +177,50 @@ const TranslateViewer = () => {
               <ToastViewer content={part.content} />
             </div>
             {buttonStates[part.id] && (
-              <div
-                className="flex flex-row min-w-fit h-fit z-95 items-center"
-                style={{
-                  position: "absolute",
-                  top: mousePositions[part.id]?.y || 0, // 저장된 y좌표 사용
-                  left: mousePositions[part.id]?.x || 0, // 저장된 x좌표 사용
-                  transform: "translate(-128px,-20px)",
+              <motion.div
+                initial={{ opacity: 0, scale: 0 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{
+                  duration: 0.4,
+                  scale: { type: "spring", visualDuration: 0.4, bounce: 0.5 },
                 }}
               >
-                <RectBtn
-                  onClick={() => {
-                    openEditor();
-                    useEditorStore.setState({
-                      docsPart: part.content,
-                      porder: part.porder,
-                      docsId: part.docsId,
-                      originId: part.originId,
-                    });
+                <div
+                  className="flex flex-col min-w-fit h-fit z-95 items-center gap-3"
+                  style={{
+                    position: "relative",
+                    top: mousePositions[part.id]?.y || 0, // 저장된 y좌표 사용
+                    transform: "translate(0px,-50%)",
                   }}
-                  text="번역하기"
-                  className="opacity-70"
-                />
-                <IoCloseCircleOutline
-                  className="w-8 h-8 cursor-pointer text-[#bc5b39] mr-2 ml-2 min-w-fit"
-                  onClick={(e) => toggleButton(part.id, e)}
-                />
-                <RectBtn
-                  onClick={() => {
-                    openArchive();
-                    useEditorStore.setState({
-                      docsPart: part.content,
-                      porder: part.porder,
-                      docsId: part.docsId,
-                      originId: part.originId,
-                    });
-                  }}
-                  text="번역기록"
-                  className="opacity-70"
-                />
-              </div>
+                >
+                  <RectBtn
+                    onClick={() => {
+                      openEditor();
+                      useEditorStore.setState({
+                        docsPart: part.content,
+                        porder: part.porder,
+                        docsId: part.docsId,
+                        originId: part.originId,
+                      });
+                    }}
+                    text="번역하기"
+                    className="opacity-70"
+                  />
+                  <RectBtn
+                    onClick={() => {
+                      openArchive();
+                      useEditorStore.setState({
+                        docsPart: part.content,
+                        porder: part.porder,
+                        docsId: part.docsId,
+                        originId: part.originId,
+                      });
+                    }}
+                    text="번역기록"
+                    className="opacity-70"
+                  />
+                </div>
+              </motion.div>
             )}
           </div>
         ))}

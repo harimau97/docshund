@@ -5,14 +5,23 @@ import useModalStore from "../store/modalStore";
 import GoBack from "../../../assets/icon/goBack.png";
 import useEditorStore from "../store/editorStore";
 import useArchiveStore from "../store/archiveStore";
-import { div } from "motion/react-client";
 
 const TranslateArchive = () => {
   const { isArchiveOpen, closeArchive } = useModalStore();
   const [transStates, setTransStates] = useState({});
   const { docsPart, bestTrans, porder, docsId, originId, currentUserText } =
     useEditorStore();
-  const { transList, setTransList, clearTransList } = useArchiveStore();
+  const {
+    transList,
+    orderByLike,
+    orderBy,
+    defaultStyle,
+    toggledStyle,
+    orderByUpdatedAt,
+    setTransList,
+    clearTransList,
+  } = useArchiveStore();
+  let cnt = 0;
 
   const toggleTransContent = (transId) => {
     setTransStates((prev) => ({
@@ -30,7 +39,7 @@ const TranslateArchive = () => {
     const fetchTransList = async () => {
       try {
         // const response = await axios.get(
-        //   `https://f1887553-e372-4944-90d7-8fe76ae8d764.mock.pstmn.io/docs/${docsId}/trans/${porder}?sort=like&order=desc&size=&page=`
+        //   `https://f1887553-e372-4944-90d7-8fe76ae8d764.mock.pstmn.io/docs/${docsId}/trans/${porder}?sort=${orderBy}&order=desc&size=&page=`
         // );
 
         // PostMan 사용량 절약을 위해 데이터를 하드코딩함
@@ -62,14 +71,11 @@ const TranslateArchive = () => {
             updatedAt: "2024-12-18 22:33:12",
           },
         ];
-        await setTransList(data);
-      } catch (error) {
-        console.log(error);
-      }
+        setTransList(data);
+      } catch (error) {}
     };
     fetchTransList();
-    console.log(transStates);
-  }, []);
+  }, [orderBy]);
 
   return (
     <Modal
@@ -92,6 +98,40 @@ const TranslateArchive = () => {
         </div>
         <div className="relative border-t border-slate-200 py-4 leading-normal text-slate-600 font-light h-9/10 flex flex-col gap-3">
           {/* 에디터 모달 안에 들어갈 컨텐츠 */}
+          <div className="flex justify-end gap-3">
+            <div
+              onClick={() => {
+                useArchiveStore.setState({
+                  orderByLike: false,
+                  orderByUpdatedAt: true,
+                  orderBy: "newest",
+                });
+              }}
+              className={orderByUpdatedAt ? toggledStyle : defaultStyle}
+            >
+              최신순
+            </div>
+            <div
+              onClick={() => {
+                useArchiveStore.setState({
+                  orderByLike: true,
+                  orderByUpdatedAt: false,
+                  orderBy: "like",
+                });
+              }}
+              className={orderByLike ? toggledStyle : defaultStyle}
+            >
+              좋아요순
+            </div>
+          </div>
+          <div>
+            {transList.filter((trans) => trans.originId === originId).length ===
+              0 && (
+              <div className="text-center text-gray-500 mt-10">
+                첫 번째 번역의 주인공이 되세요!
+              </div>
+            )}
+          </div>
           {transList.map((trans) => {
             return (
               <div key={trans.transId}>
