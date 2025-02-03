@@ -27,7 +27,11 @@ const ArticleList = () => {
   const [isLoggedIn] = useState(true); // 임시로 로그인 상태 true로 설정. TODO: 로그인 상태 확인 로직 추가 필요
   const [itemsPerPage, setItmesPerPage] = useState(15); // 페이지당 보여줄 게시글 수
 
+  // store에 저장할 필요가 없다고 판단한 변수들 <- 다른 컴포넌트에서 사용 필요시 store로 이전 필요
   const [sortType, setSortBy] = useState("latest"); // 정렬 기준
+  const [keyword, setKeyword] = useState(""); // 검색어
+  const [tmpKeyword, setTmpKeyword] = useState(""); // 임시 검색어
+
   // 정렬 옵션
   const sortOptions = [
     { value: "latest", label: "최신순" },
@@ -51,12 +55,12 @@ const ArticleList = () => {
       try {
         // articleListService.fetchArticles 함수를 호출하여 데이터를 가져옴
         const data = await articleListService.fetchArticles(
-          sortType,
-          "",
-          "",
-          "title",
-          currentPage,
-          itemsPerPage
+          sortType, // 정렬 기준
+          "", // 필터(카테고리)
+          keyword, // 검색어
+          "title", // 검색 타입
+          currentPage, // 현재 페이지
+          itemsPerPage // 페이지당 보여줄 게시글 수
         );
 
         // 가져온 데이터를 store에 저장
@@ -77,7 +81,7 @@ const ArticleList = () => {
 
     // fetchArticles 함수를 실행
     fetchArticles();
-  }, [sortType, currentPage, itemsPerPage]); // sortType, currentPage, itemsPerPage가 변경될 때마다 useEffect 실행
+  }, [sortType, keyword, currentPage, itemsPerPage]); // 의존성 배열에 sortType, keyword, currentPage, itemsPerPage 추가
 
   // 리스트 아이템 렌더링
   const renderItem = (item) => (
@@ -85,7 +89,7 @@ const ArticleList = () => {
       <div className="flex-1 min-w-0 mr-3 flex flex-col justify-between">
         {/* // Link 컴포넌트를 사용하여 글 제목을 클릭하면 해당 글로 이동하도록 설정 */}
         <Link
-          to={`/article/${item.id}`} // TODO: 게시글 상세 페이지 이동 endpoint 수정 필요
+          to={`/community/article/${item.articleId}`} // TODO: 게시글 상세 페이지 이동 endpoint 수정 필요
           className="font-semibold line-clamp-1 break-all text-[#7d7c77] hover:text-[#bc5b39]"
         >
           {item.title}
@@ -135,30 +139,41 @@ const ArticleList = () => {
         <div className="pt-4 bg-white rounded-tl-xl rounded-tr-xl border-t border-l border-r border-[#E1E1DF]">
           <div className="flex justify-between items-center">
             {/* 검색 바 */}
-            <input
-              type="text"
-              placeholder="검색어를 입력하세요"
-              className="border p-2 ml-10 rounded"
-              style={{ width: "700px", height: "30px" }}
-            />
-            {/* TODO: 돋보기 아이콘 위치 조정 */}
-            {/* 돋보기 아이콘 */}
-            <div className="absolute">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                width="24"
-                height="24"
+            <div className="relative flex items-center">
+              <input
+                type="text"
+                placeholder="검색어를 입력하세요"
+                className="border p-2 ml-10 rounded"
+                style={{ width: "700px", height: "30px" }}
+                onChange={(e) => setTmpKeyword(e.target.value)} // 검색어 입력에 따라 임시 검색어 변경
+                onKeyDown={(e) => {
+                  // 엔터키 입력 시 검색어로 검색
+                  if (e.key === "Enter") {
+                    setKeyword(e.target.value);
+                  }
+                }}
+              />
+              {/* 돋보기 아이콘, 클릭 시 임시 검색어로 검색 실행 (input의 value 참조를 위한 로직) */}
+              <div
+                className="absolute right-2 cursor-pointer"
+                onClick={() => setKeyword(tmpKeyword)}
               >
-                <path
-                  fill="none"
-                  stroke="#bc5b39"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M15.5 15.5L20 20M10 17C13.866 17 17 13.866 17 10C17 6.13401 13.866 3 10 3C6.13401 3 3 6.13401 3 10C3 13.866 6.13401 17 10 17Z"
-                />
-              </svg>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  height="24"
+                >
+                  <path
+                    fill="none"
+                    stroke="#bc5b39"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M15.5 15.5L20 20M10 17C13.866 17 17 13.866 17 10C17 6.13401 13.866 3 10 3C6.13401 3 3 6.13401 3 10C3 13.866 6.13401 17 10 17Z"
+                  />
+                </svg>
+              </div>
             </div>
             {/* 정렬 드롭다운 */}
             <select
@@ -177,7 +192,7 @@ const ArticleList = () => {
         </div>
 
         {/* 글 목록, 페이지네이션 */}
-        <ArticleListRender data={articles} renderItem={renderItem} />
+        <ArticleListRender renderItem={renderItem} />
       </main>
     </div>
   );

@@ -1,4 +1,5 @@
-const detailedArticle = () => {
+const DetailedArticle = () => {
+  console.log("Hello, article!");
   return (
     <div>
       <h1>게시글 상세 페이지</h1>
@@ -6,4 +7,4 @@ const detailedArticle = () => {
   );
 };
 
-export default detailedArticle;
+export default DetailedArticle;

@@ -29,13 +29,13 @@ const articleListService = {
       console.log(sortType, filter, keyword, searchType, page, itemsPerPage);
 
       // NOTE: page(현재 페이지)에 따라 종속된 tmp 데이터 반환
-      if (page == 1) {
-        return tmpData1;
-      } else if (page == 2) {
-        return tmpData2;
-      } else {
-        return null;
-      }
+      // if (page == 1) {
+      //   return tmpData1;
+      // } else if (page == 2) {
+      //   return tmpData2;
+      // } else {
+      //   return null;
+      // }
 
       // NOTE: 정렬 기준에 따라 다른 tmp 데이터 반환
       // if (sortType === "latest") {
@@ -43,6 +43,13 @@ const articleListService = {
       // } else if (sortType === "likes") {
       //   return tmpData2;
       // }
+
+      // NOTE: 검색어에 따라 다른 tmp 데이터 반환
+      if (keyword === "test") {
+        return tmpData1;
+      } else {
+        return tmpData2;
+      }
     } catch (error) {
       console.error(error);
       return null;

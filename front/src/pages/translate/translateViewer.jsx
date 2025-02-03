@@ -67,8 +67,8 @@ const TranslateViewer = () => {
           setLoading(true);
           try {
             const response = await axios.get(
-              // "https://f1887553-e372-4944-90d7-8fe76ae8d764.mock.pstmn.io/docs/1/origin?originId="
-              `http://localhost:8080/api/docs/docParts`
+              "https://f1887553-e372-4944-90d7-8fe76ae8d764.mock.pstmn.io/docs/1/origin?originId="
+              // `http://localhost:8080/api/docs/docParts`
             );
             const data = response.data;
 

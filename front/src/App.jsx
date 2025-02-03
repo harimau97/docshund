@@ -19,7 +19,7 @@ function App() {
   console.log("isTranslateViewerPage:", isTranslateViewerPage);
 
   return (
-    <div className="flex flex-col min-h-screen min-w-[1200px]">
+    <div className="flex flex-col min-h-screen min-w-[768px]">
       {isTranslateViewerPage ? (
         <div>
           <LeftNav />

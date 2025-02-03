@@ -1,11 +1,14 @@
-import ArticleList from "./articleList";
 import CommunityLeftNav from "./components/communityLeftNav";
+
+import { Outlet, Route, Routes } from "react-router-dom";
 
 const community = () => {
   return (
     <div className="flex">
+      {/* 좌측 내비게이션 바 */}
       <CommunityLeftNav />
-      <ArticleList />
+      {/* 리스트, 글 상세, 글 작성, 글 수정 페이지 routes */}
+      <Outlet />
     </div>
   );
 };
