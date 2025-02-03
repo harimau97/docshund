@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import myArticleStore from "../../store/myArticleStore";
-import ListRender from "../../components/ListRender";
+// import ListRender from "../../components/ListRender";
+import ListRender from "../../../../components/pagination/listRender";
 import like from "../../../../assets/icon/heartFilled24.png";
 import view from "../../../../assets/icon/viewCnt.png";
 import comment from "../../../../assets/icon/commentCnt.png";

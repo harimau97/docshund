@@ -3,7 +3,7 @@ import axios from "axios";
 import tmpData1 from "../../../store/communityStore/tmpData1";
 import tmpData2 from "../../../store/communityStore/tmpData2";
 
-const articleListService = {
+const ArticleListService = {
   // fetchArticles 함수는 filter, keyword, page, size를 인자로 받아서 데이터를 가져오는 함수
   async fetchArticles(
     sortType,
@@ -26,7 +26,7 @@ const articleListService = {
 
       // return data;
 
-      console.log(sortType, filter, keyword, searchType, page, itemsPerPage);
+      // console.log(sortType, filter, keyword, searchType, page, itemsPerPage);
 
       // NOTE: page(현재 페이지)에 따라 종속된 tmp 데이터 반환
       if (page == 1) {
@@ -57,4 +57,4 @@ const articleListService = {
   },
 };
 
-export default articleListService;
+export default ArticleListService;

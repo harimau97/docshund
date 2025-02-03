@@ -64,7 +64,7 @@ function AppRoutes() {
       <Route path="/community" element={<CommunityPage />}>
         <Route index element={<Navigate to="list" replace />} />
         <Route path="list" element={<ArticleList />} />
-        <Route path="article/:itemId" element={<DetailedArticle />} />
+        <Route path="article/:articleId" element={<DetailedArticle />} />
         <Route path="modify" element={<ModifyArticle />} />
         <Route path="write" element={<WriteArticle />} />
       </Route>

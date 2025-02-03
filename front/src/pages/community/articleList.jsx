@@ -1,18 +1,16 @@
 import { useState, useEffect } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 import articleListService from "./hooks/articleListService";
 import ArticleListRender from "../../components/pagination/listRender.jsx";
-import RectBtn from "../../components/button/rectBtn";
 import communityArticleStore from "../../store/communityStore/communityArticleStore.jsx";
+import CommunityHeader from "./components/communityHeader.jsx";
 
 import like from "../../assets/icon/heartFilled24.png";
 import view from "../../assets/icon/viewCnt.png";
 import comment from "../../assets/icon/commentCnt.png";
 
 const ArticleList = () => {
-  const navigate = useNavigate();
-
   //  store에서 데이터를 가져오기 위해 store의 상태 정의
   const articles = communityArticleStore((state) => state.articles);
   const totalPages = communityArticleStore((state) => state.totalPages);
@@ -25,7 +23,7 @@ const ArticleList = () => {
   const setLoading = communityArticleStore((state) => state.setLoading);
   const setError = communityArticleStore((state) => state.setError);
 
-  const [isLoggedIn] = useState(true); // 임시로 로그인 상태 true로 설정. TODO: 로그인 상태 확인 로직 추가 필요
+  // const [isLoggedIn] = useState(true); // 임시로 로그인 상태 true로 설정. TODO: 로그인 상태 확인 로직 추가 필요
   const [itemsPerPage, setItmesPerPage] = useState(15); // 페이지당 보여줄 게시글 수
 
   // store에 저장할 필요가 없다고 판단한 변수들 <- 다른 컴포넌트에서 사용 필요시 store로 이전 필요
@@ -71,8 +69,6 @@ const ArticleList = () => {
           setCurrentPage(data.pageNum);
           setItmesPerPage(data.articles.length);
         }
-
-        console.log("data", data);
       } catch (error) {
         setError(error);
       } finally {
@@ -90,7 +86,7 @@ const ArticleList = () => {
       <div className="flex-1 min-w-0 mr-3 flex flex-col justify-between">
         {/* // Link 컴포넌트를 사용하여 글 제목을 클릭하면 해당 글로 이동하도록 설정 */}
         <Link
-          to={`/community/article/${item.articleId}`} // TODO: 게시글 상세 페이지 이동 endpoint 수정 필요
+          to={`/community/article/${item.articleId}`}
           className="font-semibold line-clamp-1 break-all text-[#7d7c77] hover:text-[#bc5b39]"
         >
           {item.title}
@@ -120,20 +116,8 @@ const ArticleList = () => {
 
   return (
     <div className="flex">
-      {/* 2. 메인 영역 */}
       <main className="flex-1 p-8">
-        {/* 2-1. 헤더 영역 */}
-        <div className="mb-6">
-          <div className="flex justify-between items-center mb-4">
-            <h1 className="text-2xl font-bold">커뮤니티</h1>
-            {isLoggedIn && (
-              <RectBtn
-                onClick={() => navigate("/community/write")}
-                text="글쓰기"
-              />
-            )}
-          </div>
-        </div>
+        <CommunityHeader />
 
         {/* 2-2. 글 목록 */}
         {/* 글 목록이 있을 때 */}
