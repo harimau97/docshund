@@ -34,4 +34,8 @@ public class TranslatedDocumentLike extends BaseTimeEntity {
 	@JoinColumn(name = "user_id", nullable = false)
 	private User user;  // 유저 정보 (user 테이블과 연결)
 
+	public TranslatedDocumentLike(TranslatedDocument translatedDocument, User user) {
+		this.translatedDocument = translatedDocument;
+		this.user = user;
+	}
 }

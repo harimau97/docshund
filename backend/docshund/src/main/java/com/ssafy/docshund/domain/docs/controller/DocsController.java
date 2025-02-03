@@ -1,6 +1,5 @@
 package com.ssafy.docshund.domain.docs.controller;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -75,7 +74,6 @@ public class DocsController {
 		@RequestParam(required = false) Long userId
 	) {
 		if (userId == null) {
-			// 유저 아이디가 없을 시 에러 반환
 			throw new IllegalArgumentException("User not found");
 		}
 		List<DocumentDto> documents = docsService.getLikesDocument(userId);
@@ -143,7 +141,8 @@ public class DocsController {
 		@RequestParam(defaultValue = "like") String sort,
 		@RequestParam(defaultValue = "desc") String order
 	) {
-		List<TranslatedDocumentDto> translatedDocuments = docsService.getTranslatedDocuments(docsId, originId, sort, order);
+		List<TranslatedDocumentDto> translatedDocuments = docsService.getTranslatedDocuments(docsId, originId, sort,
+			order);
 
 		return ResponseEntity.ok(translatedDocuments);
 	}
@@ -233,7 +232,7 @@ public class DocsController {
 		return ResponseEntity.ok().body(Map.of("message", "Translation deleted successfully."));
 	}
 
-	// 번역 좋아요 하기
+	// 번역 투표 / 투표 해제 하기
 	@PostMapping("/{docsId}/trans/paragraph/{transId}/votes")
 	public ResponseEntity<?> postTransVotes(
 		@PathVariable Integer docsId,
@@ -246,8 +245,8 @@ public class DocsController {
 
 		boolean isLiked = docsService.toggleVotes(docsId, transId, user);
 		return ResponseEntity.ok().body(Map.of(
-				"message", isLiked ? "Translation liked successfully." : "Translation unliked successfully.",
-				"liked", isLiked
+			"message", isLiked ? "Translation liked successfully." : "Translation unliked successfully.",
+			"liked", isLiked
 		));
 	}
 

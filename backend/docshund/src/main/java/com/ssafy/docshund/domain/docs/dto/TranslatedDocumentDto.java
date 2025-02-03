@@ -19,7 +19,7 @@ public record TranslatedDocumentDto(
 	List<Long> likeUserIds
 ) {
 	public static TranslatedDocumentDto fromEntity(TranslatedDocument translatedDocument,
-												   Integer likeCount, List<Long> likeUserIds) {
+		Integer likeCount, List<Long> likeUserIds) {
 		return new TranslatedDocumentDto(
 			translatedDocument.getTransId(),
 			translatedDocument.getOriginDocument().getOriginId(),
@@ -31,6 +31,14 @@ public record TranslatedDocumentDto(
 			translatedDocument.getUpdatedAt(),
 			likeCount,
 			likeUserIds
+		);
+	}
+
+	// 좋아요한 사용자 ID 추가
+	public TranslatedDocumentDto withLikeUserIds(List<Long> likeUserIds) {
+		return new TranslatedDocumentDto(
+			this.transId, this.originId, this.userId, this.content,
+			this.reportCount, this.status, this.createdAt, this.updatedAt, likeUserIds.size(), likeUserIds
 		);
 	}
 }

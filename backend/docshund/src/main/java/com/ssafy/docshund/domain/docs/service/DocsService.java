@@ -61,7 +61,7 @@ public interface DocsService {
 
 	// 번역 투표 / 투표해제
 	boolean toggleVotes(Integer docsId, Integer transId, User user);
-	
+
 	// 유저가 좋아한 번역본 목록 조회
 	List<TranslatedDocumentDto> getUserLikedTrans(Long userId);
 }

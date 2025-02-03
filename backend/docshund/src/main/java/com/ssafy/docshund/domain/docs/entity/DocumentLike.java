@@ -12,9 +12,13 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "document_like")
+@Getter
+@NoArgsConstructor
 public class DocumentLike extends BaseTimeEntity {
 
 	@Id
@@ -30,4 +34,8 @@ public class DocumentLike extends BaseTimeEntity {
 	@JoinColumn(name = "user_id", nullable = false)
 	private User user;  // 사용자 정보 (user 테이블과 연결)
 
+	public DocumentLike(Document document, User user) {
+		this.document = document;
+		this.user = user;
+	}
 }
