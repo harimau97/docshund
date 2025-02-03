@@ -62,7 +62,7 @@ const TranslateArchive = () => {
       }}
       className="border-box w-full h-full flex items-center justify-center"
     >
-      <div className="relative m-5 p-4 w-1/2 h-[95%] min-w-[40%] min-h-[80%] max-w-full max-h-full rounded-lg bg-white shadow-sm overflow-scroll">
+      <div className="relative m-5 p-4 w-1/2 h-[95%] min-w-[768px] min-h-[80%] max-w-full max-h-full rounded-lg bg-white shadow-sm overflow-y-scroll">
         <div className="flex shrink-0 pb-4 text-xl font-medium text-slate-800 justify-between">
           <img
             src={GoBack}
@@ -131,7 +131,7 @@ const TranslateArchive = () => {
                       </div>
                     </div>
                     {transStates[trans.transId] && (
-                      <div className="border-t-1 border-slate-200 px-2 py-2">
+                      <div className="border-t-1 border-slate-200 px-2 py-2 transition duration-300 ease-in-out">
                         {trans.content}
                       </div>
                     )}

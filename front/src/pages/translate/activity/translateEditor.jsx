@@ -1,6 +1,5 @@
-import { useEffect } from "react";
-import { fetchBestTranslate } from "../hooks/translateService";
 import Modal from "react-modal";
+import AlertModal from "../../../components/emptyModal/alertModal";
 // import { AnimatePresence } from "motion/react";
 import TextContent from "../components/textContent";
 import EditorContent from "../components/editorContent";
@@ -9,7 +8,8 @@ import RectBtn from "../../../components/button/rectBtn";
 import useEditorStore from "../store/editorStore";
 
 const TranslateEditor = () => {
-  const { isEditorOpen, closeEditor } = useModalStore();
+  const { isEditorOpen, closeEditor, isAlertOpen, toggleAlert } =
+    useModalStore();
   const { docsPart, bestTrans, porder, docsId, originId, currentUserText } =
     useEditorStore();
 
@@ -22,6 +22,9 @@ const TranslateEditor = () => {
       }}
       className="border-box w-full h-full flex items-center justify-center"
     >
+      <div>
+        {isAlertOpen && <AlertModal alertTitle="임시 저장 완료" alertText="" />}
+      </div>
       <div className="relative m-5 p-4 w-6/10 h-[95%] min-w-[768px] min-h-[80%] max-w-full max-h-[95%] rounded-lg bg-white shadow-sm">
         <div className="flex shrink-0 w-full items-center pb-4 text-xl font-medium text-slate-800 justify-between">
           {porder}번째 문단 번역 중
@@ -30,6 +33,7 @@ const TranslateEditor = () => {
               onClick={async () => {
                 useEditorStore.setState({ tempSave: currentUserText });
                 console.log(useEditorStore.getState().tempSave);
+                toggleAlert();
               }}
               text="임시저장"
             />
