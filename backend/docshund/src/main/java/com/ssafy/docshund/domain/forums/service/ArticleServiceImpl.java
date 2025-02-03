@@ -5,8 +5,6 @@ import java.util.NoSuchElementException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,6 +35,9 @@ public class ArticleServiceImpl implements ArticleService {
 	public ArticleInfoDto createArticle(ArticleDto articleDto) {
 
 		User user = userUtil.getUser();
+		if(user == null) {
+			throw new AccessDeniedException("NO PERMISSION TO UNLOGINED USER");
+		}
 
 		Document document = documentRepository.findByDocumentName(articleDto.getCategory())
 			.orElseThrow(() -> new NoSuchElementException("NOT EXISTS CATEGORY"));
@@ -58,12 +59,11 @@ public class ArticleServiceImpl implements ArticleService {
 	@Transactional
 	public void updateArticle(Integer articleId, ArticleDto articleDto) {
 
-		User user = userUtil.getUser();
-
 		Article article = articleRepository.findById(articleId)
 			.orElseThrow(() -> new NoSuchElementException("NOT EXISTS ARTICLE"));
 
-		if (!article.getUser().getUserId().equals(user.getUserId())) {
+		User user = userUtil.getUser();
+		if (user== null || !article.getUser().getUserId().equals(user.getUserId())) {
 			throw new AccessDeniedException("NO PERMISSION FOR THIS ARTICLE");
 		}
 
@@ -87,14 +87,8 @@ public class ArticleServiceImpl implements ArticleService {
 	public Page<ArticleInfoDto> getArticles(String sort, Position filterPosition, String filterDocName,
 		String keyword, String searchType, Pageable pageable) {
 
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		User user = null;
 
-		if (authentication != null && authentication.isAuthenticated()
-			&& !(authentication.getPrincipal() instanceof String)) {
-			user = userUtil.getUser();
-		}
-
+		User user =  userUtil.getUser();
 		Long userId = (user != null) ? user.getUserId() : 0L;
 
 		return articleRepository.findAllArticles(sort, filterPosition, filterDocName, keyword, searchType, pageable,
@@ -104,14 +98,7 @@ public class ArticleServiceImpl implements ArticleService {
 	@Override
 	public Page<ArticleInfoDto> getArticlesByUserId(Long authorId, Pageable pageable) {
 
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		User user = null;
-
-		if (authentication != null && authentication.isAuthenticated()
-			&& !(authentication.getPrincipal() instanceof String)) {
-			user = userUtil.getUser();
-		}
-
+		User user =  userUtil.getUser();
 		Long userId = (user != null) ? user.getUserId() : 0L;
 
 		return articleRepository.findArticlesByAuthorId(authorId, pageable, userId);
@@ -120,21 +107,20 @@ public class ArticleServiceImpl implements ArticleService {
 	@Override
 	public Page<ArticleInfoDto> getArticlesLikedByUserId(Pageable pageable) {
 
-		return articleRepository.findArticlesLikedByUserId(userUtil.getUser().getUserId(), pageable);
+		User user = userUtil.getUser();
+		if(user == null) {
+			throw new AccessDeniedException("NO PERMISSION TO UNLOGINED USER");
+		}
+
+		return articleRepository.findArticlesLikedByUserId(user.getUserId(), pageable);
 	}
 
 	@Override
 	public ArticleInfoDto getArticleDetail(Integer articleId) {
 
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		User user = null;
-
-		if (authentication != null && authentication.isAuthenticated()
-			&& !(authentication.getPrincipal() instanceof String)) {
-			user = userUtil.getUser();
-		}
-
+		User user =  userUtil.getUser();
 		Long userId = (user != null) ? user.getUserId() : 0L;
+
 		ArticleInfoDto articleInfo = articleRepository.findArticleById(articleId, userId);
 
 		if (articleInfo == null) {
@@ -150,7 +136,8 @@ public class ArticleServiceImpl implements ArticleService {
 		Article article = articleRepository.findById(articleId)
 			.orElseThrow(() -> new NoSuchElementException("NOT EXISTS ARTICLE"));
 
-		if (!article.getUser().getUserId().equals(userUtil.getUser().getUserId())) {
+		User user = userUtil.getUser();
+		if (user == null || !article.getUser().getUserId().equals(user.getUserId())) {
 			throw new AccessDeniedException("NO PERMISSION FOR THIS ARTICLE");
 		}
 
@@ -161,11 +148,15 @@ public class ArticleServiceImpl implements ArticleService {
 	@Transactional
 	public void likeArticle(Integer articleId) {
 
-		Long userId = userUtil.getUser().getUserId();
-		if (articleLikeRepository.existsLike(userId, articleId) == 1) {
-			articleLikeRepository.deleteLike(userId, articleId);
+		User user = userUtil.getUser();
+		if(user == null) {
+			throw new AccessDeniedException("NO PERMISSION TO UNLOGINED USER");
+		}
+
+		if (articleLikeRepository.existsLike(user.getUserId(), articleId) == 1) {
+			articleLikeRepository.deleteLike(user.getUserId(), articleId);
 		} else {
-			articleLikeRepository.insertLike(userId, articleId);
+			articleLikeRepository.insertLike(user.getUserId(), articleId);
 		}
 	}
 }

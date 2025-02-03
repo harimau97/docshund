@@ -59,13 +59,17 @@ public class CommentServiceImpl implements CommentService {
 			.orElseThrow(() -> new NoSuchElementException("NOT EXISTS ARTICLE"));
 
 		User user = userUtil.getUser();
+		if(user == null) {
+			throw new AccessDeniedException("NO PERMISSION TO UNLOGINED USER");
+		}
 
 		Comment savedComment = commentRepository.save(new Comment(null, user, article, commentDto.getContent()));
 		return new CommentInfoDto(savedComment.getArticle().getArticleId(), savedComment.getCommentId(),
 			savedComment.getContent(),
 			savedComment.getCreatedAt(), savedComment.getUpdatedAt(),
 			savedComment.getUser().getUserId(), savedComment.getUser().getNickname(),
-			savedComment.getUser().getProfileImage(), new ArrayList<>());
+			savedComment.getUser().getProfileImage(), new ArrayList<>()
+		);
 	}
 
 	@Override
@@ -79,6 +83,9 @@ public class CommentServiceImpl implements CommentService {
 			.orElseThrow(() -> new NoSuchElementException("NOT EXISTS COMMENT"));
 
 		User user = userUtil.getUser();
+		if(user == null) {
+			throw new AccessDeniedException("NO PERMISSION TO UNLOGINED USER");
+		}
 
 		Comment savedComment = commentRepository.save(
 			new Comment(parentComment, user, article, commentDto.getContent()));
@@ -86,15 +93,13 @@ public class CommentServiceImpl implements CommentService {
 			savedComment.getContent(),
 			savedComment.getCreatedAt(), savedComment.getUpdatedAt(),
 			savedComment.getUser().getUserId(), savedComment.getUser().getNickname(),
-			savedComment.getUser().getProfileImage(), new ArrayList<>());
+			savedComment.getUser().getProfileImage(), new ArrayList<>()
+		);
 	}
 
 	@Override
 	@Transactional
 	public void updateComment(Integer articleId, Integer commentId, CommentDto commentDto) {
-
-		Article article = articleRepository.findById(articleId)
-			.orElseThrow(() -> new NoSuchElementException("NOT EXISTS ARTICLE"));
 
 		Comment comment = commentRepository.findById(commentId)
 			.orElseThrow(() -> new NoSuchElementException("NOT EXISTS COMMENT"));
@@ -103,7 +108,8 @@ public class CommentServiceImpl implements CommentService {
 			throw new AccessDeniedException("ARTICLE ID NOT MATCHED");
 		}
 
-		if (!comment.getUser().getUserId().equals(userUtil.getUser().getUserId())) {
+		User user = userUtil.getUser();
+		if (user == null || !comment.getUser().getUserId().equals(user.getUserId())) {
 			throw new AccessDeniedException("NO PERMISSION FOR THIS COMMENT");
 		}
 
@@ -124,7 +130,8 @@ public class CommentServiceImpl implements CommentService {
 			throw new AccessDeniedException("ARTICLE ID NOT MATCHED");
 		}
 
-		if (!comment.getUser().getUserId().equals(userUtil.getUser().getUserId())) {
+		User user = userUtil.getUser();
+		if (user == null || !comment.getUser().getUserId().equals(user.getUserId())) {
 			throw new AccessDeniedException("NO PERMISSION FOR THIS COMMENT");
 		}
 
