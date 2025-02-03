@@ -10,7 +10,7 @@ const MyProfilePage = () => {
   const [editedProfile, setEditedProfile] = useState(profile || {});
 
   useEffect(() => {
-    const userId = 1;
+    const userId = 220;
     fetchProfile(userId);
   }, [fetchProfile]);
 

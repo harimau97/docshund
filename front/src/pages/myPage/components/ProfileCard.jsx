@@ -10,6 +10,8 @@ const ProfileCard = ({
     return <div>Loading...</div>;
   }
 
+  console.log(profile);
+
   return (
     <div className="w-auto bg-white p-10 rounded-xl border-1 border-[#E1E1DF] text-[#424242] mb-5">
       <div className="flex mb-4">

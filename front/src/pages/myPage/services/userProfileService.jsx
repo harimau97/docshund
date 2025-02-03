@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const baseUrl = "https://69889664-709b-4f94-96d0-9ed9a4216ee0.mock.pstmn.io";
+const baseUrl = "https://f1887553-e372-4944-90d7-8fe76ae8d764.mock.pstmn.io";
 
 const userProfileService = {
   // 프로필 데이터 가져오기
@@ -23,7 +23,7 @@ const userProfileService = {
       );
 
       //test
-      console.log(response);
+      console.log(updatedProfile);
 
       return response.status;
     } catch (error) {
