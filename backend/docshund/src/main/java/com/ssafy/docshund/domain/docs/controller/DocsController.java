@@ -1,6 +1,7 @@
 package com.ssafy.docshund.domain.docs.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -147,12 +148,14 @@ public class DocsController {
 	public ResponseEntity<?> postTransDocs(
 		@PathVariable Integer docsId,
 		@PathVariable Integer originId,
-		@RequestParam String content
+		@RequestBody Map<String, String> requestBody
 	) {
 		User user = userUtil.getUser();
 		if (user == null) {
 			throw new IllegalArgumentException("User not found");
 		}
+
+		String content = requestBody.get("content");
 		if (content == null || content.trim().isEmpty()) {
 			throw new IllegalArgumentException("Content is empty or null");
 		}

@@ -184,16 +184,16 @@ public class CustomDocumentRepositoryImpl implements CustomDocumentRepository {
 				translatedDocument.status,
 				translatedDocument.createdAt,
 				translatedDocument.updatedAt,
-				translatedDocumentLike.countDistinct().intValue() // ✅ 좋아요 개수 포함
+				translatedDocumentLike.countDistinct().intValue()
 			))
 			.from(translatedDocument)
 			.leftJoin(translatedDocumentLike)
 			.on(translatedDocument.transId.eq(translatedDocumentLike.translatedDocument.transId))
 			.join(translatedDocument.originDocument, originDocument)
 			.join(translatedDocument.user, user)
-			.where(condition) // ✅ 동적 조건 적용
+			.where(condition)
 			.groupBy(translatedDocument.transId, originDocument.originId, user.userId)
-			.orderBy(originDocument.pOrder.asc()) // ✅ 문단순서 정렬
+			.orderBy(originDocument.pOrder.asc())
 			.fetch();
 	}
 
@@ -210,7 +210,7 @@ public class CustomDocumentRepositoryImpl implements CustomDocumentRepository {
 		QTranslatedDocumentLike translatedDocumentLike = QTranslatedDocumentLike.translatedDocumentLike;
 		QOriginDocument originDocument = QOriginDocument.originDocument;
 
-		// ✅ 각 originId별 좋아요 개수가 가장 많은 transId 찾기
+		// 각 originId별 좋아요 개수가 가장 많은 transId 찾기
 		List<Long> bestTransIds = queryFactory
 			.select(translatedDocument.transId)
 			.from(translatedDocument)

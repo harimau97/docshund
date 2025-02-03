@@ -7,7 +7,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,6 +30,8 @@ import com.ssafy.docshund.domain.users.entity.User;
 import jakarta.persistence.EntityNotFoundException;
 
 @Service
+@RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class DocsServiceImpl implements DocsService {
 
 	private final DocumentRepository documentRepository;
@@ -39,21 +41,8 @@ public class DocsServiceImpl implements DocsService {
 	private final TranslatedDocumentRepository translatedDocumentRepository;
 	private final ObjectMapper objectMapper = new ObjectMapper();
 
-	@Autowired
-	public DocsServiceImpl(DocumentRepository documentRepository,
-		OriginDocumentRepository originDocumentRepository,
-		CustomDocumentRepository customDocumentRepository,
-		DocumentLikeRepository documentLikeRepository, TranslatedDocumentRepository translatedDocumentRepository) {
-		this.documentRepository = documentRepository;
-		this.originDocumentRepository = originDocumentRepository;
-		this.customDocumentRepository = customDocumentRepository;
-		this.translatedDocumentRepository = translatedDocumentRepository;
-		this.documentLikeRepository = documentLikeRepository;
-	}
-
 	// 전체 문서 목록 조회
 	@Override
-	@Transactional(readOnly = true)
 	public List<DocumentDto> getAllDocuments(String sort, String order) {
 		return customDocumentRepository.findAllDocumentsWithLikes(sort, order);
 	}
@@ -75,7 +64,6 @@ public class DocsServiceImpl implements DocsService {
 
 		// 조회수 증가
 		document.setViewCount(document.getViewCount() + 1);
-		documentRepository.save(document);
 
 		return new DocumentDto(
 			documentDto.docsId(),
@@ -113,6 +101,7 @@ public class DocsServiceImpl implements DocsService {
 
 	// 관심문서 등록 및 해제
 	@Override
+	@Transactional
 	public DocumentDto toggleLikes(Integer docsId, Long currentUserId) {
 		// 현재 사용자가 해당 문서를 좋아요 했는지 확인
 		boolean isLiked = documentLikeRepository.existsByDocument_DocsIdAndUser_UserId(docsId, currentUserId);
@@ -143,7 +132,6 @@ public class DocsServiceImpl implements DocsService {
 
 	// 문서 원본(origin_document) 조회
 	@Override
-	@Transactional(readOnly = true)
 	public List<OriginDocumentDto> getAllOriginDocuments(Integer docsId) {
 		List<OriginDocument> originDocuments = originDocumentRepository.findByDocument_DocsId(docsId);
 		return originDocuments.stream()
@@ -153,7 +141,6 @@ public class DocsServiceImpl implements DocsService {
 
 	// 특정 단락 원본 조회
 	@Override
-	@Transactional(readOnly = true)
 	public OriginDocumentDto getOriginDocumentDetail(Integer originId) {
 		OriginDocument originDocument = originDocumentRepository.findByOriginId(originId);
 		if (originDocument == null) {
@@ -293,6 +280,7 @@ public class DocsServiceImpl implements DocsService {
 
 	// 번역 수정하기
 	@Override
+	@Transactional
 	public TranslatedDocumentDto updateTranslatedDocument(Integer docsId, Integer transId) {
 		return null;
 
@@ -300,12 +288,14 @@ public class DocsServiceImpl implements DocsService {
 
 	// 번역 삭제하기
 	@Override
+	@Transactional
 	public void deleteTranslatedDocument(Integer docsId, Integer transId) {
 		translatedDocumentRepository.deleteById(transId);
 	}
 
 	// 번역 투표 / 투표해제
 	@Override
+	@Transactional
 	public void toggleVotes(Integer docsId, Integer transId, Long userId) {
 
 	}
