@@ -1,10 +1,8 @@
 package com.ssafy.docshund.global.util.user;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
 import com.ssafy.docshund.domain.users.dto.auth.CustomOAuth2User;
 import com.ssafy.docshund.domain.users.entity.Role;
@@ -32,10 +30,7 @@ public class UserUtil {
 		log.info("Personal ID: {}", personalId);
 
 		User user = userRepository.findByPersonalId(personalId)
-			.orElseThrow(() -> {
-				log.error("User not found");
-				return new ResponseStatusException(HttpStatus.NOT_FOUND, "회원 정보를 찾을 수 없습니다.");
-			});
+			.orElseGet(null);
 
 		log.info("email: {}", user.getEmail());
 
