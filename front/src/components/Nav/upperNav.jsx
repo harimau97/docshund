@@ -1,101 +1,88 @@
 import PropTypes from "prop-types";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import logo from "../../assets/logo.png";
-import notification from "../../assets/icon/notification.png";
+import notification from "../../assets/icon/notification32.png";
 import SampleProfileImg from "../../assets/sample_profile_image.png";
 import RectBtn from "../button/rectBtn";
 
 const UpperNav = ({ loginStatus }) => {
   const location = useLocation();
   const navigate = useNavigate();
-  const activeLink =
-    "relative inset-[-16.67%] w-fit h-[133.33%] flex items-center justify-center text-center font-bold text-[20px] tracking-[0.2px] text-[#bc5b39]";
-  const inactiveLink =
-    "relative inset-[-16.67%] w-fit h-[133.33%] flex items-center justify-center text-center text-[20px] tracking-[0.2px] text-[#424242]";
 
+  // 내비게이션 링크 스타일
+  const activeLink = "font-bold text-[clamp(16px,1.5vw,20px)] text-[#bc5b39]";
+  const inactiveLink =
+    "text-[clamp(16px,1.5vw,20px)] text-[#424242] hover:text-[#bc5b39]";
   return (
-    <div className=" bg-[#f0eee5] pl-[120px] pr-[64px] py-[22px] flex flex-row items-center justify-between relative shadow-[0px_-1px_1px_0px_rgba(0, 0, 0, 0.10)]">
-      <NavLink to="/">
-        <img
-          className="shrink-0 w-[196px] h-[82px] relative object-cover"
-          src="https://cdn.discordapp.com/attachments/1325677272572891136/1334006138638958713/docshund.png?ex=679af588&is=6799a408&hm=29441a9c35dd323776e3a367f2cc18daea6dd7883f1cfef1a225f3b6a1bb63cb&"
-          alt="로고 이미지"
-        />
-      </NavLink>
-      <div className="flex flex-row items-center justify-between shrink-0 w-[40%] relative">
-        <div className="shrink-0 w-fit h-[18px] relative">
-          {location.pathname === "/" ? (
-            <div className={activeLink}>
-              <NavLink to="/">홈</NavLink>
-            </div>
-          ) : (
-            <div className={inactiveLink}>
-              <NavLink to="/">홈</NavLink>
-            </div>
-          )}
+    <div className="bg-[#f0eee5] flex justify-center px-9 py-3 shadow-[0px_-1px_1px_0px_rgba(0, 0, 0, 0.10)]">
+      <div className="w-full max-w-screen-xl mx-auto gap-3 flex items-center justify-between">
+        {/* 로고 */}
+        <NavLink to="/">
+          <img
+            className="w-[clamp(120px,10vw,148px)] h-auto"
+            src={logo}
+            alt="로고 이미지"
+          />
+        </NavLink>
+
+        {/* 내비게이션 메뉴 */}
+        <div className="flex w-2/4 justify-between">
+          <NavLink
+            to="/"
+            className={location.pathname === "/" ? activeLink : inactiveLink}
+          >
+            홈
+          </NavLink>
+          <NavLink
+            to="/translate"
+            className={
+              location.pathname === "/translate" ? activeLink : inactiveLink
+            }
+          >
+            번역문서
+          </NavLink>
+          <NavLink
+            to="/community"
+            className={
+              location.pathname === "/community" ? activeLink : inactiveLink
+            }
+          >
+            커뮤니티
+          </NavLink>
+          <NavLink
+            to="/helpDesk"
+            className={
+              location.pathname === "/helpDesk" ? activeLink : inactiveLink
+            }
+          >
+            헬프데스크
+          </NavLink>
         </div>
-        <div className="shrink-0 w-fit h-[18px] relative">
-          {location.pathname === "/translate" ? (
-            <div className={activeLink}>
-              <NavLink to="/translate">번역문서</NavLink>
-            </div>
-          ) : (
-            <div className={inactiveLink}>
-              <NavLink to="/translate">번역문서</NavLink>
-            </div>
-          )}
-        </div>
-        <div className="shrink-0 w-fit h-[18px] relative">
-          {location.pathname === "/community" ? (
-            <div className={activeLink}>
-              <NavLink to="/community">커뮤니티</NavLink>
-            </div>
-          ) : (
-            <div className={inactiveLink}>
-              <NavLink to="/community">커뮤니티</NavLink>
-            </div>
-          )}
-        </div>
-        <div className="shrink-0 w-fit h-[18px] relative">
-          {location.pathname === "/helpDesk" ? (
-            <div className={activeLink}>
-              <NavLink to="/helpDesk">헬프데스크</NavLink>
-            </div>
-          ) : (
-            <div className={inactiveLink}>
-              <NavLink to="/helpDesk">헬프데스크</NavLink>
-            </div>
-          )}
-        </div>
-      </div>
-      {/* 로그인 되어 있을 경우 알림아이콘, 로그아웃 버튼, 프로필 이미지 표시, 반대는 로그인 버튼만 표시 */}
-      <div className="rounded-[5px] flex flex-row gap-[20px] items-center justify-start shrink-0 relative">
-        {loginStatus ? (
-          <div>
+
+        {/* 로그인 여부에 따라 표시되는 요소 */}
+        <div className="flex items-center gap-4">
+          {loginStatus && (
             <img
-              className="cursor-pointer"
+              className="w-[clamp(20px,2.1vw,32px)] h-auto cursor-pointer"
               src={notification}
               alt="알림 아이콘"
             />
-          </div>
-        ) : null}
+          )}
 
-        {loginStatus ? (
-          <RectBtn onClick={() => {}} text="로그아웃" />
-        ) : (
-          <RectBtn onClick={() => {}} text="로그인" />
-        )}
-
-        {loginStatus ? (
-          // 프로필 이미지를 누르면 마이페이지로 navigate
-          <img
-            onClick={() => {
-              navigate("/myPage/profile");
-            }}
-            className="box-border w-[64px] h-[64px] relative object-cover cursor-pointer"
-            src={SampleProfileImg}
+          <RectBtn
+            onClick={() => {}}
+            text={loginStatus ? "로그아웃" : "로그인"}
           />
-        ) : null}
+
+          {loginStatus && (
+            <img
+              onClick={() => navigate("/myPage/profile")}
+              className="w-[clamp(40px,4vw,64px)] h-auto cursor-pointer"
+              src={SampleProfileImg}
+              alt="프로필 이미지"
+            />
+          )}
+        </div>
       </div>
     </div>
   );

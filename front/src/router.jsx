@@ -2,17 +2,17 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import LandingPage from "./pages/landingPage.jsx";
 import TranslatePage from "./pages/translate/translate.jsx";
 import MyPage from "./pages/myPage/MyPage.jsx";
-import MyProfilePage from "./pages/myPage/MyProfilePage.jsx";
-import ArchivePage from "./pages/myPage/ArchivePage.jsx";
-import LikeArticlePage from "./pages/myPage/archive/LikeArticlePage.jsx";
-import LikeTranslationPage from "./pages/myPage/archive/LikeTranslationPage.jsx";
-import LikeDocsPage from "./pages/myPage/archive/LikeDocsPage.jsx";
-import ActivityPage from "./pages/myPage/ActivityPage.jsx";
-import MyTranslationPage from "./pages/myPage/activity/MyTranslationPage.jsx";
-import MyArticlePage from "./pages/myPage/activity/MyArticlePage.jsx";
-import MyCommentPage from "./pages/myPage/activity/MyCommentPage.jsx";
-import MemoPage from "./pages/myPage/MemoPage.jsx";
-import InquiryPage from "./pages/myPage/InquiryPage.jsx";
+import MyProfilePage from "./pages/myPage/pages/MyProfilePage.jsx";
+import ArchivePage from "./pages/myPage/pages/ArchivePage.jsx";
+import LikeArticlePage from "./pages/myPage/pages/archive/LikeArticlePage.jsx";
+import LikeTranslationPage from "./pages/myPage/pages/archive/LikeTranslationPage.jsx";
+import LikeDocsPage from "./pages/myPage/pages/archive/LikeDocsPage.jsx";
+import ActivityPage from "./pages/myPage/pages/ActivityPage.jsx";
+import MyTranslationPage from "./pages/myPage/pages/activity/MyTranslationPage.jsx";
+import MyArticlePage from "./pages/myPage/pages/activity/MyArticlePage.jsx";
+import MyCommentPage from "./pages/myPage/pages/activity/MyCommentPage.jsx";
+import MemoPage from "./pages/myPage/pages/MemoPage.jsx";
+import InquiryPage from "./pages/myPage/pages/InquiryPage.jsx";
 import CommunityPage from "./pages/community/community.jsx";
 import HelpDesk from "./pages/helpDesk.jsx";
 import TranslateViewer from "./pages/translate/translateViewer.jsx";
@@ -25,10 +25,7 @@ function AppRoutes() {
 
       {/* 마이페이지 관련 주소 */}
       <Route path="/myPage" element={<MyPage />}>
-        <Route
-          path="/myPage"
-          element={<Navigate to="/myPage/profile" replace />}
-        />
+        <Route index element={<Navigate to="profile" replace />} />
         <Route path="profile" element={<MyProfilePage />} />
         <Route path="archive" element={<ArchivePage />}>
           <Route path="likeTrans" element={<LikeTranslationPage />} />
@@ -45,10 +42,12 @@ function AppRoutes() {
       </Route>
 
       {/* 번역 관련 주소 */}
-      <Route path="/translate" element={<TranslatePage />}> 
-        <Route path="viewer/:docsName" element={<TranslateViewer />}></Route>      
-      </Route>
-
+      <Route path="/translate" element={<TranslatePage />}></Route>
+      {/* 하위 항목으로 작성하면 인식이 안되서 수정함 */}
+      <Route
+        path="translate/viewer/:docsName"
+        element={<TranslateViewer />}
+      ></Route>
       {/* 커뮤니티 관련 주소 */}
       <Route path="/community" element={<CommunityPage />} />
 
