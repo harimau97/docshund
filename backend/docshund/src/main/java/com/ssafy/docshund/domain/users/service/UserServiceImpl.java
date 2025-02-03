@@ -6,12 +6,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.ssafy.docshund.domain.users.dto.page.UserAndInfoDto;
+import com.ssafy.docshund.domain.users.dto.page.UserProfileDto;
 import com.ssafy.docshund.domain.users.dto.page.UserSearchCondition;
 import com.ssafy.docshund.domain.users.dto.profile.ProfileRequestDto;
 import com.ssafy.docshund.domain.users.entity.User;
 import com.ssafy.docshund.domain.users.entity.UserInfo;
 import com.ssafy.docshund.domain.users.repository.UserInfoRepository;
 import com.ssafy.docshund.domain.users.repository.UserRepository;
+import com.ssafy.docshund.global.util.user.UserUtil;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +25,7 @@ public class UserServiceImpl implements UserService {
 
 	private final UserRepository userRepository;
 	private final UserInfoRepository userInfoRepository;
+	private final UserUtil userUtil;
 
 	@Override
 	@Transactional(readOnly = true)
@@ -32,8 +35,19 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public UserAndInfoDto getUserProfile(Long userId) {
-		return userRepository.getProfileUser(userId);
+	public UserProfileDto getUserProfile(Long userId) {
+		UserProfileDto profileUser = userRepository.getProfileUser(userId);
+		if (profileUser == null) {
+			return null;
+		}
+
+		User user = userUtil.getUser();
+		if (user == null || !userUtil.isMine(userId, user)) {
+			profileUser.setEmail(null);
+			profileUser.setIsDarkmode(null);
+		}
+
+		return profileUser;
 	}
 
 	@Override
