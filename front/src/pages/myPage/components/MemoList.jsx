@@ -1,10 +1,8 @@
+import PropTypes from "prop-types";
 import MemoCard from "./MemoCard";
-import memoStore from "../stores/memoStore";
 
-const MemoList = () => {
-  const { memos } = memoStore();
-
-  if (memos.length === 0) {
+const MemoList = ({ memos, onEditMemo, onDeleteMemo }) => {
+  if (!memos.length) {
     return (
       <div className="text-center text-gray-500 mt-10">
         아직 작성한 메모가 없습니다.
@@ -17,13 +15,19 @@ const MemoList = () => {
       {memos.map((memo) => (
         <MemoCard
           key={memo.memo_id}
-          title={memo.title}
-          content={memo.content}
-          createdAt={memo.created_at}
+          memo={memo}
+          onEditMemo={() => onEditMemo(memo.memo_id, memo)}
+          onDeleteMemo={onDeleteMemo}
         />
       ))}
     </div>
   );
+};
+
+MemoList.propTypes = {
+  memos: PropTypes.array.isRequired,
+  onEditMemo: PropTypes.func.isRequired,
+  onDeleteMemo: PropTypes.func.isRequired,
 };
 
 export default MemoList;

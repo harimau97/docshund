@@ -1,8 +1,8 @@
 import { Link } from "react-router-dom";
-import likeArticleStore from "../stores/likeArticleStore";
-import ListRender from "../components/ListRender";
-import like from "../../../assets/icon/heartFilled24.png";
-import likeCancel from "../../../assets/icon/heartEmpty24.png";
+import likeArticleStore from "../../store/likeArticleStore";
+import ListRender from "../../components/ListRender";
+import like from "../../../../assets/icon/heartFilled24.png";
+import likeCancel from "../../../../assets/icon/heartEmpty24.png";
 
 const LikeArticlePage = () => {
   const articles = likeArticleStore((state) => state.articles);

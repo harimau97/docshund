@@ -1,10 +1,11 @@
 import { Link } from "react-router-dom";
-import myTranslationStore from "../stores/myTranslationStore";
-import ListRender from "../components/ListRender";
-import like from "../../../assets/icon/heartFilled24.png";
+import likeTranslationStore from "../../store/likeTranslationStore";
+import ListRender from "../../components/ListRender";
+import like from "../../../../assets/icon/heartFilled24.png";
+import likeCancel from "../../../../assets/icon/heartEmpty24.png";
 
-const MyTranslationPage = () => {
-  const translations = myTranslationStore((state) => state.translations);
+const LikeTranslationPage = () => {
+  const translations = likeTranslationStore((state) => state.translations);
 
   const renderTranslation = (item) => (
     <div className="flex justify-between text-lg px-3">
@@ -17,11 +18,15 @@ const MyTranslationPage = () => {
         </Link>
       </div>
       <div className="flex space-x-6">
+        <p className="whitespace-nowrap">{item.nickname}</p>
         <p className="whitespace-nowrap">{item.createdAt}</p>
-        <div className="flex items-center">
-          <img className="mr-3" src={like} alt="좋아요수 아이콘" />
-          <p className="w-8 text-right">{item.likeCount}</p>
-        </div>
+        <button>
+          <img
+            src={item.liked ? like : likeCancel} // liked 상태에 따라 아이콘 변경
+            alt="좋아요 아이콘"
+            className="w-6 h-6 cursor-pointer"
+          />
+        </button>
       </div>
     </div>
   );
@@ -36,5 +41,4 @@ const MyTranslationPage = () => {
     </div>
   );
 };
-
-export default MyTranslationPage;
+export default LikeTranslationPage;
