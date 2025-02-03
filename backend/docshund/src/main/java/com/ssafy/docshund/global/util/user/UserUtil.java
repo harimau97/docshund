@@ -63,4 +63,15 @@ public class UserUtil {
 		return true;
 	}
 
+	@Transactional(readOnly = true)
+	public boolean isMine(Long userId, User user) {
+		if (!user.getUserId().equals(userId)) {
+			log.info("is Not Mine");
+			return false;
+		}
+
+		log.info("is Mine");
+		return true;
+	}
+
 }
