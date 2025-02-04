@@ -15,8 +15,10 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.Getter;
 
 @Entity
+@Getter
 @Table(name = "inquiry")
 public class Inquiry extends BaseTimeEntity {
 
@@ -59,5 +61,9 @@ public class Inquiry extends BaseTimeEntity {
 		inquiry.isAnswered = false;
 
 		return inquiry;
+	}
+
+	public void isAnsweredTrue() {
+		this.isAnswered = true;
 	}
 }
