@@ -2,6 +2,7 @@ package com.ssafy.docshund.domain.supports.service;
 
 import org.springframework.web.multipart.MultipartFile;
 
+import com.ssafy.docshund.domain.supports.dto.inquiry.AnswerRequestDto;
 import com.ssafy.docshund.domain.supports.dto.inquiry.InquiryRequestDto;
 
 public interface InquiryService {
@@ -10,5 +11,5 @@ public interface InquiryService {
 
 	void getInquiries();
 
-	void respondToInquiry();
+	void respondToInquiry(Long inquiryId, AnswerRequestDto answerRequestDto);
 }
