@@ -1,6 +1,11 @@
 import { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
-import { initDB, addData, loadData } from "./hooks/indexedDbService.jsx";
+import {
+  initDB,
+  addData,
+  loadData,
+  closeAllConnections,
+} from "./hooks/indexedDbService.jsx";
 import {
   fetchTranslateData,
   fetchBestTranslate,
@@ -95,7 +100,7 @@ const TranslateViewer = () => {
 
   useEffect(() => {
     let isMounted = true; // 컴포넌트 마운트 상태 추적
-
+    closeAllConnections(); // 새로운 문서에 들어갈 경우를 위해 기존 db와 연결 해제
     // 상태 초기화
     setDocParts([]);
     setProcessedCount(0);
@@ -112,14 +117,14 @@ const TranslateViewer = () => {
         console.log("Initializing DB for docsId:", docsId); // 디버깅용
         await initDB(dbName, objectStoreName);
         const loadedData = await loadData(objectStoreName);
-        console.log("Loaded data from DB:", loadedData); // 디버깅용
+        console.log("Loaded data from DB:", loadedData.length); // 디버깅용
 
         if (!isMounted) return; // 비동기 작업 후 마운트 상태 다시 확인
 
         if (!loadedData || loadedData.length === 0) {
           console.log("Fetching data from server for docsId:", docsId); // 디버깅용
           try {
-            const data = await fetchTranslateData(docsId, null);
+            const data = await fetchTranslateData(docsId, null, true);
             if (!isMounted) return;
             if (data && Array.isArray(data)) {
               docData.current = data;
@@ -194,7 +199,7 @@ const TranslateViewer = () => {
                   "like",
                   10,
                   1,
-                  false
+                  true
                 );
                 if (transList[0].originId === part.originId) {
                   useEditorStore.setState({ bestTrans: transList[0].content });

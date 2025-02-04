@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 import { FaPlus } from "react-icons/fa6";
 import { NavLink, useNavigate } from "react-router-dom";
-
+import Logo from "../../assets/logo.png";
 import modalStore from "../../pages/myPage/store/modalStore.jsx";
 import EditorModal from "../../pages/myPage/components/EditorModal.jsx";
 import docsList from "../../assets/icon/docsList.png";
@@ -82,7 +82,8 @@ const LeftNav = () => {
         <div className="p-5 text-center">
           <NavLink to="/translate">
             <img
-              src="https://cdn.discordapp.com/attachments/1325677272572891136/1334006138638958713/docshund.png?ex=679af588&is=6799a408&hm=29441a9c35dd323776e3a367f2cc18daea6dd7883f1cfef1a225f3b6a1bb63cb&"
+              className="w-[clamp(120px,10vw,148px)] h-auto"
+              src={Logo}
               alt="닥스훈트 로고"
             />
           </NavLink>

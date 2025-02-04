@@ -50,7 +50,7 @@ function AppRoutes() {
       <Route path="/helpDesk" element={<HelpDesk />} />
       {/* 번역뷰어 */}
       <Route
-        path="translate/viewer/:docsName"
+        path="translate/viewer/:docsId"
         element={<TranslateViewer />}
       ></Route>
 

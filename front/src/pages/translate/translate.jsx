@@ -14,7 +14,7 @@ const TransLatePage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetchDocsList();
+    fetchDocsList(true);
   }, []);
 
   return (

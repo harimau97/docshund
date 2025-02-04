@@ -43,7 +43,7 @@ const TranslateArchive = () => {
         orderBy,
         10,
         1,
-        false
+        true
       );
       setTransList(data);
     };
