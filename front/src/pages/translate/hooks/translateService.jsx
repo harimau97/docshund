@@ -2,12 +2,26 @@ import axios from "axios";
 import PropTypes from "prop-types";
 import TmpBestData from "../store/tmpBestData";
 import useEditorStore from "../store/editorStore";
+import useDocsStore from "../store/docsStore";
+
+const baseUrl = "https://f1887553-e372-4944-90d7-8fe76ae8d764.mock.pstmn.io";
+
+export const fetchDocsList = async () => {
+  try {
+    const response = await axios.get(`${baseUrl}/docs?sort=name&order=asc`);
+    const data = response.data;
+    useDocsStore.setState({ docsList: data });
+  } catch (error) {
+    console.log(error);
+  }
+};
 
 export const fetchTranslateData = async (docsId, originId, test) => {
+  console.log("데이터 fetching 시작");
   try {
     if (!test) {
       const response = await axios.get(
-        `https://f1887553-e372-4944-90d7-8fe76ae8d764.mock.pstmn.io/docs/${docsId}/origin?originId=${originId}`
+        `${baseUrl}/docs/${docsId}/origin?originId=${originId}`
       );
       const data = response.data;
       return data;
@@ -31,7 +45,7 @@ export const fetchBestTranslate = async (
   try {
     if (!test) {
       const response = await axios.get(
-        `https://f1887553-e372-4944-90d7-8fe76ae8d764.mock.pstmn.io/docs/${docsId}/trans/${originId}?sort=${sortType}&order=desc&size=${size}&page=${page}`
+        `${baseUrl}/docs/${docsId}/trans/${originId}?sort=${sortType}&order=desc&size=${size}&page=${page}`
       );
       const data = response.data;
       if (size === 1) {

@@ -1,23 +1,30 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
 import { useNavigate, NavLink } from "react-router-dom";
+import useDocsStore from "./store/docsStore";
+import { fetchDocsList } from "./hooks/translateService";
 
 const TransLatePage = () => {
-  const [docsList, setDocsList] = useState([
-    "kafka",
-    "rabbitmq",
-    "elasticsearch",
-    "kafka",
-    "springboot",
-    "kafka",
-    "mysql",
-  ]);
+  // const [docsList, setDocsList] = useState([
+  //   "kafka",
+  //   "rabbitmq",
+  //   "elasticsearch",
+  //   "kafka",
+  //   "springboot",
+  //   "kafka",
+  //   "mysql",
+  // ]);
   const [docsCategories, setDocsCategories] = useState([
     "frontend",
     "backend",
     "DB",
   ]);
+
+  const { docsList } = useDocsStore();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    fetchDocsList();
+  }, []);
 
   return (
     <div>
@@ -49,10 +56,11 @@ const TransLatePage = () => {
                   src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAMAAABF0y+mAAAAzFBMVEVHcExwLIZpK4PIIDjJIDfXQS85KGyRHVP1lSKPL27odCbJIjflbSiZI2S5IEeGJnWpIFewIE6rIFWrIFMqJmPQNDPEIDvKJDfLIDb0kSPFIDvxjCPeWSvFIDvJIDe/IEDfWSvfWyvXQC+0IEx+KHyFJnaDJneBJ3m8IETOKTTjainoeSf0lSPndCfLIDbeWCzjaSl+KHuKJXN6KX27IER/KHu2IEmbImWGJnV/KHvKIDazIEy/IEDOJjTaSy7hYCrqeyaJJXPpeCbdVSxkhj7EAAAAOnRSTlMANkom8usWBP0MG8P5Ht7M96m24UdcpDeviP5xPpjl+NzOwUgkqbfgk/Jx5ufdiKnelGOdyo72UWrsTLVmUAAAANZJREFUKJF90VeTgjAUhuGAwQRFql13FcGuW3TXkgSw/P//5Dhe+oVzmWfeM5mEkLfpcV57P33NgHPe09jwsuF8gK3246wvN83a7yJ2nC22Vh6Pi2IFjVnWJL/HNsSvbGLl1hBahdJ6li07ED9E/VOILkPWobQrBK3gUD3DNgxtd9RW/X4Lhol0/5Qa4a2BDA5SLaCxKAqldBsQG34YST+Blp6uoR8c8cux2dzzpjtoxP6fna9TbMTw9vNffBvCbDPVZM+1pt6IYZSgWdUba5aE1VJEv/gAhbgShVrVkEQAAAAASUVORK5CYII="
                   alt="문서 아이콘"
                 />
-                <div>{docs}</div>
+
+                <div>{docs.documentName}</div>
                 <button
                   className="cursor-pointer border"
-                  onClick={() => navigate(`/translate/viewer/${docs}`)}
+                  onClick={() => navigate(`/translate/viewer/${docs.docsId}`)}
                 >
                   번역하기
                 </button>

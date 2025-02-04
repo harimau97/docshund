@@ -12,10 +12,10 @@ const AlertModal = ({ imgSrc, alertTitle, alertText, isVisible }) => {
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0 }}
           transition={{
-            duration: 0.3,
             scale: {
               type: "tween",
               ease: "easeInOut",
+              duration: 0.3,
             },
           }}
           className="fixed inset-0 flex items-center justify-center z-[2100]"

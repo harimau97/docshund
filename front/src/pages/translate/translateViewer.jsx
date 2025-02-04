@@ -16,20 +16,23 @@ import RectBtn from "../../components/button/rectBtn.jsx";
 import loadingGif from "../../assets/loading.gif";
 
 const TranslateViewer = () => {
-  const { docsName } = useParams();
+  const { docsId } = useParams();
+  // const docsId = 1;
+
   const [docParts, setDocParts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [processedCount, setProcessedCount] = useState(0);
   const [buttonStates, setButtonStates] = useState({});
   const [mousePositions, setMousePositions] = useState({}); // 마우스 위치를 저장할 state 추가
+  const [checkComplete, setCheckComplete] = useState(false);
   const docData = useRef([]);
   const loadingRef = useRef(null);
   const chunk_size = 20;
 
   //indexedDB 관련 변수
   const dbName = "docs";
-  const objectStoreName = docsName;
+  const objectStoreName = docsId;
   const [isDbInitialized, setIsDbInitialized] = useState(false);
 
   //번역 에디터, 투표 관련 모달
@@ -93,47 +96,78 @@ const TranslateViewer = () => {
   };
 
   useEffect(() => {
+    let isMounted = true; // 컴포넌트 마운트 상태 추적
+
+    // 상태 초기화
+    setDocParts([]);
+    setProcessedCount(0);
+    setHasMore(true);
+    setCheckComplete(false);
+    setIsDbInitialized(false); // 여기로 이동
+    docData.current = [];
+
     async function checkDB() {
+      if (!isMounted) return; // 컴포넌트가 언마운트되었다면 중단
       setLoading(true);
+
       try {
+        console.log("Initializing DB for docsId:", docsId); // 디버깅용
         await initDB(dbName, objectStoreName);
         const loadedData = await loadData(objectStoreName);
 
-        if (loadedData.length === 0) {
-          console.log("db에 데이터가 없습니다. 데이터 가져오기 시작...");
-          setLoading(true);
+        if (!isMounted) return; // 비동기 작업 후 마운트 상태 다시 확인
+
+        if (!loadedData || loadedData.length === 0) {
+          console.log("Fetching data from server for docsId:", docsId); // 디버깅용
           try {
-            const data = await fetchTranslateData(1, null, false);
-            docData.current = data;
+            const data = await fetchTranslateData(docsId, null, false);
+            if (!isMounted) return;
+
             if (data && Array.isArray(data)) {
+              docData.current = data;
               await addData(data, objectStoreName);
-              console.log(data.length);
+              console.log("Server data saved, length:", data.length); // 디버깅용
+              if (isMounted) {
+                setIsDbInitialized(true);
+                await loadMore(); // 여기서 바로 loadMore 실행
+                setCheckComplete(true);
+              }
             } else {
               throw new Error("Invalid data format received from server");
             }
           } catch (error) {
             console.error("Failed to fetch data from server:", error);
-            throw error;
           }
         } else {
-          console.log("DB에 해당 문서 데이터가 있습니다.");
-          setIsDbInitialized(true);
-          docData.current = loadedData;
+          console.log("Using cached data from IndexedDB"); // 디버깅용
+          if (isMounted) {
+            docData.current = loadedData;
+            setIsDbInitialized(true);
+            await loadMore(); // 여기서도 바로 loadMore 실행
+            setCheckComplete(true);
+          }
         }
       } catch (error) {
         console.error("Error in checkDB:", error);
-        // 에러 상태를 관리하는 state가 있다면 여기서 설정
       } finally {
-        setLoading(false);
+        if (isMounted) {
+          setLoading(false);
+        }
       }
     }
+
     checkDB();
-  }, []);
+
+    // 클린업 함수
+    return () => {
+      isMounted = false;
+    };
+  }, [docsId]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting && hasMore && !loading) {
+        if (entries[0].isIntersecting && hasMore && !loading && checkComplete) {
           loadMore();
         }
       },
@@ -145,11 +179,7 @@ const TranslateViewer = () => {
     return () => observer.disconnect();
   }, [hasMore, loading, processedCount]);
 
-  useEffect(() => {
-    if (isDbInitialized) {
-      loadMore();
-    }
-  }, [isDbInitialized]);
+  // Race Condition Prevention Pattern : useEffect에서 함수가 동시 실행되는 것을 방지
 
   return (
     <div className="h-[99%] min-w-[800px]  w-[70%] absolute top-1/2 left-1/2 -translate-1/2 overflow-x-auto overflow-y-scroll p-4 flex flex-col z-[1000]">
