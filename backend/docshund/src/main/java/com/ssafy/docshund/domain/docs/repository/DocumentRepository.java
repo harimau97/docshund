@@ -13,4 +13,6 @@ public interface DocumentRepository extends JpaRepository<Document, Integer> {
 	Document findByDocsId(Integer docsId);
 
 	Optional<Document> findByDocumentName(String documentName);
+
+
 }
