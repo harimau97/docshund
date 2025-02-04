@@ -8,11 +8,14 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.ssafy.docshund.domain.users.repository.UserRepository;
 import com.ssafy.docshund.domain.users.service.UserAuthServiceImpl;
+import com.ssafy.docshund.global.util.jwt.JwtFilter;
 import com.ssafy.docshund.global.util.jwt.JwtUtil;
 import com.ssafy.docshund.global.util.oauth2.CustomSuccessHandler;
 
@@ -34,11 +37,11 @@ public class SecurityConfig {
 		http.csrf((auth) -> auth.disable());
 		http.formLogin((auth) -> auth.disable());
 		http.httpBasic((auth) -> auth.disable());
-		//		 http.addFilterBefore(new JwtFilter(jwtUtil, userRepository), UsernamePasswordAuthenticationFilter.class);
-		//		 http.oauth2Login((oauth2) -> oauth2
-		//		 	.userInfoEndpoint((userInfoEndpointConfig) -> userInfoEndpointConfig
-		//		 		.userService(userAuthServiceImpl))
-		//		 	.successHandler(customSuccessHandler));
+		http.addFilterBefore(new JwtFilter(jwtUtil, userRepository), UsernamePasswordAuthenticationFilter.class);
+		http.oauth2Login((oauth2) -> oauth2
+			.userInfoEndpoint((userInfoEndpointConfig) -> userInfoEndpointConfig
+				.userService(userAuthServiceImpl))
+			.successHandler(customSuccessHandler));
 		http.authorizeHttpRequests((auth) -> auth
 			.anyRequest().permitAll());
 		http.sessionManagement((session) -> session
@@ -49,15 +52,14 @@ public class SecurityConfig {
 
 	@Bean
 	public CorsConfigurationSource corsConfigurationSource() {
-		return request -> {
-			CorsConfiguration configuration = new CorsConfiguration();
-			configuration.setAllowedOrigins(Collections.singletonList("http://localhost:5173")); // Origin 허용
-			configuration.setAllowedMethods(Collections.singletonList("*")); // 모든 HTTP 메서드 허용
-			configuration.setAllowedHeaders(Collections.singletonList("*")); // 모든 헤더 허용
-			configuration.setAllowCredentials(true); // 인증 정보 포함 허용
-			configuration.setMaxAge(3600L); // Pre-flight 요청 캐시 시간
+		CorsConfiguration configuration = new CorsConfiguration();
+		configuration.setAllowedOrigins(Collections.singletonList("http://localhost:5173"));
+		configuration.setAllowedMethods(Collections.singletonList("*"));
+		configuration.setAllowedHeaders(Collections.singletonList("*"));
+		configuration.setAllowCredentials(true);
 
-			return configuration;
-		};
+		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+		source.registerCorsConfiguration("/**", configuration);
+		return source;
 	}
 }
