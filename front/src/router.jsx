@@ -30,13 +30,13 @@ function AppRoutes() {
       {/* 도움말 관련 주소 */}
       <Route path="/helpDesk" element={<HelpDesk />} />
 
+      {/* 번역뷰어 */}
+      <Route
+        path="translate/viewer/:docsId"
+        element={<TranslateViewer key={window.location.pathname} />}
+      ></Route>
       {/* 비로그인 접근 불가 */}
       <Route element={<ProtectedRoute />}>
-        {/* 번역뷰어 */}
-        <Route
-          path="translate/viewer/:docsName"
-          element={<TranslateViewer key={window.location.pathname} />}
-        ></Route>
         {/* 마이페이지 관련 주소 */}
         <Route path="/myPage" element={<MyPage />}>
           <Route index element={<Navigate to="profile" replace />} />

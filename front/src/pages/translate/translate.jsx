@@ -4,15 +4,6 @@ import useDocsStore from "./store/docsStore";
 import { fetchDocsList } from "./hooks/translateService";
 
 const TransLatePage = () => {
-  // const [docsList, setDocsList] = useState([
-  //   "kafka",
-  //   "rabbitmq",
-  //   "elasticsearch",
-  //   "kafka",
-  //   "springboot",
-  //   "kafka",
-  //   "mysql",
-  // ]);
   const [docsCategories, setDocsCategories] = useState([
     "frontend",
     "backend",

@@ -16,18 +16,13 @@ export const fetchDocsList = async () => {
   }
 };
 
-export const fetchTranslateData = async (docsId, originId, test) => {
-  console.log("데이터 fetching 시작");
+export const fetchTranslateData = async (docsId, originId) => {
   try {
-    if (!test) {
-      const response = await axios.get(
-        `${baseUrl}/docs/${docsId}/origin?originId=${originId}`
-      );
-      const data = response.data;
-      return data;
-    } else {
-      return null;
-    }
+    const response = await axios.get(
+      `${baseUrl}/docs/${docsId}/origin?originId=${originId}`
+    );
+    const data = response.data;
+    return data;
   } catch (error) {
     console.log(error);
     return null;
@@ -79,8 +74,7 @@ export const fetchBestTranslate = async (
 
 fetchTranslateData.propTypes = {
   docsId: PropTypes.string.isRequired,
-  originId: PropTypes.string.isRequired,
-  test: PropTypes.bool.isRequired,
+  originId: PropTypes.string,
 };
 
 fetchBestTranslate.propTypes = {

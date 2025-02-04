@@ -17,8 +17,6 @@ import loadingGif from "../../assets/loading.gif";
 
 const TranslateViewer = () => {
   const { docsId } = useParams();
-  // const docsId = 1;
-
   const [docParts, setDocParts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
@@ -114,15 +112,15 @@ const TranslateViewer = () => {
         console.log("Initializing DB for docsId:", docsId); // 디버깅용
         await initDB(dbName, objectStoreName);
         const loadedData = await loadData(objectStoreName);
+        console.log("Loaded data from DB:", loadedData); // 디버깅용
 
         if (!isMounted) return; // 비동기 작업 후 마운트 상태 다시 확인
 
         if (!loadedData || loadedData.length === 0) {
           console.log("Fetching data from server for docsId:", docsId); // 디버깅용
           try {
-            const data = await fetchTranslateData(docsId, null, false);
+            const data = await fetchTranslateData(docsId, null);
             if (!isMounted) return;
-
             if (data && Array.isArray(data)) {
               docData.current = data;
               await addData(data, objectStoreName);
@@ -148,7 +146,7 @@ const TranslateViewer = () => {
           }
         }
       } catch (error) {
-        console.error("Error in checkDB:", error);
+        console.log("Error in checkDB:", error);
       } finally {
         if (isMounted) {
           setLoading(false);
