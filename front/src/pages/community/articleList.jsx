@@ -23,6 +23,8 @@ const ArticleList = () => {
   const setLoading = communityArticleStore((state) => state.setLoading);
   const setError = communityArticleStore((state) => state.setError);
 
+  const testMehotd = communityArticleStore((state) => state.testMehotd);
+
   // const [isLoggedIn] = useState(true); // 임시로 로그인 상태 true로 설정. TODO: 로그인 상태 확인 로직 추가 필요
   const [itemsPerPage, setItmesPerPage] = useState(15); // 페이지당 보여줄 게시글 수
 
@@ -188,6 +190,8 @@ const ArticleList = () => {
           />
         </div>
       </main>
+      {console.log(articles)}
+      {console.log(testMehotd)}
     </div>
   );
 };
