@@ -65,6 +65,10 @@ public class Comment extends BaseTimeEntityWithUpdatedAt {
 		this.content = content;
 		this.reportCount = 0;
 		this.status = Status.VISIBLE;
+
+		if (parentComment != null) {
+			parentComment.getReplies().add(this);
+		}
 	}
 
 	public void modifyContent(String content) {
@@ -78,5 +82,4 @@ public class Comment extends BaseTimeEntityWithUpdatedAt {
 	public void modifyToInvisible() {
 		this.status = Status.INVISIBLE;
 	}
-
 }
