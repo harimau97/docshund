@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
 import articleListService from "./hooks/articleListService";
-import ArticleListRender from "../../components/pagination/listRender.jsx";
+import ListRender from "../../components/pagination/listRender.jsx";
 import communityArticleStore from "../../store/communityStore/communityArticleStore.jsx";
 import CommunityHeader from "./components/communityHeader.jsx";
 
@@ -55,7 +55,7 @@ const ArticleList = () => {
         // articleListService.fetchArticles 함수를 호출하여 데이터를 가져옴
         const data = await articleListService.fetchArticles(
           sortType, // 정렬 기준
-          "", // 필터(카테고리)
+          "", // 필터(카테고리) TODO: 카테고리 기능 추가
           keyword, // 검색어
           "title", // 검색 타입
           currentPage, // 현재 페이지
@@ -63,11 +63,12 @@ const ArticleList = () => {
         );
 
         // 가져온 데이터를 store에 저장
-        if (data) {
-          setArticles(data.articles);
-          setTotalPages(data.totalPages);
-          setCurrentPage(data.pageNum);
-          setItmesPerPage(data.articles.length);
+        // 데이터가 비어있지 않을 때
+        if (!data.empty && data.content.length > 0) {
+          setArticles(data.content); // 게시글 목록 설정
+          setTotalPages(data.totalPages); // 전체 페이지 수
+          setCurrentPage(data.pageable.pageNumber); // 현재 페이지
+          setItmesPerPage(data.numberOfElements); // 페이지당 보여줄 게시글 수
         }
       } catch (error) {
         setError(error);
@@ -99,7 +100,7 @@ const ArticleList = () => {
         <div className="flex flex-col justify-between">
           <div className="flex items-center">
             <img className="mr-2" src={like} alt="좋아요수 아이콘" />
-            <p className="w-8 text-right">{item.likesCount}</p>
+            <p className="w-8 text-right">{item.likeCount}</p>
           </div>
           <div className="flex items-center">
             <img className="mr-2" src={view} alt="조회수 아이콘" />
@@ -177,13 +178,15 @@ const ArticleList = () => {
         </div>
 
         {/* 글 목록, 페이지네이션 */}
-        <ArticleListRender
-          data={articles}
-          renderItem={renderItem}
-          totalPages={totalPages}
-          currentPage={currentPage}
-          setCurrentPage={setCurrentPage}
-        />
+        <div className="p-10 bg-white rounded-bl-xl rounded-br-xl border-b border-l border-r border-[#E1E1DF] text-[#7D7C77]">
+          <ListRender
+            data={articles}
+            renderItem={renderItem}
+            totalPages={totalPages}
+            currentPage={currentPage}
+            setCurrentPage={setCurrentPage}
+          />
+        </div>
       </main>
     </div>
   );

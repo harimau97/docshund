@@ -1,10 +1,11 @@
+import PropTypes from "prop-types";
 import axios from "axios";
 
-import tmpDataDetail from "../../../store/communityStore/tmpDataDetail";
+import tmpDataDetail from "../../../store/communityStore/tmpDataDetail.jsx";
 
-const DetailedArticleService = {
+const ArticleItemService = {
   // 게시글 상세 정보를 가져오는 함수
-  async fetchDetailedArticle(articleId) {
+  async fetchArticleItem(articleId) {
     try {
       // TODO: 데이터 axios로 변경 필요
       // axios를 사용하여 서버에 GET 요청
@@ -15,6 +16,7 @@ const DetailedArticleService = {
       //   // 가져온 데이터를 반환
       //   return data;
 
+      console.log("articleId : ", articleId);
       const data = tmpDataDetail;
 
       return data;
@@ -25,4 +27,8 @@ const DetailedArticleService = {
   },
 };
 
-export default DetailedArticleService;
+ArticleItemService.propTypes = {
+  articleId: PropTypes.number,
+};
+
+export default ArticleItemService;

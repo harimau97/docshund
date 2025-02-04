@@ -1,42 +1,39 @@
-import detailedArticleService from "./hooks/detailedArticleService";
+import ArticleItemService from "./hooks/articleItemService";
 import communityArticleStore from "../../store/communityStore/communityArticleStore";
 import CommunityHeader from "./components/communityHeader";
+import ReplyList from "./replyList";
 
 import axios from "axios";
 import { useEffect } from "react";
 import { useParams } from "react-router-dom";
 
-const DetailedArticle = () => {
+const ArticleItem = () => {
   const { articleId } = useParams();
 
-  const articleData = communityArticleStore((state) => state.detailedArticle);
+  const articleData = communityArticleStore((state) => state.articleItems);
 
   // store의 메소드를 가져오기 위해 정의
   const setArticleId = communityArticleStore((state) => state.setArticleId);
-  const setDetailedArticle = communityArticleStore(
-    (state) => state.setDetailedArticle
+  const setArticleItems = communityArticleStore(
+    (state) => state.setArticleItems
   );
   const setLoading = communityArticleStore((state) => state.setLoading);
   const setError = communityArticleStore((state) => state.setError);
 
   // NOTE: 즉시 store에 접근하여 데이터를 가져오기 위해 useEffect 사용
   useEffect(() => {
-    const fetchDetailedArticle = async (articleId) => {
+    const fetchArticleItems = async (articleId) => {
       // 데이터를 가져오기 전에 로딩 상태를 true로 변경
       setLoading(true);
 
       // 데이터 가져오기
       try {
         // detailedArticleService.fetchDetailedArticle 함수를 호출하여 데이터를 가져옴
-        const data = await detailedArticleService.fetchDetailedArticle(
-          articleId
-        );
-
-        console.log(data);
+        const data = await ArticleItemService.fetchArticleItem(articleId);
 
         if (data) {
           setArticleId(articleId);
-          setDetailedArticle(data);
+          setArticleItems(data);
         }
       } catch (error) {
         setError(error);
@@ -45,7 +42,8 @@ const DetailedArticle = () => {
       }
     };
 
-    fetchDetailedArticle(articleId);
+    // 게시글 아이템을 가져오는 fetchArticleItems 함수 호출
+    fetchArticleItems(articleId);
   }, [articleId]);
 
   return (
@@ -53,9 +51,9 @@ const DetailedArticle = () => {
       <main className="flex-1 p-8 max-w-[1280px]">
         {/* header */}
         <CommunityHeader />
-
         {/* main content - bg-white와 rounded 스타일을 상위 div에 적용 */}
-        <div className="bg-white rounded-tl-xl rounded-tr-xl border-t border-l border-r border-[#E1E1DF]">
+        {/* 게시글 전체 박스 영역 */}
+        <div className="bg-white rounded-tl-xl rounded-tr-xl border-t rounded-bl-xl rounded-br-xl border-b border-l border-r  border-[#E1E1DF]">
           <div className="p-6">
             {/* TODO: 헤더 구현 */}
             {/* 게시글 헤더 */}
@@ -69,6 +67,7 @@ const DetailedArticle = () => {
                     className="w-8 h-8 rounded-full"
                   />
                   <span className="font-medium">{articleData.nickname}</span>
+                  {/* TODO: date 양식 변경 */}
                   <span>{articleData.createdAt}</span>
                 </div>
                 <div className="flex items-center gap-6">
@@ -86,8 +85,10 @@ const DetailedArticle = () => {
 
             {/* TODO: 본문 구현 */}
             {/* 게시글 본문 */}
-            <div className="min-h-[200px] whitespace-pre-wrap mb-6">
-              {articleData.content}
+            <div className="border-b border-[#E1E1DF] pb-4 mb-4">
+              <div className="min-h-[200px] whitespace-pre-wrap mb-6">
+                {articleData.content}
+              </div>
             </div>
 
             {/* 문서 참조 정보 */}
@@ -98,20 +99,14 @@ const DetailedArticle = () => {
                 위치: {articleData.position}
               </p>
             </div>
+
+            {/* 본문 footer */}
           </div>
         </div>
-
-        {/* TODO: 댓글 구현 */}
-        {/* 댓글 영역 - 스타일 일관성을 위해 수정 */}
-        <div className="mt-6 bg-white rounded-lg border border-[#E1E1DF] p-6">
-          <h2 className="text-xl font-bold mb-4">
-            댓글 {articleData.commnetCount}
-          </h2>
-          {/* 댓글 리스트는 여기에 구현 */}
-        </div>
+        <ReplyList articleData={articleData} />
       </main>
     </div>
   );
 };
 
-export default DetailedArticle;
+export default ArticleItem;

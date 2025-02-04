@@ -20,13 +20,19 @@ const communityArticleStore = create((set) => ({
   setTotalPages: (totalPages) => set({ totalPages }),
   setCurrentPage: (currentPage) => set({ currentPage }),
 
-  // article detail의 초기값 설정
+  // article item의 초기값 설정
   articleId: 0,
-  detailedArticle: {},
+  articleItems: {},
 
-  // article detail의 메소드 설정
+  // article item의 메소드 설정
   setArticleId: (articleId) => set({ articleId }),
-  setDetailedArticle: (detailedArticle) => set({ detailedArticle }),
+  setArticleItems: (articleItems) => set({ articleItems }),
+
+  // reply list의 초기값 설정
+  replies: [],
+
+  // reply list의 메소드 설정
+  setReplies: (replies) => set({ replies }),
 }));
 
 export default communityArticleStore;

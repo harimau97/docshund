@@ -1,7 +1,7 @@
 import axios from "axios";
 
-import tmpData1 from "../../../store/communityStore/tmpData1";
-import tmpData2 from "../../../store/communityStore/tmpData2";
+import ArticleListExample from "../../../store/communityStore/articleListExample";
+import ArticleListEmptyExample from "../../../store/communityStore/articleListEmptyExample";
 
 const ArticleListService = {
   // fetchArticles 함수는 filter, keyword, page, size를 인자로 받아서 데이터를 가져오는 함수
@@ -23,19 +23,30 @@ const ArticleListService = {
       // const data = response.data;
 
       // TODO: 게시글이 15개 초과일 경우에 대한 예외처리 필요
+      console.log(
+        "input parameter => ",
+        sortType,
+        filter,
+        keyword,
+        searchType,
+        page,
+        itemsPerPage
+      );
+      // console.log("output data => ", data);
 
       // return data;
 
-      // console.log(sortType, filter, keyword, searchType, page, itemsPerPage);
+      return ArticleListExample;
+      // return ArticleListEmptyExample;
 
       // NOTE: page(현재 페이지)에 따라 종속된 tmp 데이터 반환
-      if (page == 1) {
-        return tmpData1;
-      } else if (page == 2) {
-        return tmpData2;
-      } else {
-        return null;
-      }
+      // if (page == 1) {
+      //   return tmpData1;
+      // } else if (page == 2) {
+      //   return tmpData2;
+      // } else {
+      //   return null;
+      // }
 
       // NOTE: 정렬 기준에 따라 다른 tmp 데이터 반환
       // if (sortType === "latest") {

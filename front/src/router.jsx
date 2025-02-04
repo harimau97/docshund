@@ -25,9 +25,9 @@ import TranslateViewer from "./pages/translate/translateViewer.jsx";
 // Community 관련 페이지
 import CommunityPage from "./pages/community/community.jsx";
 import ArticleList from "./pages/community/articleList.jsx";
-import DetailedArticle from "./pages/community/detailedArticle.jsx";
 import WriteArticle from "./pages/community/writeArticle.jsx";
 import ModifyArticle from "./pages/community/modifyArticle.jsx";
+import ArticleItem from "./pages/community/articleItem.jsx";
 
 function AppRoutes() {
   return (
@@ -64,7 +64,7 @@ function AppRoutes() {
       <Route path="/community" element={<CommunityPage />}>
         <Route index element={<Navigate to="list" replace />} />
         <Route path="list" element={<ArticleList />} />
-        <Route path="article/:articleId" element={<DetailedArticle />} />
+        <Route path="article/:articleId" element={<ArticleItem />} />
         <Route path="modify" element={<ModifyArticle />} />
         <Route path="write" element={<WriteArticle />} />
       </Route>
