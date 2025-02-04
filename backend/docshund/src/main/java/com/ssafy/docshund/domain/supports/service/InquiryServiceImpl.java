@@ -30,15 +30,16 @@ public class InquiryServiceImpl implements InquiryService {
 	public void createInquiry(InquiryRequestDto inquiryRequestDto, MultipartFile file) {
 		User user = userUtil.getUser();
 		String imageUrl = null;
-		if (file != null)
+		if (file != null) {
 			imageUrl = fileUploadService.uploadFile(file, "inquiry");
+		}
 
 		Inquiry inquiry = Inquiry.createInquiry(user, inquiryRequestDto, imageUrl);
 		inquiryRepository.save(inquiry);
 
-		inquiryRequestDto.emailTextGenerator(imageUrl);
+		inquiryRequestDto.emailTextGenerator();
 		mailSendService.sendEmail(inquiryRequestDto.getEmail(), inquiryRequestDto.getTitle(),
-			inquiryRequestDto.getContent());
+			inquiryRequestDto.getContent(), imageUrl);
 
 	}
 
