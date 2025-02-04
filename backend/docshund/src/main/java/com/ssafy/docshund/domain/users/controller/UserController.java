@@ -3,14 +3,16 @@ package com.ssafy.docshund.domain.users.controller;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.ssafy.docshund.domain.users.dto.page.UserAndInfoDto;
 import com.ssafy.docshund.domain.users.dto.page.UserProfileDto;
@@ -60,13 +62,16 @@ public class UserController {
 		return ResponseEntity.ok(userProfile);
 	}
 
-	@PatchMapping("/profile/{userId}")
-	public ResponseEntity<String> modifyProfile(@PathVariable Long userId, @RequestBody ProfileRequestDto request) {
+	@PatchMapping(value = "/profile/{userId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+	public ResponseEntity<String> modifyProfile(@PathVariable Long userId,
+		@RequestPart("profile") ProfileRequestDto request,
+		@RequestPart(value = "file", required = false) MultipartFile file) {
 		User user = userUtil.getUser();
 		if (user == null || !userUtil.isMine(userId, user))
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("자신의 프로필이 아닙니다.");
 
-		userService.modifyUserProfile(user, request);
+		//파일을 추가로 받아서 처리하는 서비스 구현
+		userService.modifyUserProfile(user, request, file);
 
 		return ResponseEntity.ok("프로필이 수정되었습니다.");
 	}

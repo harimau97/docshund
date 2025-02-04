@@ -76,9 +76,12 @@ public class User extends BaseTimeEntityWithUpdatedAt {
 		this.status = Status.WITHDRAWN;
 	}
 
-	public void modifyUserProfile(String profileImage, String nickname) {
-		this.profileImage = profileImage;
+	public void modifyNickname(String nickname) {
 		this.nickname = nickname;
+	}
+
+	public void modifyProfileUrl(String profileImage) {
+		this.profileImage = profileImage;
 	}
 
 	public void changeAdmin() {
