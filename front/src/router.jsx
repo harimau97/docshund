@@ -45,16 +45,17 @@ function AppRoutes() {
         <Route path="modify" element={<ModifyArticle />} />
         <Route path="write" element={<WriteArticle />} />
       </Route>
+
       {/* 도움말 관련 주소 */}
       <Route path="/helpDesk" element={<HelpDesk />} />
+      {/* 번역뷰어 */}
+      <Route
+        path="translate/viewer/:docsName"
+        element={<TranslateViewer />}
+      ></Route>
 
       {/* 비로그인 접근 불가 */}
       <Route element={<ProtectedRoute />}>
-        {/* 번역뷰어 */}
-        <Route
-          path="translate/viewer/:docsName"
-          element={<TranslateViewer />}
-        ></Route>
         {/* 마이페이지 관련 주소 */}
         <Route path="/myPage" element={<MyPage />}>
           <Route index element={<Navigate to="profile" replace />} />
