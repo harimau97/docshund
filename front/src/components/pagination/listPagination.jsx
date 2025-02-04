@@ -1,10 +1,8 @@
-import communityArticleStore from "../stores/communityArticleStore";
+import PropTypes from "prop-types";
 
-const ArticleListPagination = () => {
-  const totalPages = communityArticleStore((state) => state.totalPages);
-  const currentPage = communityArticleStore((state) => state.currentPage);
-  const setCurrentPage = communityArticleStore((state) => state.setCurrentPage);
-
+// 페이지네이션 컴포넌트
+const ListPagination = ({ totalPages, currentPage, setCurrentPage }) => {
+  // 페이지 버튼 배열 생성 함수
   const getPageNumbers = () => {
     let pages = [];
     let startPage, endPage;
@@ -40,7 +38,7 @@ const ArticleListPagination = () => {
   };
 
   return (
-    // < 버튼 (이전 페이지 이동)
+    // "<"" 버튼 (이전 페이지 이동)
     <div className="flex justify-center items-center space-x-2 mt-6">
       <button
         className={`text-gray-500 hover:text-gray-800 ${
@@ -67,7 +65,7 @@ const ArticleListPagination = () => {
         </button>
       ))}
 
-      {/* > 버튼 (다음 페이지 이동) */}
+      {/* ">" 버튼 (다음 페이지 이동) */}
       <button
         className={`text-gray-500 hover:text-gray-800 ${
           currentPage === totalPages
@@ -83,4 +81,11 @@ const ArticleListPagination = () => {
   );
 };
 
-export default ArticleListPagination;
+// props 타입 설정
+ListPagination.propTypes = {
+  totalPages: PropTypes.number,
+  currentPage: PropTypes.number,
+  setCurrentPage: PropTypes.func,
+};
+
+export default ListPagination;

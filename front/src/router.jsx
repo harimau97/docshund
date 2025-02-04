@@ -1,6 +1,7 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import LandingPage from "./pages/landingPage.jsx";
-import TranslatePage from "./pages/translate/translate.jsx";
+
+// 마이페이지 관련 페이지
 import MyPage from "./pages/myPage/MyPage.jsx";
 import MyProfilePage from "./pages/myPage/pages/MyProfilePage.jsx";
 import ArchivePage from "./pages/myPage/pages/ArchivePage.jsx";
@@ -13,10 +14,21 @@ import MyArticlePage from "./pages/myPage/pages/activity/MyArticlePage.jsx";
 import MyCommentPage from "./pages/myPage/pages/activity/MyCommentPage.jsx";
 import MemoPage from "./pages/myPage/pages/MemoPage.jsx";
 import InquiryPage from "./pages/myPage/pages/InquiryPage.jsx";
-import CommunityPage from "./pages/community/community.jsx";
+
+// 도움말 관련 페이지
 import HelpDesk from "./pages/helpDesk.jsx";
+
+// 번역 관련 페이지
+import TranslatePage from "./pages/translate/translate.jsx";
 import TranslateViewer from "./pages/translate/translateViewer.jsx";
 import ProtectedRoute from "./utils/protectedRoute.jsx";
+
+// Community 관련 페이지
+import CommunityPage from "./pages/community/community.jsx";
+import ArticleList from "./pages/community/articleList.jsx";
+import WriteArticle from "./pages/community/writeArticle.jsx";
+import ModifyArticle from "./pages/community/modifyArticle.jsx";
+import ArticleItem from "./pages/community/articleItem.jsx";
 
 function AppRoutes() {
   return (
@@ -26,9 +38,21 @@ function AppRoutes() {
       {/* 번역 관련 주소 */}
       <Route path="/translate" element={<TranslatePage />}></Route>
       {/* 커뮤니티 관련 주소 */}
-      <Route path="/community" element={<CommunityPage />} />
+      <Route path="/community" element={<CommunityPage />}>
+        <Route index element={<Navigate to="list" replace />} />
+        <Route path="list" element={<ArticleList />} />
+        <Route path="article/:articleId" element={<ArticleItem />} />
+        <Route path="modify" element={<ModifyArticle />} />
+        <Route path="write" element={<WriteArticle />} />
+      </Route>
+
       {/* 도움말 관련 주소 */}
       <Route path="/helpDesk" element={<HelpDesk />} />
+      {/* 번역뷰어 */}
+      <Route
+        path="translate/viewer/:docsName"
+        element={<TranslateViewer />}
+      ></Route>
 
       {/* 번역뷰어 */}
       <Route

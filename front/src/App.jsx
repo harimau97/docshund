@@ -21,7 +21,6 @@ function App() {
   return (
     <div className="flex flex-col min-h-screen min-w-[768px]">
       {isTranslateViewerPage ? <LeftNav /> : <UpperNav />}
-
       <div className="flex-grow w-full max-w-screen-xl mx-auto">
         <AppRouter />
       </div>
