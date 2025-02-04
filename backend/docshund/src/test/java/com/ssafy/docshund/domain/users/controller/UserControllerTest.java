@@ -8,7 +8,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -82,14 +84,25 @@ class UserControllerTest {
 		requestDto.setIntroduce("새로운 자기소개");
 
 		// mocking
-		User mockUser = new User(); // User 객체를 더미로 생성
-		when(userUtil.getUser()).thenReturn(mockUser); // mockUser를 리턴하도록 설정
-		when(userUtil.isMine(eq(userId), eq(mockUser))).thenReturn(false); // 두 인자 모두 matchers 사용
+		User mockUser = new User();
+		when(userUtil.getUser()).thenReturn(mockUser);
+		when(userUtil.isMine(eq(userId), eq(mockUser))).thenReturn(false);
+
+		// ProfileRequestDto를 JSON으로 변환한 MultipartFile 생성
+		MockMultipartFile profilePart = new MockMultipartFile(
+			"profile",
+			"",
+			MediaType.APPLICATION_JSON_VALUE,
+			new ObjectMapper().writeValueAsBytes(requestDto) // DTO를 JSON으로 변환
+		);
 
 		// when & then
-		mockMvc.perform(MockMvcRequestBuilders.patch("/api/v1/docshund/users/profile/{userId}", userId)
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(objectMapper.writeValueAsString(requestDto)))
+		mockMvc.perform(
+				MockMvcRequestBuilders.multipart(HttpMethod.PATCH, "/api/v1/docshund/users/profile/{userId}", userId)
+					.file(profilePart) // DTO JSON 전달
+					.contentType(MediaType.MULTIPART_FORM_DATA)
+					.characterEncoding("UTF-8")
+			)
 			.andExpect(MockMvcResultMatchers.status().isBadRequest())
 			.andExpect(MockMvcResultMatchers.content().string("자신의 프로필이 아닙니다."));
 	}

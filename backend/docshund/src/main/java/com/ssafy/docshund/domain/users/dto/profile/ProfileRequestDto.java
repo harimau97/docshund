@@ -9,8 +9,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ProfileRequestDto {
-	private String profileUrl;
-
 	@Size(max = 20)
 	private String nickname;
 
