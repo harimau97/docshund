@@ -18,8 +18,8 @@ public class CustomSecurityContextFactory implements WithSecurityContextFactory<
 
 		// CustomOAuth2User 생성
 		CustomOAuth2User user = new CustomOAuth2User(
-			new UserDto(Provider.GOOGLE, annotation.personalId(), annotation.email(), annotation.nickname(),
-				"ROLE_USER")
+			new UserDto(100000L, Provider.GOOGLE, annotation.personalId(), annotation.email(), annotation.nickname(),
+				"ROLE_ADMIN")
 		);
 
 		Authentication auth = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());

@@ -43,12 +43,16 @@ public class UserAuthServiceImpl extends DefaultOAuth2UserService {
 		String username = generateUsername(oAuth2Response);
 		UserDto userDto = UserDto.createUserDto(oAuth2Response, username);
 
-		userRepository.findByProviderAndPersonalId(oAuth2Response.getProvider(), oAuth2Response.getProviderId())
+		User findUser = userRepository.findByProviderAndPersonalId(oAuth2Response.getProvider(),
+				oAuth2Response.getProviderId())
 			.orElseGet(() -> {
-				User user = userRepository.save(User.createUser(userDto));
-				userInfoRepository.save(UserInfo.createUserInfo(user));
-				return user;
+				User saveUser = userRepository.save(User.createUser(userDto));
+				userInfoRepository.save(UserInfo.createUserInfo(saveUser));
+				return saveUser;
 			});
+
+		userDto.setRole(findUser.getRole().toString());
+		userDto.setUserId(findUser.getUserId());
 
 		return new CustomOAuth2User(userDto);
 	}
