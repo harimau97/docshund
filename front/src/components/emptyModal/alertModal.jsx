@@ -2,7 +2,7 @@ import PropTypes from "prop-types";
 import * as motion from "motion/react-client";
 import { AnimatePresence } from "motion/react";
 
-const AlertModal = ({ imgSrc, alertTitle, alertText, isVisible }) => {
+const AlertModal = ({ imgSrc, alertTitle, alertText, isButton, isVisible }) => {
   return (
     <AnimatePresence>
       {isVisible ? (
@@ -21,7 +21,7 @@ const AlertModal = ({ imgSrc, alertTitle, alertText, isVisible }) => {
           className="fixed inset-0 flex items-center justify-center z-[2100]"
         >
           {/* <div className="fixed inset-0 z-10 w-screen overflow-hidden"> */}
-          <div className="relative w-[200px] h-[200px] transform overflow-hidden rounded-lg bg-[#E4DCD4] text-left shadow-xl">
+          <div className="relative w-fit min-w-[200px] h-fit min-h-[200px] transform overflow-hidden rounded-lg bg-[#E4DCD4] text-left shadow-xl">
             <div className="bg-[#E4DCD4] px-4 pt-5 pb-4">
               <div className="flex justify-center">
                 <div className="mt-3 text-center">
@@ -37,7 +37,9 @@ const AlertModal = ({ imgSrc, alertTitle, alertText, isVisible }) => {
                     {alertTitle}
                   </h3>
                   <div className="mt-2">
-                    <p className="text-sm text-gray-500">{alertText}</p>
+                    <p className="text-sm text-gray-500 whitespace-pre-wrap">
+                      {alertText}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -55,6 +57,7 @@ AlertModal.propTypes = {
   imgSrc: PropTypes.string,
   alertTitle: PropTypes.string,
   alertText: PropTypes.string,
+  isButton: PropTypes.bool,
   isVisible: PropTypes.bool.isRequired,
 };
 

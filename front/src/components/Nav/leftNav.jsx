@@ -1,15 +1,24 @@
 import { useState, useEffect } from "react";
-import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 import { FaPlus } from "react-icons/fa6";
 import { NavLink, useNavigate } from "react-router-dom";
-import Logo from "../../assets/logo.png";
-import modalStore from "../../pages/myPage/store/modalStore.jsx";
 import EditorModal from "../../pages/myPage/components/EditorModal.jsx";
-import docsList from "../../assets/icon/docsList.png";
+import RoundCornerBtn from "../button/roundCornerBtn.jsx";
+import { fetchDocsList } from "../../pages/translate/hooks/translateService.jsx";
+
+// 상태 import
+import useDocsStore from "../../pages/translate/store/docsStore.jsx";
+import modalStore from "../../pages/myPage/store/modalStore.jsx";
+//
+
+//이미지 주소 import
+import Logo from "../../assets/logo.png";
+import menuDown from "../../assets/icon/menu-down.png";
+import menuUp from "../../assets/icon/menu-up.png";
 import notification from "../../assets/icon/notification.png";
+import ListIcon from "../../assets/icon/docsList.png";
 import memo from "../../assets/icon/memo.png";
 import navToggle from "../../assets/icon/navToggle.png";
-import RoundCornerBtn from "../button/roundCornerBtn.jsx";
+//
 
 const LeftNav = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -23,6 +32,7 @@ const LeftNav = () => {
     "max-w-[15%] min-w-fit w-60 h-[80%] bg-[#F0EEE5] flex flex-col border-box border-2 border-black absolute top-1/2 -translate-y-1/2 rounded-br-4xl rounded-tr-4xl transform transition-transform duration-250 -translate-x-[95%] z-[1500]"
   ); // leftNav가 화면 최상위에 오도록 z-index 설정
   const { isOpen, openModal, closeModal } = modalStore();
+  //메모 관련 상태
   const [memoData, setMemoData] = useState({
     title: "",
     content: "",
@@ -41,6 +51,13 @@ const LeftNav = () => {
     // 예를 들어, 데이터를 서버로 전송하거나 상태 업데이트 처리
     closeModal();
   };
+
+  //문서 목록 관련 상태
+  const { docsList } = useDocsStore();
+
+  useEffect(() => {
+    fetchDocsList(true);
+  }, [docsList]);
 
   function toggleNav() {
     console.log(isNavOpen);
@@ -94,23 +111,29 @@ const LeftNav = () => {
             className="px-5 py-2.5 flex items-center cursor-pointer hover:bg-gray-50"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
           >
-            <img src={docsList} alt="문서목록 아이콘" />
+            <img src={ListIcon} alt="문서목록 아이콘" />
             <span className="ml-5">문서목록</span>
             {isMenuOpen ? (
-              <IoIosArrowUp className="right-0 mr-5" />
+              <img
+                src={menuUp}
+                className="w-4 h-4 flex absolute right-0 mr-5"
+              />
             ) : (
-              <IoIosArrowDown className="right-0 mr-5" />
+              <img src={menuDown} className="w-4 h-4 absolute right-0 mr-5" />
             )}
           </div>
           {isMenuOpen && (
             <div className="h-[200px] overflow-y-scroll ">
               <div className="px-5">
-                {docs.map((doc, index) => (
+                {docsList.map((doc, index) => (
                   <div
+                    onClick={() =>
+                      window.location.replace(`/translate/viewer/${doc.docsId}`)
+                    }
                     key={index}
-                    className="py-2.5 flex justify-between items-center border-b border-gray-100"
+                    className="cursor-pointer py-2.5 flex justify-between items-center border-b border-gray-100"
                   >
-                    {doc}
+                    {doc.documentName}
                   </div>
                 ))}
               </div>

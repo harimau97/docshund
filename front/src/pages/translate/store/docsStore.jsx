@@ -1,5 +1,4 @@
 import { create } from "zustand";
-import PropTypes from "prop-types";
 
 const docsStore = create((set) => ({
   docsList: [],

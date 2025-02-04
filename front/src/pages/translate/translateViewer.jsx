@@ -14,11 +14,17 @@ import * as motion from "motion/react-client";
 import useModalStore from "./store/modalStore.jsx";
 import useEditorStore from "./store/editorStore.jsx";
 import useArchiveStore from "./store/archiveStore.jsx";
+import AlertModal from "../../components/emptyModal/alertModal.jsx";
+import useAlertStore from "../../store/alertStore.jsx";
 import TranslateEditor from "./activity/translateEditor.jsx";
 import TranslateArchive from "./activity/translateArchive.jsx";
 import ToastViewer from "./components/toastViewer.jsx";
 import RectBtn from "../../components/button/rectBtn.jsx";
+
+//이미지
 import loadingGif from "../../assets/loading.gif";
+import warning from "../../assets/icon/warning.png";
+//
 
 const TranslateViewer = () => {
   const { docsId } = useParams();
@@ -32,6 +38,9 @@ const TranslateViewer = () => {
   const docData = useRef([]);
   const loadingRef = useRef(null);
   const chunk_size = 20;
+
+  // 알림창 관련
+  const { isAlertOpen, toggleAlert } = useAlertStore();
 
   //indexedDB 관련 변수
   const dbName = "docs";
@@ -100,7 +109,8 @@ const TranslateViewer = () => {
 
   useEffect(() => {
     let isMounted = true; // 컴포넌트 마운트 상태 추적
-    closeAllConnections(); // 새로운 문서에 들어갈 경우를 위해 기존 db와 연결 해제
+    closeAllConnections();
+    toggleAlert(3000); // 새로운 문서에 들어갈 경우를 위해 기존 db와 연결 해제
     // 상태 초기화
     setDocParts([]);
     setProcessedCount(0);
@@ -185,10 +195,21 @@ const TranslateViewer = () => {
   // Race Condition Prevention Pattern : useEffect에서 함수가 동시 실행되는 것을 방지
 
   return (
-    <div className="h-[99%] min-w-[800px]  w-[70%] absolute top-1/2 left-1/2 -translate-1/2 overflow-x-auto overflow-y-scroll p-4 flex flex-col z-[1000]">
-      <div className="flex flex-col gap-3">
+    <div className="h-[99%] min-w-[800px] w-[70%] absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 overflow-x-auto overflow-y-scroll p-6 flex flex-col z-[1000] ">
+      <AlertModal
+        imgSrc={warning}
+        alertTitle={"알림"}
+        alertText={
+          "[서비스 이용 안내]\n\n" +
+          "1. 이 번역본은 공식 번역이 아니며, 원본의 정확성과 완전성을 보장하지 않습니다.\n" +
+          "2. 참고용으로만 사용하시고, 공식 정보를 확인하시려면 원본 문서를 직접 참조하시기 바랍니다.\n\n" +
+          "3. 본 서비스는 공익적인 목적을 위해 제공되며, 상업적 이용 시 발생하는 모든 법적 책임은 해당 사용자에게 있으며, 서비스 제공자는 이에 대한 책임을 지지 않습니다."
+        }
+        isVisible={isAlertOpen}
+      />
+      <div className="flex flex-col gap-4">
         {docParts.map((part, index) => (
-          <div key={index} className="flex flex-row gap-3 relative">
+          <div key={index} className="flex flex-row gap-4 relative">
             <div
               onClick={async (e) => {
                 e.stopPropagation();
@@ -204,29 +225,29 @@ const TranslateViewer = () => {
                 if (transList[0].originId === part.originId) {
                   useEditorStore.setState({ bestTrans: transList[0].content });
                 }
-              }} // toggleButton에 e를 전달
-              className="cursor-pointer p-3 rounded-md text-[#424242] bg-[#E4DCD4] hover:bg-[#cfccc9] transition duration-150 ease-in-out flex flex-col w-full"
+              }}
+              className="cursor-pointer p-5 rounded-xl text-[#424242] bg-[#E4DCD4] hover:bg-[#cfccc9] hover:shadow-lg transition-all duration-200 ease-in-out flex flex-col w-full shadow-md"
             >
               <ToastViewer content={part.content} />
             </div>
             {buttonStates[part.id] && (
               <motion.div
-                initial={{ opacity: 0, scale: 0 }}
+                initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{
-                  duration: 0.4,
+                  duration: 0.3,
                   scale: {
                     type: "spring",
                     visualDuration: 0.2,
-                    bounce: 0.2,
+                    bounce: 0.25,
                   },
                 }}
               >
                 <div
-                  className="flex flex-col min-w-fit h-fit z-95 items-center gap-3"
+                  className="flex flex-col min-w-fit h-fit z-95 items-center gap-4"
                   style={{
                     position: "relative",
-                    top: mousePositions[part.id]?.y || 0, // 저장된 y좌표 사용
+                    top: mousePositions[part.id]?.y || 0,
                     transform: "translate(0px,-50%)",
                   }}
                 >
@@ -241,7 +262,7 @@ const TranslateViewer = () => {
                       });
                     }}
                     text="번역하기"
-                    className="opacity-70 w-full"
+                    className="opacity-90 hover:opacity-100 transition-opacity duration-200 shadow-sm hover:shadow-md w-full"
                   />
                   <RectBtn
                     onClick={async () => {
@@ -254,7 +275,7 @@ const TranslateViewer = () => {
                       });
                     }}
                     text="번역기록"
-                    className="opacity-70"
+                    className="opacity-90 hover:opacity-100 transition-opacity duration-200 shadow-sm hover:shadow-md"
                   />
                 </div>
               </motion.div>
@@ -263,17 +284,21 @@ const TranslateViewer = () => {
         ))}
       </div>
 
-      <div ref={loadingRef} className="py-4 text-center">
+      <div ref={loadingRef} className="py-6 text-center">
         {loading && (
           <div className="flex justify-center items-center" role="status">
             <img
-              className="w-[300px] h-[300px]"
+              className="w-[250px] h-[250px]"
               src={loadingGif}
               alt="로딩 애니메이션"
             />
           </div>
         )}
-        {!hasMore && <div>모든 문서를 불러왔습니다.</div>}
+        {!hasMore && (
+          <div className="text-gray-600 font-medium">
+            모든 문서를 불러왔습니다.
+          </div>
+        )}
       </div>
       <TranslateEditor className="z-auto" />
       <TranslateArchive className="z-auto" />
