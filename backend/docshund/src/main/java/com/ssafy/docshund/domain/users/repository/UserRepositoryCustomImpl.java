@@ -14,7 +14,9 @@ import org.springframework.stereotype.Repository;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.ssafy.docshund.domain.users.dto.page.QUserAndInfoDto;
+import com.ssafy.docshund.domain.users.dto.page.QUserProfileDto;
 import com.ssafy.docshund.domain.users.dto.page.UserAndInfoDto;
+import com.ssafy.docshund.domain.users.dto.page.UserProfileDto;
 import com.ssafy.docshund.domain.users.dto.page.UserSearchCondition;
 
 import lombok.RequiredArgsConstructor;
@@ -69,15 +71,13 @@ public class UserRepositoryCustomImpl implements UserRepositoryCustom {
 	}
 
 	@Override
-	public UserAndInfoDto getProfileUser(Long userId) {
+	public UserProfileDto getProfileUser(Long userId) {
 		return queryFactory
 			.select(
-				new QUserAndInfoDto(
+				new QUserProfileDto(
 					user.userId, user.email, user.profileImage, user.nickname,
-					user.role, user.provider, user.personalId, user.status,
 					user.lastLogin, user.createdAt, user.updatedAt,
-					userInfo.userInfoId, userInfo.isDarkmode, userInfo.hobby,
-					userInfo.introduce, userInfo.reportCount
+					userInfo.hobby, userInfo.introduce, userInfo.isDarkmode
 				)
 			)
 			.from(user)
