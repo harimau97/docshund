@@ -1,11 +1,30 @@
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import logo from "../assets/logo.png";
 import google from "../assets/google.png";
 import github from "../assets/github.png";
 import useAuth from "../utils/useAuth";
+import useAuthStore from "../store/authStore";
 import useModalStore from "../store/modalStore";
 
 const LoginModal = () => {
   const { isModalOpen, closeModal } = useModalStore();
+  const { loginWithGoogle, loginWithGithub } = useAuth();
+  const { setToken } = useAuthStore();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // 로그인 후 리다이렉트된 URL에서 토큰을 추출하는 부분
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlToken = urlParams.get("token");
+
+    if (urlToken) {
+      setToken(urlToken);
+      localStorage.setItem("token", urlToken);
+      closeModal();
+      navigate("/"); // 로그인 후 홈으로 리다이렉트
+    }
+  }, [navigate, closeModal, setToken]);
 
   return (
     <div
@@ -33,13 +52,19 @@ const LoginModal = () => {
         </div>
         {/* 소셜로그인 */}
         <div className="flex flex-col items-center mt-4 mb-4">
-          <div className="flex items-center justify-center w-8/10 p-2 bg-[#BC5B39] rounded-[15px] border-3 border-[#C96442] hover:bg-[#C96442] mb-4">
+          <div
+            className="flex items-center justify-center w-8/10 p-2 bg-[#BC5B39] rounded-[15px] border-3 border-[#C96442] hover:bg-[#C96442] mb-4"
+            onClick={loginWithGoogle}
+          >
             <img src={google} alt="google" className="mr-4" />
             <button className="text-[#FAF9F5] text-sm cursor-pointer">
               Sign in with Google
             </button>
           </div>
-          <div className="flex items-center justify-center w-8/10 p-2 bg-[#BC5B39] rounded-[15px] border-3 border-[#C96442] hover:bg-[#C96442]">
+          <div
+            className="flex items-center justify-center w-8/10 p-2 bg-[#BC5B39] rounded-[15px] border-3 border-[#C96442] hover:bg-[#C96442]"
+            onClick={loginWithGithub}
+          >
             <img src={github} alt="github" className="mr-4" />
             <button className=" text-[#FAF9F5] text-sm cursor-pointer">
               Sign in with GitHub

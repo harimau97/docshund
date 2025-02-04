@@ -1,4 +1,3 @@
-import PropTypes from "prop-types";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import RectBtn from "../button/rectBtn";
 import useModalStore from "../../store/modalStore";
@@ -7,19 +6,17 @@ import logo from "../../assets/logo.png";
 import notification from "../../assets/icon/notification32.png";
 import SampleProfileImg from "../../assets/sample_profile_image.png";
 
-const UpperNav = ({ loginStatus }) => {
+const UpperNav = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { logout } = useAuth();
+  const { isAuthenticated, logout } = useAuth();
   const { openModal } = useModalStore();
 
   // 로그인 버튼 동작
   const handleLoginClick = () => {
-    if (loginStatus) {
-      console.log("로그아웃 할거임");
+    if (isAuthenticated()) {
       logout(); // 로그인 상태일 때 로그아웃 처리
     } else {
-      console.log("로그인 할거임");
       openModal(); //로그인 모달 열기
     }
   };
@@ -75,7 +72,7 @@ const UpperNav = ({ loginStatus }) => {
         </div>
         {/* 로그인 여부에 따라 표시되는 요소 */}
         <div className="flex items-center gap-4">
-          {loginStatus && (
+          {isAuthenticated() && (
             <img
               className="w-[clamp(20px,2.1vw,32px)] h-auto cursor-pointer"
               src={notification}
@@ -85,10 +82,10 @@ const UpperNav = ({ loginStatus }) => {
 
           <RectBtn
             onClick={handleLoginClick}
-            text={loginStatus ? "로그아웃" : "로그인"}
+            text={isAuthenticated() ? "로그아웃" : "로그인"}
           />
 
-          {loginStatus && (
+          {isAuthenticated() && (
             <img
               onClick={() => navigate("/myPage/profile")}
               className="w-[clamp(40px,4vw,64px)] h-auto cursor-pointer"
@@ -100,11 +97,6 @@ const UpperNav = ({ loginStatus }) => {
       </div>
     </div>
   );
-};
-
-UpperNav.propTypes = {
-  loginStatus: PropTypes.bool.isRequired,
-  handleLoginLogout: PropTypes.func.isRequired,
 };
 
 export default UpperNav;
