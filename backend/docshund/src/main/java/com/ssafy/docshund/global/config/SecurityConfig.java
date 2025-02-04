@@ -16,7 +16,6 @@ import com.ssafy.docshund.domain.users.service.UserAuthServiceImpl;
 import com.ssafy.docshund.global.util.jwt.JwtUtil;
 import com.ssafy.docshund.global.util.oauth2.CustomSuccessHandler;
 
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 
 @Configuration
@@ -31,23 +30,7 @@ public class SecurityConfig {
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http, UserRepository userRepository) throws Exception {
 		http
-			.cors(corsCustomizer -> corsCustomizer.configurationSource(new CorsConfigurationSource() {
-
-				@Override
-				public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
-
-					CorsConfiguration configuration = new CorsConfiguration();
-
-					configuration.setAllowedOrigins(Collections.singletonList("http://localhost:5173"));
-					configuration.setAllowedMethods(Collections.singletonList("*"));
-					configuration.setAllowCredentials(true);
-					configuration.setAllowedHeaders(Collections.singletonList("*"));
-					configuration.setMaxAge(3600L);
-					configuration.setExposedHeaders(Collections.singletonList("Authorization"));
-
-					return configuration;
-				}
-			}));
+			.cors(cors -> cors.configurationSource(corsConfigurationSource()));
 		http.csrf((auth) -> auth.disable());
 		http.formLogin((auth) -> auth.disable());
 		http.httpBasic((auth) -> auth.disable());
@@ -62,5 +45,19 @@ public class SecurityConfig {
 			.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
 		return http.build();
+	}
+
+	@Bean
+	public CorsConfigurationSource corsConfigurationSource() {
+		return request -> {
+			CorsConfiguration configuration = new CorsConfiguration();
+			configuration.setAllowedOrigins(Collections.singletonList("http://localhost:5173")); // Origin 허용
+			configuration.setAllowedMethods(Collections.singletonList("*")); // 모든 HTTP 메서드 허용
+			configuration.setAllowedHeaders(Collections.singletonList("*")); // 모든 헤더 허용
+			configuration.setAllowCredentials(true); // 인증 정보 포함 허용
+			configuration.setMaxAge(3600L); // Pre-flight 요청 캐시 시간
+
+			return configuration;
+		};
 	}
 }
