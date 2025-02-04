@@ -128,16 +128,14 @@ class UserServiceImplTest {
 		profile.setHobby("Frontend");
 		profile.setIsDarkmode(false);
 		profile.setNickname("변경된 닉네임");
-		profile.setProfileUrl("changedImage");
 
 		//when
-		userService.modifyUserProfile(user, profile);
+		userService.modifyUserProfile(user, profile, null);
 
 		//then
 		User findUser = userRepository.findByPersonalId(user.getPersonalId()).get();
 		UserInfo findUserInfo = userInfoRepository.findByUser(findUser).get();
 
-		Assertions.assertThat(findUser.getProfileImage()).isEqualTo(profile.getProfileUrl());
 		Assertions.assertThat(findUser.getNickname()).isEqualTo(profile.getNickname());
 		Assertions.assertThat(findUserInfo.getIntroduce()).isEqualTo(profile.getIntroduce());
 		Assertions.assertThat(findUserInfo.isDarkmode()).isFalse();
