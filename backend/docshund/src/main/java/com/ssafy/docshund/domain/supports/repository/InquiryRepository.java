@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository;
 import com.ssafy.docshund.domain.supports.entity.Inquiry;
 
 @Repository
-public interface InquiryRepository extends JpaRepository<Inquiry, Long> {
+public interface InquiryRepository extends JpaRepository<Inquiry, Long>, InquiryRepositoryCustom {
 }
