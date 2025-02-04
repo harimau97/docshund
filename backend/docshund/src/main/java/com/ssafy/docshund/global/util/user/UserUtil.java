@@ -1,5 +1,6 @@
 package com.ssafy.docshund.global.util.user;
 
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,11 +23,22 @@ public class UserUtil {
 
 	@Transactional(readOnly = true)
 	public User getUser() {
-		CustomOAuth2User principal = (CustomOAuth2User)SecurityContextHolder.getContext()
-			.getAuthentication()
-			.getPrincipal();
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-		String personalId = principal.getPersonalId();
+		if (authentication == null || authentication.getPrincipal() == "anonymousUser") {
+			log.warn("SecurityContext에 Authentication이 없습니다. 사용자가 로그인하지 않았을 가능성이 큽니다.");
+			return null;
+		}
+
+		Object principal = authentication.getPrincipal();
+
+		if (!(principal instanceof CustomOAuth2User)) {
+			log.error("Principal이 CustomOAuth2User 타입이 아닙니다. 현재 타입: {}", principal.getClass().getName());
+			return null;
+		}
+
+		CustomOAuth2User customUser = (CustomOAuth2User)principal;
+		String personalId = customUser.getPersonalId();
 		log.info("Personal ID: {}", personalId);
 
 		User user = userRepository.findByPersonalId(personalId)
