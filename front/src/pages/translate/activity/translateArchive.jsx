@@ -36,13 +36,14 @@ const TranslateArchive = () => {
 
   useEffect(() => {
     const fetchData = async () => {
+      console.log(docsId);
       const data = await fetchBestTranslate(
         docsId,
         originId,
         orderBy,
         10,
         1,
-        true
+        false
       );
       setTransList(data);
     };

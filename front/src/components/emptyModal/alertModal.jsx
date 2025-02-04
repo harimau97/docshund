@@ -1,30 +1,37 @@
 import PropTypes from "prop-types";
+import * as motion from "motion/react-client";
+import { AnimatePresence } from "motion/react";
 
-const alertModal = ({ alertTitle, alertText }) => {
+const AlertModal = ({ imgSrc, alertTitle, alertText, isVisible }) => {
   return (
-    <div
-      className="relative z-10"
-      aria-labelledby="modal-title"
-      role="dialog"
-      aria-modal="true"
-    >
-      <div
-        className="fixed inset-0 bg-gray-500/75 transition-opacity"
-        aria-hidden="true"
-      ></div>
-
-      <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
-        <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
-          <div className="relative w-1/6 transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all duration-300 ease-in-out motion-safe:animate-[fadeIn_0.3s_ease-in-out] sm:my-8">
-            <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+    <AnimatePresence>
+      {isVisible ? (
+        <motion.div
+          key="alert-modal"
+          initial={{ opacity: 0, scale: 0 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0 }}
+          transition={{
+            duration: 0.3,
+            scale: {
+              type: "tween",
+              ease: "easeInOut",
+            },
+          }}
+          className="fixed inset-0 flex items-center justify-center z-[2100]"
+        >
+          {/* <div className="fixed inset-0 z-10 w-screen overflow-hidden"> */}
+          <div className="relative w-[200px] h-[200px] transform overflow-hidden rounded-lg bg-[#E4DCD4] text-left shadow-xl">
+            <div className="bg-[#E4DCD4] px-4 pt-5 pb-4">
               <div className="flex justify-center">
                 <div className="mt-3 text-center">
                   <h3
-                    className="text-base font-semibold text-gray-900 flex justify-center flex-col items-center gap-5"
+                    className="text-base font-semibold text-[#424242] flex justify-center flex-col items-center gap-2"
                     id="modal-title"
                   >
                     <img
-                      src="https://upload.wikimedia.org/wikipedia/commons/3/3b/Eo_circle_green_checkmark.svg"
+                      className="w-[100px] h-[100px]"
+                      src={imgSrc}
                       alt="체크 이미지"
                     />
                     {alertTitle}
@@ -35,15 +42,20 @@ const alertModal = ({ alertTitle, alertText }) => {
                 </div>
               </div>
             </div>
-            <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6"></div>
+            <div className="bg-[#E4DCD4] px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6"></div>
           </div>
-        </div>
-      </div>
-    </div>
+          {/* </div> */}
+        </motion.div>
+      ) : null}
+    </AnimatePresence>
   );
 };
 
-alertModal.propTypes = {
+AlertModal.propTypes = {
+  imgSrc: PropTypes.string,
   alertTitle: PropTypes.string,
   alertText: PropTypes.string,
+  isVisible: PropTypes.bool.isRequired,
 };
+
+export default AlertModal;

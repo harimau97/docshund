@@ -8,6 +8,7 @@ import {
 import * as motion from "motion/react-client";
 import useModalStore from "./store/modalStore.jsx";
 import useEditorStore from "./store/editorStore.jsx";
+import useArchiveStore from "./store/archiveStore.jsx";
 import TranslateEditor from "./activity/translateEditor.jsx";
 import TranslateArchive from "./activity/translateArchive.jsx";
 import ToastViewer from "./components/toastViewer.jsx";
@@ -33,6 +34,7 @@ const TranslateViewer = () => {
 
   //번역 에디터, 투표 관련 모달
   const { openEditor, openArchive } = useModalStore();
+  const { transList } = useArchiveStore();
 
   //ui 관련
   const toggleButton = (partId, e) => {
@@ -158,6 +160,17 @@ const TranslateViewer = () => {
               onClick={async (e) => {
                 e.stopPropagation();
                 toggleButton(part.id, e);
+                fetchBestTranslate(
+                  part.docsId,
+                  part.originId,
+                  "like",
+                  10,
+                  1,
+                  false
+                );
+                if (transList[0].originId === part.originId) {
+                  useEditorStore.setState({ bestTrans: transList[0].content });
+                }
               }} // toggleButton에 e를 전달
               className="cursor-pointer p-3 rounded-md text-[#424242] bg-[#E4DCD4] hover:bg-[#cfccc9] transition duration-150 ease-in-out flex flex-col w-full"
             >
@@ -193,21 +206,13 @@ const TranslateViewer = () => {
                         docsId: part.docsId,
                         originId: part.originId,
                       });
-                      fetchBestTranslate(
-                        part.docsId,
-                        part.originId,
-                        "like",
-                        1,
-                        1,
-                        true
-                      );
                     }}
                     text="번역하기"
                     className="opacity-70 w-full"
                   />
                   <RectBtn
-                    onClick={() => {
-                      openArchive();
+                    onClick={async () => {
+                      await openArchive();
                       useEditorStore.setState({
                         docsPart: part.content,
                         porder: part.porder,

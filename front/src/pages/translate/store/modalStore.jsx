@@ -4,7 +4,6 @@ import useEditorStore from "./editorStore";
 const modalStore = create((set) => ({
   isEditorOpen: false,
   isArchiveOpen: false,
-  isAlertOpen: false,
   openEditor: () => {
     set({ isEditorOpen: true });
   },
@@ -18,10 +17,6 @@ const modalStore = create((set) => ({
   closeArchive: () => {
     set({ isArchiveOpen: false });
     useEditorStore.getState().clearAll();
-  },
-  toggleAlert: () => {
-    set({ isAlertOpen: true });
-    setTimeout(() => set({ isAlertOpen: false }), 1500);
   },
 }));
 
