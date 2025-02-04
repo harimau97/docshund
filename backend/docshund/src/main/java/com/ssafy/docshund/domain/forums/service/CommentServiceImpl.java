@@ -30,6 +30,7 @@ public class CommentServiceImpl implements CommentService {
 	private final UserUtil userUtil;
 
 	@Override
+	@Transactional(readOnly = true)
 	public List<CommentInfoDto> getCommentsByArticleId(Integer articleId) {
 
 		List<Comment> comments = commentRepository.findAllByArticleId(articleId);
@@ -41,6 +42,7 @@ public class CommentServiceImpl implements CommentService {
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public List<CommentInfoDto> getCommentsByUserId(Long userId) {
 
 		List<Comment> comments = commentRepository.findAllByUserId(userId);
