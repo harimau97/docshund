@@ -21,6 +21,7 @@ import HelpDesk from "./pages/helpDesk.jsx";
 // 번역 관련 페이지
 import TranslatePage from "./pages/translate/translate.jsx";
 import TranslateViewer from "./pages/translate/translateViewer.jsx";
+import ProtectedRoute from "./utils/protectedRoute.jsx";
 
 // Community 관련 페이지
 import CommunityPage from "./pages/community/community.jsx";
@@ -34,32 +35,8 @@ function AppRoutes() {
     <Routes>
       {/* UpperNav 바로가기 주소 */}
       <Route path="/" element={<LandingPage />} />
-
-      {/* 마이페이지 관련 주소 */}
-      <Route path="/myPage" element={<MyPage />}>
-        <Route index element={<Navigate to="profile" replace />} />
-        <Route path="profile" element={<MyProfilePage />} />
-        <Route path="archive" element={<ArchivePage />}>
-          <Route path="likeTrans" element={<LikeTranslationPage />} />
-          <Route path="likeArticle" element={<LikeArticlePage />} />
-          <Route path="likeDocs" element={<LikeDocsPage />} />
-        </Route>
-        <Route path="activity" element={<ActivityPage />}>
-          <Route path="myTrans" element={<MyTranslationPage />} />
-          <Route path="myArticle" element={<MyArticlePage />} />
-          <Route path="myComment" element={<MyCommentPage />} />
-        </Route>
-        <Route path="memo" element={<MemoPage />} />
-        <Route path="inquiry" element={<InquiryPage />} />
-      </Route>
-
       {/* 번역 관련 주소 */}
       <Route path="/translate" element={<TranslatePage />}></Route>
-      {/* 하위 항목으로 작성하면 인식이 안되서 수정함 */}
-      <Route
-        path="translate/viewer/:docsName"
-        element={<TranslateViewer />}
-      ></Route>
       {/* 커뮤니티 관련 주소 */}
       <Route path="/community" element={<CommunityPage />}>
         <Route index element={<Navigate to="list" replace />} />
@@ -68,9 +45,34 @@ function AppRoutes() {
         <Route path="modify" element={<ModifyArticle />} />
         <Route path="write" element={<WriteArticle />} />
       </Route>
-
       {/* 도움말 관련 주소 */}
       <Route path="/helpDesk" element={<HelpDesk />} />
+
+      {/* 비로그인 접근 불가 */}
+      <Route element={<ProtectedRoute />}>
+        {/* 번역뷰어 */}
+        <Route
+          path="translate/viewer/:docsName"
+          element={<TranslateViewer />}
+        ></Route>
+        {/* 마이페이지 관련 주소 */}
+        <Route path="/myPage" element={<MyPage />}>
+          <Route index element={<Navigate to="profile" replace />} />
+          <Route path="profile" element={<MyProfilePage />} />
+          <Route path="archive" element={<ArchivePage />}>
+            <Route path="likeTrans" element={<LikeTranslationPage />} />
+            <Route path="likeArticle" element={<LikeArticlePage />} />
+            <Route path="likeDocs" element={<LikeDocsPage />} />
+          </Route>
+          <Route path="activity" element={<ActivityPage />}>
+            <Route path="myTrans" element={<MyTranslationPage />} />
+            <Route path="myArticle" element={<MyArticlePage />} />
+            <Route path="myComment" element={<MyCommentPage />} />
+          </Route>
+          <Route path="memo" element={<MemoPage />} />
+          <Route path="inquiry" element={<InquiryPage />} />
+        </Route>
+      </Route>
     </Routes>
   );
 }
