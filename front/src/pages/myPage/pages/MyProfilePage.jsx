@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { jwtDecode } from "jwt-decode";
 import useUserProfileStore from "../store/userProfileStore";
 import ProfileCard from "../components/ProfileCard";
 import Setting from "../components/Setting";
@@ -10,8 +11,14 @@ const MyProfilePage = () => {
   const [editedProfile, setEditedProfile] = useState(profile || {});
 
   useEffect(() => {
-    const userId = 1;
-    fetchProfile(userId);
+    const token = localStorage.getItem("token");
+
+    // 토큰이 존재하면 userId 추출
+    if (token) {
+      const decodedToken = jwtDecode(token);
+      const userId = decodedToken.userId;
+      fetchProfile(userId); // userId로 프로필 정보 가져오기
+    }
   }, [fetchProfile]);
 
   useEffect(() => {

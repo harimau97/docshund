@@ -74,7 +74,7 @@ const EditorModal = ({
     <div
       className={`fixed inset-0 flex items-center justify-center z-50 ${
         !isOpen ? "hidden" : ""
-      } backdrop-blur-xs backdrop-brightness-50`}
+      }  backdrop-brightness-60`}
       onClick={handleBackdropClick}
     >
       <div
