@@ -7,10 +7,11 @@ import useModalStore from "../store/modalStore";
 import GoBack from "../../../assets/icon/goBack.png";
 import useEditorStore from "../store/editorStore";
 import useArchiveStore from "../store/archiveStore";
+import useTestStore from "../store/testStore.jsx";
 
 const TranslateArchive = () => {
-  const { isArchiveOpen, closeArchive } = useModalStore();
   const [transStates, setTransStates] = useState({});
+  const { isArchiveOpen, closeArchive } = useModalStore();
   const { docsPart, bestTrans, porder, docsId, originId, currentUserText } =
     useEditorStore();
   const {
@@ -19,10 +20,13 @@ const TranslateArchive = () => {
     orderBy,
     defaultStyle,
     toggledStyle,
+    isArchiveVisible,
     orderByUpdatedAt,
     setTransList,
     clearTransList,
+    toggleArchive,
   } = useArchiveStore();
+  const { isTest } = useTestStore();
 
   const toggleTransContent = (transId) => {
     setTransStates((prev) => ({
@@ -38,23 +42,19 @@ const TranslateArchive = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      console.log(docsId);
-      const data = await fetchBestTranslate(
-        docsId,
-        originId,
-        orderBy,
-        10,
-        1,
-        true
-      );
+      const data = await fetchBestTranslate(docsId, originId, isTest);
       setTransList(data);
     };
     console.log(
       "검색 기준이 변경되었습니다. 다시 검색합니다. 현재 검색 기준: ",
-      orderBy
+      orderBy,
+      "docsID",
+      docsId,
+      "originID",
+      originId
     );
     fetchData();
-  }, [orderBy]);
+  }, []);
 
   return (
     <Modal
@@ -62,23 +62,23 @@ const TranslateArchive = () => {
       onRequestClose={closeArchive}
       closeTimeoutMS={0}
       style={{
-        overlay: { backgroundColor: "rgba(240,238,229,0.8)", zIndex: 2000 },
+        overlay: {
+          backgroundColor: "rgba(240,238,229,0.8)",
+          zIndex: 2000,
+        },
       }}
       className="border-box w-full h-full flex items-center justify-center"
     >
       <AnimatePresence>
-        {isArchiveOpen ? (
+        {isArchiveVisible ? (
           <motion.div
-            key="alert-modal"
-            initial={{ opacity: 0, scale: 0 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0 }}
+            key="archive-modal"
+            initial={{ opacity: 0, y: 1000 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 1000 }}
             transition={{
-              scale: {
-                type: "tween",
-                ease: "easeInOut",
-                duration: 0.3,
-              },
+              ease: "easeInOut",
+              duration: 0.5,
             }}
             className="fixed inset-0 flex items-center justify-center min-w-full min-h-full "
           >
@@ -88,10 +88,13 @@ const TranslateArchive = () => {
                   src={GoBack}
                   className="cursor-pointer w-[40px] h-[25px] hover:scale-110 transition-transform duration-200"
                   alt="나가기"
-                  onClick={closeArchive}
+                  onClick={async () => {
+                    await toggleArchive();
+                    setTimeout(() => closeArchive(), 300);
+                  }}
                 />
                 <span className="flex-1 text-center">
-                  {porder}번째 문단 번역 기록
+                  {originId}번째 문단 번역 기록
                 </span>
                 <div className="w-[40px]"></div>
               </div>

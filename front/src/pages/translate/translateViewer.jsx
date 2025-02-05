@@ -11,6 +11,7 @@ import {
   fetchBestTranslate,
 } from "./hooks/translateService.jsx";
 import * as motion from "motion/react-client";
+import useTestStore from "./store/testStore.jsx";
 import useModalStore from "./store/modalStore.jsx";
 import useEditorStore from "./store/editorStore.jsx";
 import useArchiveStore from "./store/archiveStore.jsx";
@@ -39,6 +40,8 @@ const TranslateViewer = () => {
   const loadingRef = useRef(null);
   const chunk_size = 20;
 
+  const { isTest } = useTestStore();
+
   // 알림창 관련
   const { isAlertOpen, toggleAlert } = useAlertStore();
 
@@ -49,7 +52,8 @@ const TranslateViewer = () => {
 
   //번역 에디터, 투표 관련 모달
   const { openEditor, openArchive } = useModalStore();
-  const { transList } = useArchiveStore();
+  const { transList, toggleArchive } = useArchiveStore();
+  const { toggleEditor } = useEditorStore();
 
   //ui 관련
   const toggleButton = (partId, e) => {
@@ -134,7 +138,7 @@ const TranslateViewer = () => {
         if (!loadedData || loadedData.length === 0) {
           console.log("Fetching data from server for docsId:", docsId); // 디버깅용
           try {
-            const data = await fetchTranslateData(docsId, null, true);
+            const data = await fetchTranslateData(docsId, isTest);
             if (!isMounted) return;
             if (data && Array.isArray(data)) {
               docData.current = data;
@@ -214,15 +218,9 @@ const TranslateViewer = () => {
               onClick={async (e) => {
                 e.stopPropagation();
                 toggleButton(part.id, e);
-                fetchBestTranslate(
-                  part.docsId,
-                  part.originId,
-                  "like",
-                  10,
-                  1,
-                  true
-                );
-                if (transList[0].originId === part.originId) {
+                fetchBestTranslate(part.docsId, null, isTest);
+                console.log(part.originId);
+                if (transList[0] && transList[0].originId === part.originId) {
                   useEditorStore.setState({ bestTrans: transList[0].content });
                 }
               }}
@@ -252,27 +250,29 @@ const TranslateViewer = () => {
                   }}
                 >
                   <RectBtn
-                    onClick={() => {
-                      openEditor();
+                    onClick={async () => {
                       useEditorStore.setState({
                         docsPart: part.content,
                         porder: part.porder,
                         docsId: part.docsId,
                         originId: part.originId,
                       });
+                      await openEditor();
+                      toggleEditor();
                     }}
                     text="번역하기"
                     className="opacity-90 hover:opacity-100 transition-opacity duration-200 shadow-sm hover:shadow-md w-full"
                   />
                   <RectBtn
                     onClick={async () => {
-                      await openArchive();
                       useEditorStore.setState({
                         docsPart: part.content,
                         porder: part.porder,
                         docsId: part.docsId,
                         originId: part.originId,
                       });
+                      await openArchive();
+                      toggleArchive();
                     }}
                     text="번역기록"
                     className="opacity-90 hover:opacity-100 transition-opacity duration-200 shadow-sm hover:shadow-md"

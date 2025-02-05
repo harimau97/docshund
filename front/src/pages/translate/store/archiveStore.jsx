@@ -7,6 +7,12 @@ const archiveStore = create((set) => ({
   orderBy: "like",
   toggledStyle: "text-[#BC5B39] font-bold",
   defaultStyle: "text-black cursor-pointer",
+  isArchiveVisible: false,
+  toggleArchive: () => {
+    set((state) => ({
+      isArchiveVisible: !state.isArchiveVisible,
+    }));
+  },
   setTransList: (contents) => {
     set({ transList: contents });
   },

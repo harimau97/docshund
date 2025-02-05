@@ -9,7 +9,13 @@ const editorStore = create((set) => ({
   currentUserText: "",
   tempSave: "",
   submitData: "",
+  isEditorVisible: false,
 
+  toggleEditor: () => {
+    set((state) => ({
+      isEditorVisible: !state.isEditorVisible,
+    }));
+  },
   clearDocsPart: () => {
     set({ docsPart: "" });
   },
@@ -43,6 +49,15 @@ const editorStore = create((set) => ({
   clearSubmitData: () => {
     set({ submitData: "" });
   },
+  clearEditor: () => {
+    set({
+      docsPart: "",
+      bestTrans: "",
+      porder: 0,
+      tempSave: "",
+      submitData: "",
+    });
+  },
   clearAll: () => {
     set({
       docsPart: "",
@@ -50,6 +65,7 @@ const editorStore = create((set) => ({
       porder: 0,
       docsId: 0,
       originId: 0,
+      currentUserText: "",
       tempSave: "",
       submitData: "",
     });

@@ -1,25 +1,39 @@
 import { useState, useEffect } from "react";
 import { useNavigate, NavLink } from "react-router-dom";
 import useDocsStore from "./store/docsStore";
+import useTestStore from "./store/testStore";
 import { fetchDocsList } from "./hooks/translateService";
+import { motion } from "framer-motion";
 
 const TransLatePage = () => {
   const [docsCategories, setDocsCategories] = useState(["Spring", "MyBatis"]);
 
   const { docsList } = useDocsStore();
+  const { isTest } = useTestStore();
   const navigate = useNavigate();
 
+  const slogan = "번역 문서";
+  const [showSlogan, setShowSlogan] = useState(false);
+
   useEffect(() => {
-    fetchDocsList(true);
+    fetchDocsList(isTest);
+    setShowSlogan(true);
   }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 py-8 px-4 max-w-screen-xl mx-auto">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent mb-4">
-            번역 문서
-          </h1>
+          <motion.h1
+            className="text-2xl md:text-4xl lg:text-6xl font-bold mb-6 bg-gradient-to-r from-[#bc5b39] to-[#C96442] text-transparent bg-clip-text"
+            key={showSlogan}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            style={{ whiteSpace: "pre-line", lineHeight: "1.5" }}
+          >
+            {slogan}
+          </motion.h1>
           <p className="text-gray-600">
             원하시는 문서를 선택하여 번역을 시작하세요
           </p>

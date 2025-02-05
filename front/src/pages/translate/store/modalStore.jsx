@@ -9,7 +9,7 @@ const modalStore = create((set) => ({
   },
   closeEditor: () => {
     set({ isEditorOpen: false });
-    useEditorStore.getState().clearAll();
+    useEditorStore.getState().clearEditor();
   },
   openArchive: () => {
     set({ isArchiveOpen: true });

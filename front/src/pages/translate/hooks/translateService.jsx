@@ -1,3 +1,4 @@
+import { useState } from "react";
 import axios from "axios";
 import PropTypes from "prop-types";
 import TmpBestData from "../store/tmpBestData";
@@ -6,13 +7,13 @@ import TmpDocsList from "../store/tmpDocsList";
 import useEditorStore from "../store/editorStore";
 import useDocsStore from "../store/docsStore";
 
-// const baseUrl = "https://f1887553-e372-4944-90d7-8fe76ae8d764.mock.pstmn.io";
-const baseUrl = "http://localhost:8080";
+// const baseUrl = "http://localhost:8080/api/v1/docshund/docs";
+const baseUrl = "http://i12a703.p.ssafy.io:8081/api/v1/docshund/docs";
 
 export const fetchDocsList = async (test) => {
   try {
     if (!test) {
-      const response = await axios.get(`${baseUrl}/docs?sort=name&order=asc`);
+      const response = await axios.get(`${baseUrl}`);
       const data = response.data;
       useDocsStore.setState({ docsList: data });
     } else {
@@ -24,12 +25,10 @@ export const fetchDocsList = async (test) => {
   }
 };
 
-export const fetchTranslateData = async (docsId, originId, test) => {
+export const fetchTranslateData = async (docsId, test) => {
   try {
     if (!test) {
-      const response = await axios.get(
-        `${baseUrl}/docs/${docsId}/origin?originId=${originId}`
-      );
+      const response = await axios.get(`${baseUrl}/${docsId}/origin`);
       const data = response.data;
       return data;
     } else {
@@ -42,39 +41,17 @@ export const fetchTranslateData = async (docsId, originId, test) => {
   }
 };
 
-export const fetchBestTranslate = async (
-  docsId,
-  originId,
-  sortType,
-  size,
-  page,
-  test
-) => {
+export const fetchBestTranslate = async (docsId, isBest, test) => {
+  const status = isBest ? "best" : "";
   try {
     if (!test) {
+      console.log("번역데이터 가져오기 시작");
       const response = await axios.get(
-        `${baseUrl}/docs/${docsId}/trans/${originId}?sort=${sortType}&order=desc&size=${size}&page=${page}`
+        `${baseUrl}/${docsId}/trans?status=${status}`
       );
       const data = response.data;
-      if (size === 1) {
-        const tempContent = data[0];
-        if (tempContent.originId === originId) {
-          useEditorStore.setState({
-            bestTrans: tempContent.content,
-          });
-        }
-      }
       return data;
     } else {
-      if (size === 1) {
-        const tempContent = TmpBestData.transList[0];
-        if (tempContent.originId === originId) {
-          useEditorStore.setState({
-            bestTrans: tempContent.content,
-          });
-        }
-      }
-
       return TmpBestData.transList;
     }
   } catch (error) {
@@ -91,8 +68,7 @@ fetchTranslateData.propTypes = {
 
 fetchBestTranslate.propTypes = {
   docsId: PropTypes.string.isRequired,
+  isBest: PropTypes.bool.isRequired,
   originId: PropTypes.string.isRequired,
-  size: PropTypes.number.isRequired,
-  page: PropTypes.number.isRequired,
   test: PropTypes.bool.isRequired,
 };

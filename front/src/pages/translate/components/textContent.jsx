@@ -4,7 +4,7 @@ import ToastViewer from "./toastViewer";
 const TextContent = ({ tag, textContent }) => {
   return (
     <div className="flex flex-col h-[calc(50%)] min-h-0 w-full group">
-      <div className="bg-slate-100 w-1/6 min-w-[150px] flex items-center px-4 py-2 rounded-t-xl border border-slate-200 h-10 transition-all duration-300 group-hover:bg-slate-200 relative">
+      <div className="bg-slate-100 w-3/10 min-w-[200px] flex items-center px-4 py-2 rounded-t-xl border border-slate-200 h-10 transition-all duration-300 group-hover:bg-slate-200 relative">
         <svg
           className="w-4 h-4 mr-2 text-slate-500"
           fill="none"
