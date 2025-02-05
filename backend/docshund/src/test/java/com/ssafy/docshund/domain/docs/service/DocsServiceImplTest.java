@@ -209,7 +209,7 @@ class DocsServiceImplTest {
 	@DisplayName("원본 문서 등록 테스트")
 	void createOriginDocuments() {
 		// given
-		String content = "<p>문서 내용</p>";
+		String content = "<p>문서 테스트 내용</p>";
 
 		// when
 		Mockito.when(userUtil.getUser()).thenReturn(user1);
