@@ -24,6 +24,8 @@ import NoticePage from "./pages/helpDesk/NoticePage.jsx";
 import NoticeDetail from "./pages/helpDesk/NoticeDetail.jsx";
 import FAQPage from "./pages/helpDesk/FAQPage.jsx";
 import InquiryFormPage from "./pages/helpDesk/InquiryFormPage.jsx";
+import TermsPage from "./pages/helpDesk/TermsPage.jsx";
+import PrivacyPage from "./pages/helpDesk/PrivacyPage.jsx";
 
 // 번역 관련 페이지
 import TranslatePage from "./pages/translate/translate.jsx";
@@ -56,10 +58,13 @@ function AppRoutes() {
       <Route path="/helpDesk" element={<HelpDeskPage />}>
         <Route index element={<Navigate to="notices" replace />} />
         <Route path="notices" element={<NoticePage />} />
-        <Route path="notices/:noticeId" element={<NoticeDetail />} />
         <Route path="faq" element={<FAQPage />} />
         <Route path="inquiryForm" element={<InquiryFormPage />} />
       </Route>
+      <Route path="/helpDesk/notices/:noticeId" element={<NoticeDetail />} />
+      <Route path="/terms" element={<TermsPage />} />
+      <Route path="/privacy" element={<PrivacyPage />} />
+
       {/* 번역뷰어 */}
       <Route
         path="translate/viewer/:docsName"

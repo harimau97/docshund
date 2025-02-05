@@ -31,7 +31,7 @@ const NoticePage = () => {
     };
 
     fetchNotices();
-  }, [currentPage]);
+  }, [currentPage, setError, setLoading, setNotices, setTotalPages]);
 
   const renderNotice = (item) => (
     <div className="flex justify-between text-lg px-3">

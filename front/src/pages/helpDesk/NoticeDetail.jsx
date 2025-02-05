@@ -22,7 +22,7 @@ const NoticeDetail = () => {
     };
 
     fetchNoticeDetail(noticeId);
-  }, [noticeId]);
+  }, [noticeId, setError, setLoading, setNoticeDetail]);
 
   return (
     <div className="flex justify-center w-full">
@@ -31,7 +31,7 @@ const NoticeDetail = () => {
           <h1 className="font-bold text-2xl">공지사항</h1>
           <Link
             to="/helpDesk/notices"
-            className="text-[#bc5b39] hover:underline"
+            className="py-2 px-4 bg-[#bc5b39] text-white rounded-md shadow-sm hover:bg-[#C96442]"
           >
             목록으로
           </Link>
@@ -41,7 +41,9 @@ const NoticeDetail = () => {
             <div className="border-b border-[#E1E1DF] pb-4 mb-4">
               <h1 className="text-2xl font-bold mb-2">{noticeDetail.title}</h1>
               <div className="flex justify-between items-center text-[#7d7c77]">
-                <span>{noticeDetail.createdAt}</span>
+                <span className="whitespace-nowrap">
+                  {noticeDetail.createdAt.split("T")[0]}
+                </span>
               </div>
             </div>
             <div className="border-b border-[#E1E1DF] pb-4 mb-4">

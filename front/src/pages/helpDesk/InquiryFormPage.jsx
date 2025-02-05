@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { jwtDecode } from "jwt-decode";
+import InquiryService from "../../services/helpDeskServices/inquiryService";
 
 const InquiryFormPage = () => {
   const [category, setCategory] = useState("");
@@ -7,13 +9,49 @@ const InquiryFormPage = () => {
   const [content, setContent] = useState("");
   const [file, setFile] = useState(null);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!category || !title || !email || !content) {
       alert("문의 카테고리, 제목, 이메일, 내용을 모두 입력해주세요.");
       return;
     }
-    // Handle form submission logic here
+
+    let userId = null;
+    const token = localStorage.getItem("token");
+    if (token) {
+      const decodedToken = jwtDecode(token);
+      userId = decodedToken.userId;
+    }
+
+    const formData = new FormData();
+    formData.append("title", title);
+    formData.append("category", category);
+    formData.append("content", content);
+    formData.append("email", email);
+    if (userId) {
+      formData.append("userId", userId);
+    }
+    if (file) {
+      formData.append("file", file);
+    }
+
+    // Log FormData content
+    for (let pair of formData.entries()) {
+      console.log(pair[0] + ": " + pair[1]);
+    }
+
+    try {
+      await InquiryService.submitInquiry(formData);
+      alert("문의가 성공적으로 제출되었습니다.");
+      setCategory("");
+      setTitle("");
+      setEmail("");
+      setContent("");
+      setFile(null);
+    } catch (error) {
+      alert("문의 제출 중 오류가 발생했습니다.");
+      console.log("문의 등록 실패", error);
+    }
   };
 
   const handleFileChange = (e) => {
@@ -37,9 +75,9 @@ const InquiryFormPage = () => {
             className="mt-1 block w-full py-2 px-3 border bg-white rounded-md shadow-sm focus:outline-none focus:ring-[#bc5b39] focus:border-[#bc5b39] sm:text-sm"
           >
             <option value="">카테고리를 선택하세요</option>
-            <option value="document">문서등록요청</option>
-            <option value="membership">회원관련</option>
-            <option value="report">신고관련</option>
+            <option value="문서등록요청">문서등록요청</option>
+            <option value="회원관련">회원관련</option>
+            <option value="신고관련">신고관련</option>
           </select>
         </div>
         <div className="mb-6">
@@ -76,6 +114,7 @@ const InquiryFormPage = () => {
             className="mt-1 block w-full py-2 px-3 border rounded-md shadow-sm focus:outline-none focus:ring-[#bc5b39] focus:border-[#bc5b39] sm:text-sm"
             rows="4"
             placeholder="내용을 입력하세요"
+            style={{ height: "200px" }}
           ></textarea>
         </div>
         <div className="mb-6">
@@ -117,7 +156,7 @@ const InquiryFormPage = () => {
         <div className="text-center">
           <button
             type="submit"
-            className="py-2 px-4 bg-[#bc5b39] text-white rounded-md shadow-sm hover:bg-[#C96442] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#bc5b39] transition duration-300"
+            className="py-2 px-4 bg-[#bc5b39] text-white rounded-md shadow-sm hover:bg-[#C96442]"
           >
             보내기
           </button>
