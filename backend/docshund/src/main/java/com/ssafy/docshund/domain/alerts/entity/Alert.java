@@ -19,6 +19,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "alert")
@@ -54,6 +55,7 @@ public class Alert extends BaseTimeEntity {
 	@JoinColumn(name = "inquiry_id")
 	private Inquiry inquiry;
 
+	@Setter
 	@Column(name = "checked_at")
 	private LocalDateTime checkedAt;
 
