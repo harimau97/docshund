@@ -1,10 +1,9 @@
-import { useState } from "react";
 import axios from "axios";
 import PropTypes from "prop-types";
 import TmpBestData from "../store/tmpBestData";
 import TmpTranslateData from "../store/tmpTranslateData";
 import TmpDocsList from "../store/tmpDocsList";
-import useEditorStore from "../store/editorStore";
+import useArchiveStore from "../store/archiveStore";
 import useDocsStore from "../store/docsStore";
 
 // const baseUrl = "http://localhost:8080/api/v1/docshund/docs";
@@ -50,7 +49,9 @@ export const fetchBestTranslate = async (docsId, isBest, test) => {
         `${baseUrl}/${docsId}/trans?status=${status}`
       );
       const data = response.data;
-      return data;
+      console.log(data);
+      useArchiveStore.setState({ transList: data });
+      console.log(useArchiveStore.getState().transList[0]);
     } else {
       return TmpBestData.transList;
     }

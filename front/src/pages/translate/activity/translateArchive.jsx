@@ -153,7 +153,7 @@ const TranslateArchive = () => {
                           >
                             <div className="flex flex-col gap-1">
                               <div className="text-lg font-medium">
-                                {trans.nickname}님의 번역본
+                                {trans.userId}님의 번역본
                               </div>
                               <div className="text-sm text-gray-500">
                                 {trans.updatedAt}

@@ -59,10 +59,10 @@ const TranslateViewer = () => {
   const toggleButton = (partId, e) => {
     const rect = e.currentTarget.getBoundingClientRect();
     const mouseY = e.clientY - rect.top;
-    
+
     // 버튼 컨테이너의 높이 (두 버튼의 높이 + 간격)
     const buttonContainerHeight = 100; // 대략적인 높이값
-    
+
     // y 위치 제한
     const limitedY = Math.min(
       Math.max(buttonContainerHeight / 2, mouseY),
@@ -227,9 +227,10 @@ const TranslateViewer = () => {
               onClick={async (e) => {
                 e.stopPropagation();
                 toggleButton(part.id, e);
-                fetchBestTranslate(part.docsId, null, isTest);
+                fetchBestTranslate(part.docsId, "", isTest);
                 console.log(part.originId);
-                if (transList[0] && transList[0].originId === part.originId) {
+                console.log("제발 좀 출력돼라", transList);
+                if (transList[0].originId === part.originId) {
                   useEditorStore.setState({ bestTrans: transList[0].content });
                 }
               }}
