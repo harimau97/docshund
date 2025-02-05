@@ -29,8 +29,8 @@ const LeftNav = () => {
     "absolute top-25 -right-3 transform rotate-180"
   );
   const [showNav, setShowNav] = useState(
-    "max-w-[15%] min-w-fit w-60 h-[80%] bg-[#F0EEE5] flex flex-col border-box border-2 border-black absolute top-1/2 -translate-y-1/2 rounded-br-4xl rounded-tr-4xl transform transition-transform duration-250 -translate-x-[95%] z-[1500]"
-  ); // leftNav가 화면 최상위에 오도록 z-index 설정
+    "max-w-[15%] min-w-fit w-60 h-[80%] bg-[#F8F7F3] flex flex-col border-box border-2 border-[#E0DED9] absolute top-1/2 -translate-y-1/2 rounded-br-4xl rounded-tr-4xl transform transition-all duration-400 -translate-x-[90%] z-[1500]"
+  ); // 배경색 및 테두리 색상 변경, 애니메이션 효과 조정
   const { isOpen, openModal, closeModal } = modalStore();
   //메모 관련 상태
   const [memoData, setMemoData] = useState({
@@ -68,7 +68,7 @@ const LeftNav = () => {
         "absolute top-25 -right-3 transform transition-transform duration-300 rotate-180"
       );
       setShowNav(
-        "max-w-[15%] min-w-fit w-60 h-[80%] bg-[#F0EEE5] flex flex-col border-box border-2 border-black absolute top-1/2 -translate-y-1/2 rounded-br-4xl rounded-tr-4xl transform transition-transform duration-400 -translate-x-[90%] z-[1500]"
+        "max-w-[15%] min-w-fit w-60 h-[80%] bg-[#F8F7F3] flex flex-col border-box border-2 border-[#E0DED9] absolute top-1/2 -translate-y-1/2 rounded-br-4xl rounded-tr-4xl transform transition-all duration-400 -translate-x-[90%] z-[1500]"
       );
     } else if (isNavOpen === false) {
       console.log("nav 연다.");
@@ -77,7 +77,7 @@ const LeftNav = () => {
         "absolute top-25 -right-3 transform transition-transform duration-300 "
       );
       setShowNav(
-        "max-w-[15%] min-w-fit w-60 h-[80%] bg-[#F0EEE5] flex flex-col border-box border-2 border-black absolute top-1/2 -translate-y-1/2 rounded-br-4xl rounded-tr-4xl transform transition-transform duration-400 z-[1500]"
+        "max-w-[15%] min-w-fit w-60 h-[80%] bg-[#F8F7F3] flex flex-col border-box border-2 border-[#E0DED9] absolute top-1/2 -translate-y-1/2 rounded-br-4xl rounded-tr-4xl transform transition-all duration-400 z-[1500]"
       );
     }
   }
@@ -99,80 +99,86 @@ const LeftNav = () => {
         <div className="p-5 text-center">
           <NavLink to="/translate">
             <img
-              className="w-[clamp(120px,10vw,148px)] h-auto"
+              className="w-[clamp(120px,10vw,148px)] h-auto hover:opacity-80 transition-opacity duration-200"
               src={Logo}
               alt="닥스훈트 로고"
             />
           </NavLink>
         </div>
-
-        <div className="mb-5">
-          <div
-            className="px-5 py-2.5 flex items-center cursor-pointer hover:bg-gray-50"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-          >
-            <img src={ListIcon} alt="문서목록 아이콘" />
-            <span className="ml-5">문서목록</span>
-            {isMenuOpen ? (
-              <img
-                src={menuUp}
-                className="w-4 h-4 flex absolute right-0 mr-5"
-              />
-            ) : (
-              <img src={menuDown} className="w-4 h-4 absolute right-0 mr-5" />
-            )}
-          </div>
-          {isMenuOpen && (
-            <div className="h-[200px] overflow-y-scroll ">
-              <div className="px-5">
-                {docsList.map((doc, index) => (
-                  <div
-                    onClick={() =>
-                      window.location.replace(`/translate/viewer/${doc.docsId}`)
-                    }
-                    key={index}
-                    className="cursor-pointer py-2.5 flex justify-between items-center border-b border-gray-100"
-                  >
-                    {doc.documentName}
-                  </div>
-                ))}
+        {/* 문서목록 토글 */}
+        <div className="flex-1 overflow-y-scroll">
+          <div className="mb-5">
+            <div
+              className="px-5 py-2.5 flex flex-row items-center  cursor-pointer hover:bg-[#F5F4F0] transition-colors duration-200"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+            >
+              <img src={ListIcon} alt="문서목록 아이콘" />
+              <span className="ml-5 font-medium text-[#4A4A4A]">문서목록</span>
+              <div className="flex w-1/5 justify-end items-center">
+                {" "}
+                {isMenuOpen ? (
+                  <img src={menuUp} className="w-4 h-4 right-0" />
+                ) : (
+                  <img src={menuDown} className="w-4 h-4 right-0" />
+                )}
               </div>
             </div>
-          )}
-        </div>
-
-        <div className="mb-5 flex items-center">
-          <img
-            className="w-[24px] h-[24px] ml-5"
-            src={notification}
-            alt="알림 아이콘"
-          />
-          <div className="px-5 py-2.5 flex items-center gap-2.5 ">
-            <span>알림</span>
-          </div>
-        </div>
-
-        <div className="flex-1 overflow-y-auto">
-          <div className="px-5 py-2.5 flex items-center">
-            <img className="w-[24px] h-[24px]" src={memo} alt="메모 아이콘" />
-            <span className="ml-5">MEMO</span>
-            <FaPlus
-              onClick={openModal}
-              className="cursor-pointer absolute right-0 mr-5 hover:text-[#BC5B39]"
-            />
-          </div>
-          <div className="px-5">
-            {memos.map((memo, index) => (
-              <div
-                key={index}
-                className="py-2.5 flex justify-between items-center border-b border-gray-100"
-              >
-                {memo}
-                <button className="text-gray-600 hover:text-black cursor-pointer text-sm">
-                  보기
-                </button>
+            {isMenuOpen && (
+              <div className="h-[200px] overflow-y-scroll ">
+                <div className="px-5">
+                  {docsList.map((doc, index) => (
+                    <div
+                      onClick={() =>
+                        window.location.replace(
+                          `/translate/viewer/${doc.docsId}`
+                        )
+                      }
+                      key={index}
+                      className="cursor-pointer py-2.5 flex justify-between items-center border-b border-[#E0DED9] hover:bg-[#F5F4F0] transition-colors duration-200"
+                    >
+                      <span className="text-[#4A4A4A]">{doc.documentName}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
-            ))}
+            )}
+          </div>
+          {/* 알림 리스트 */}
+          <div className="mb-5 flex items-center">
+            <img
+              className="w-[24px] h-[24px] ml-5"
+              src={notification}
+              alt="알림 아이콘"
+            />
+            <div className="px-5 py-2.5 flex items-center gap-2.5 hover:bg-[#F5F4F0] transition-colors duration-200">
+              <span className="font-medium text-[#4A4A4A]">알림</span>
+            </div>
+          </div>
+          {/* 메모 리스트 */}
+          <div className="flex-1 overflow-y-auto">
+            <div className="px-5 py-2.5 w-full flex items-center hover:bg-[#F5F4F0] transition-colors duration-200">
+              <img className="w-[24px] h-[24px]" src={memo} alt="메모 아이콘" />
+              <span className="ml-5 font-medium text-[#4A4A4A]">MEMO</span>
+              <div className="flex w-full right-0 justify-end items-center">
+                <FaPlus
+                  onClick={openModal}
+                  className="cursor-pointer hover:text-[#BC5B39]"
+                />
+              </div>
+            </div>
+            <div className="px-5">
+              {memos.map((memo, index) => (
+                <div
+                  key={index}
+                  className="py-2.5 flex justify-between items-center border-b border-[#E0DED9] hover:bg-[#F5F4F0] transition-colors duration-200"
+                >
+                  <span className="text-[#4A4A4A]">{memo}</span>
+                  <button className="text-[#6B6B6B] hover:text-[#4A4A4A] cursor-pointer text-sm transition-colors duration-200">
+                    보기
+                  </button>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
         <div className="items-center justify-center flex mb-10">

@@ -18,7 +18,7 @@ const AlertModal = ({ imgSrc, alertTitle, alertText, isButton, isVisible }) => {
               duration: 0.3,
             },
           }}
-          className="fixed inset-0 flex items-center justify-center z-[2100]"
+          className="fixed inset-0 flex items-center justify-center z-[2200]"
         >
           {/* <div className="fixed inset-0 z-10 w-screen overflow-hidden"> */}
           <div className="relative w-fit min-w-[200px] h-fit min-h-[200px] transform overflow-hidden rounded-lg bg-[#E4DCD4] text-left shadow-xl">
