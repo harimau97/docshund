@@ -2,7 +2,7 @@
 import axios from "axios";
 
 const axiosInstance = axios.create({
-  baseURL: "http://localhost:8080/api/v1/docshund/", // API 기본 URL
+  baseURL: "http://i12a703.p.ssafy.io:8081/api/v1/docshund/", // API 기본 URL
   headers: {
     "Content-Type": "application/json",
   },
