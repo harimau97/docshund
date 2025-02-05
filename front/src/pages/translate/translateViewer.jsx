@@ -57,14 +57,23 @@ const TranslateViewer = () => {
 
   //ui 관련
   const toggleButton = (partId, e) => {
-    // 클릭 이벤트 객체 e를 받도록 수정
     const rect = e.currentTarget.getBoundingClientRect();
+    const mouseY = e.clientY - rect.top;
+    
+    // 버튼 컨테이너의 높이 (두 버튼의 높이 + 간격)
+    const buttonContainerHeight = 100; // 대략적인 높이값
+    
+    // y 위치 제한
+    const limitedY = Math.min(
+      Math.max(buttonContainerHeight / 2, mouseY),
+      rect.height - buttonContainerHeight / 2
+    );
+
     setMousePositions((prev) => ({
-      // 클릭한 위치 저장
       ...prev,
       [partId]: {
         x: e.clientX - rect.left,
-        y: e.clientY - rect.top,
+        y: limitedY,
       },
     }));
 
