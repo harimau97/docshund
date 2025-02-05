@@ -1,5 +1,6 @@
 package com.ssafy.docshund.domain.supports.entity;
 
+import com.ssafy.docshund.domain.supports.dto.notice.NoticeRequestDto;
 import com.ssafy.docshund.global.audit.BaseTimeEntityWithUpdatedAt;
 
 import jakarta.persistence.Column;
@@ -8,7 +9,9 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.Getter;
 
+@Getter
 @Entity
 @Table(name = "Notice")
 public class Notice extends BaseTimeEntityWithUpdatedAt {
@@ -24,5 +27,16 @@ public class Notice extends BaseTimeEntityWithUpdatedAt {
 	@Column(name = "content", nullable = false)
 	private String content;
 
+	public static Notice createNotice(NoticeRequestDto noticeRequestDto) {
+		Notice notice = new Notice();
+		notice.title = noticeRequestDto.getTitle();
+		notice.content = noticeRequestDto.getContent();
+		return notice;
+	}
+
+	public void modifyNotice(NoticeRequestDto noticeRequestDto) {
+		this.title = noticeRequestDto.getTitle();
+		this.content = noticeRequestDto.getContent();
+	}
 }
 
