@@ -28,6 +28,14 @@ const communityArticleStore = create((set) => ({
   setArticleId: (articleId) => set({ articleId }),
   setArticleItems: (articleItems) => set({ articleItems }),
 
+  // 좋아요한 article list의 초기값 설정
+  likeArticles: [],
+  setLikeArticles: (likedArticles) => set({ likedArticles }),
+
+  // 내가 작성한 article list의 초기값 설정
+  myArticles: [],
+  setMyArticles: (myArticles) => set({ myArticles }),
+
   // reply list의 초기값 설정
   replies: [],
 
