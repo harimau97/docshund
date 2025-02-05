@@ -52,7 +52,7 @@ public class ForumController {
 
 	@PostMapping("/image")
 	public ResponseEntity<String> postImage(
-			@RequestPart(value = "file", required = false) MultipartFile file
+			@RequestPart(value = "file") MultipartFile file
 	) {
 		String image = s3FileUploadService.uploadFile(file, "article");
 
