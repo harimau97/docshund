@@ -32,7 +32,7 @@ public class ArticleRepositoryCustomImpl implements ArticleRepositoryCustom {
 
 	@Override
 	public Page<ArticleInfoDto> findAllArticles(String sort, Position filterPosition, String filterDocName,
-                                                String keyword, String searchType, Pageable pageable, Long userId) {
+		String keyword, String searchType, Pageable pageable, Long userId) {
 
 		QArticle article = QArticle.article;
 		QArticleLike articleLike = QArticleLike.articleLike;
@@ -271,14 +271,15 @@ public class ArticleRepositoryCustomImpl implements ArticleRepositoryCustom {
 				article.articleId.eq(articleId),
 				article.status.eq(Status.VISIBLE)
 			)
-			.groupBy(article.articleId, document.docsId, document.position, document.documentName, article.title, article.content,
+			.groupBy(article.articleId, document.docsId, document.position, document.documentName, article.title,
+				article.content,
 				article.createdAt, article.updatedAt, article.viewCount,
 				article.user.userId, article.user.nickname, article.user.profileImage)
 			.fetchOne();
 	}
 
 	private OrderSpecifier<?> getSortOrder(QArticle article, QArticleLike articleLike, String sort) {
-		if ("latest".equals(sort)) {
+		if ("likes".equals(sort)) {
 			return articleLike.alikeId.countDistinct().desc();
 		} else if ("highView".equals(sort)) {
 			return article.viewCount.desc();
