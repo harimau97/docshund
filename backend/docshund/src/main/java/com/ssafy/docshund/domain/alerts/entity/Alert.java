@@ -1,4 +1,4 @@
-package com.ssafy.docshund.domain.alert.entity;
+package com.ssafy.docshund.domain.alerts.entity;
 
 import java.time.LocalDateTime;
 
