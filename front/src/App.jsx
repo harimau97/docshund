@@ -19,9 +19,9 @@ function App() {
   // console.log("isTranslateViewerPage:", isTranslateViewerPage);
 
   return (
-    <div className="flex flex-col min-h-screen min-w-[768px]">
+    <div className="flex flex-col min-h-screen min-w-[768px] overflow-hidden">
       {isTranslateViewerPage ? <LeftNav /> : <UpperNav />}
-      <div className="flex-grow w-full">
+      <div className="flex-grow">
         <AppRouter />
       </div>
       {isTranslateViewerPage ? null : <Footer />}
