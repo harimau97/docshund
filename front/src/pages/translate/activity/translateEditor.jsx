@@ -1,5 +1,5 @@
 import Modal from "react-modal";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import * as motion from "motion/react-client";
 import { AnimatePresence } from "motion/react";
 import AlertModal from "../../../components/emptyModal/alertModal";
@@ -11,29 +11,27 @@ import check from "../../../assets/icon/check.svg";
 //상태 관련
 import useModalStore from "../store/modalStore";
 import useEditorStore from "../store/editorStore";
-import useArchiveStore from "../store/archiveStore";
 //
 
 const TranslateEditor = () => {
-  const { isEditorOpen, closeEditor, openArchive } = useModalStore();
+  const { docsPart, bestTrans, docsId, originId, currentUserText } =
+    useEditorStore();
+  const [isVisible, setIsVisible] = useState(false);
+
+  //모달 관련 상태
   const {
-    docsPart,
-    bestTrans,
-    porder,
-    docsId,
-    originId,
-    currentUserText,
+    isEditorOpen,
+    closeEditor,
+    openArchive,
     isEditorVisible,
     toggleEditor,
-  } = useEditorStore();
-  const { toggleArchive } = useArchiveStore();
-  const [isVisible, setIsVisible] = useState(false);
+    toggleArchive,
+  } = useModalStore();
   const [alertTitle, setAlertTitle] = useState("");
 
   return (
     <Modal
       isOpen={isEditorOpen}
-      onRequestClose={closeEditor}
       closeTimeoutMS={0}
       style={{
         overlay: {

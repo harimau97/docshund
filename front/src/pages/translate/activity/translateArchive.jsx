@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { fetchBestTranslate } from "../hooks/translateService.jsx";
+import { fetchBestTranslate } from "../hooks/translateGetService.jsx";
 import * as motion from "motion/react-client";
 import { AnimatePresence } from "motion/react";
 import Modal from "react-modal";
@@ -11,8 +11,7 @@ import useTestStore from "../store/testStore.jsx";
 
 const TranslateArchive = () => {
   const [transStates, setTransStates] = useState({});
-  const { isArchiveOpen, closeArchive } = useModalStore();
-  const { docsPart, bestTrans, porder, docsId, originId, currentUserText } =
+  const { docsPart, bestTrans, docsId, originId, currentUserText } =
     useEditorStore();
   const {
     transList,
@@ -20,13 +19,15 @@ const TranslateArchive = () => {
     orderBy,
     defaultStyle,
     toggledStyle,
-    isArchiveVisible,
     orderByUpdatedAt,
     setTransList,
     clearTransList,
-    toggleArchive,
   } = useArchiveStore();
   const { isTest } = useTestStore();
+
+  //모달 관련 상태
+  const { isArchiveOpen, closeArchive, isArchiveVisible, toggleArchive } =
+    useModalStore();
 
   const toggleTransContent = (transId) => {
     setTransStates((prev) => ({
@@ -42,30 +43,36 @@ const TranslateArchive = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const data = await fetchBestTranslate(docsId, originId, isTest);
+      const data = await fetchBestTranslate(docsId, "", isTest);
       setTransList(data);
     };
-    console.log(
-      "검색 기준이 변경되었습니다. 다시 검색합니다. 현재 검색 기준: ",
-      orderBy,
-      "docsID",
-      docsId,
-      "originID",
-      originId
-    );
+    // console.log(
+    //   "검색 기준이 변경되었습니다. 다시 검색합니다. 현재 검색 기준: ",
+    //   orderBy,
+    //   "docsID",
+    //   docsId,
+    //   "originID",
+    //   originId
+    // );
     fetchData();
   }, []);
 
   return (
     <Modal
       isOpen={isArchiveOpen}
-      onRequestClose={closeArchive}
       closeTimeoutMS={0}
       style={{
         overlay: {
           backgroundColor: "rgba(240,238,229,0.8)",
           zIndex: 2000,
         },
+      }}
+      onKeyDown={(e) => {
+        {
+          if (e.key === "Escape") {
+            toggleArchive();
+          }
+        }
       }}
       className="border-box w-full h-full flex items-center justify-center"
     >
@@ -140,7 +147,7 @@ const TranslateArchive = () => {
                 {transList.map((trans) => {
                   return (
                     <div key={trans.transId}>
-                      {trans.pOrder === porder && (
+                      {trans.originId === originId && (
                         <div
                           key={trans.transId}
                           className="w-full flex flex-col bg-white border border-[#87867F] py-4 px-5 rounded-xl hover:shadow-lg transition-all duration-300 ease-in-out"

@@ -3,7 +3,7 @@ import { FaPlus } from "react-icons/fa6";
 import { NavLink, useNavigate } from "react-router-dom";
 import EditorModal from "../../pages/myPage/components/EditorModal.jsx";
 import RoundCornerBtn from "../button/roundCornerBtn.jsx";
-import { fetchDocsList } from "../../pages/translate/hooks/translateService.jsx";
+import { fetchDocsList } from "../../pages/translate/hooks/translateGetService.jsx";
 
 // 상태 import
 import useDocsStore from "../../pages/translate/store/docsStore.jsx";
@@ -17,7 +17,7 @@ import menuUp from "../../assets/icon/menu-up.png";
 import notification from "../../assets/icon/notification.png";
 import ListIcon from "../../assets/icon/docsList.png";
 import memo from "../../assets/icon/memo.png";
-import navToggle from "../../assets/icon/navToggle.png";
+import navToggle2 from "../../assets/icon/navToggle2.png";
 //
 
 const LeftNav = () => {
@@ -26,7 +26,7 @@ const LeftNav = () => {
   const [memos, setMemo] = useState([]);
   const [isNavOpen, setIsNavOpen] = useState(false);
   const [btnToggled, setBtnToggled] = useState(
-    "absolute top-25 -right-3 transform rotate-180"
+    "absolute top-15 -right-6 transform"
   );
   const [showNav, setShowNav] = useState(
     "max-w-[15%] min-w-fit w-60 h-[80%] bg-[#F8F7F3] flex flex-col border-box border-2 border-[#E0DED9] absolute top-1/2 -translate-y-1/2 rounded-br-4xl rounded-tr-4xl transform transition-all duration-400 -translate-x-[90%] z-[1500]"
@@ -47,7 +47,7 @@ const LeftNav = () => {
   };
 
   const handleSubmit = (data) => {
-    console.log("Memo Saved:", data); // 메모 저장 처리
+    // console.log("Memo Saved:", data); // 메모 저장 처리
     // 예를 들어, 데이터를 서버로 전송하거나 상태 업데이트 처리
     closeModal();
   };
@@ -60,21 +60,18 @@ const LeftNav = () => {
   }, [docsList]);
 
   function toggleNav() {
-    console.log(isNavOpen);
     if (isNavOpen === true) {
-      console.log("nav 닫는다.");
       setIsNavOpen(false);
       setBtnToggled(
-        "absolute top-25 -right-3 transform transition-transform duration-300 rotate-180"
+        "absolute top-15 -right-6 transform transition-transform duration-300 "
       );
       setShowNav(
         "max-w-[15%] min-w-fit w-60 h-[80%] bg-[#F8F7F3] flex flex-col border-box border-2 border-[#E0DED9] absolute top-1/2 -translate-y-1/2 rounded-br-4xl rounded-tr-4xl transform transition-all duration-400 -translate-x-[90%] z-[1500]"
       );
     } else if (isNavOpen === false) {
-      console.log("nav 연다.");
       setIsNavOpen(true);
       setBtnToggled(
-        "absolute top-25 -right-3 transform transition-transform duration-300 "
+        "absolute top-15 -right-6 transform transition-transform duration-300 rotate-180"
       );
       setShowNav(
         "max-w-[15%] min-w-fit w-60 h-[80%] bg-[#F8F7F3] flex flex-col border-box border-2 border-[#E0DED9] absolute top-1/2 -translate-y-1/2 rounded-br-4xl rounded-tr-4xl transform transition-all duration-400 z-[1500]"
@@ -86,14 +83,15 @@ const LeftNav = () => {
     <div className="h-screen">
       <div
         className={showNav}
-        onMouseLeave={() => toggleNav()}
-        onMouseEnter={() => toggleNav()}
+        // onMouseLeave={() => toggleNav()}
+        // onMouseEnter={() => toggleNav()}
       >
         <button className={btnToggled}>
           <img
-            className="w-[24px] h-[24px] cursor-pointer"
-            src={navToggle}
+            className="w-[48px] h-[48px] cursor-pointer"
+            src={navToggle2}
             alt="nav 토글 버튼"
+            onClick={() => toggleNav()}
           />
         </button>
         <div className="p-5 text-center">

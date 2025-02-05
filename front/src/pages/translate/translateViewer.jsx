@@ -9,23 +9,26 @@ import {
 import {
   fetchTranslateData,
   fetchBestTranslate,
-} from "./hooks/translateService.jsx";
+} from "./hooks/translateGetService.jsx";
 import * as motion from "motion/react-client";
-import useTestStore from "./store/testStore.jsx";
-import useModalStore from "./store/modalStore.jsx";
-import useEditorStore from "./store/editorStore.jsx";
-import useArchiveStore from "./store/archiveStore.jsx";
+// 컴포넌트 import
 import AlertModal from "../../components/emptyModal/alertModal.jsx";
 import useAlertStore from "../../store/alertStore.jsx";
 import TranslateEditor from "./activity/translateEditor.jsx";
 import TranslateArchive from "./activity/translateArchive.jsx";
 import ToastViewer from "./components/toastViewer.jsx";
+
 import RectBtn from "../../components/button/rectBtn.jsx";
 
-//이미지
+//상태 import
+import useTestStore from "./store/testStore.jsx";
+import useModalStore from "./store/modalStore.jsx";
+import useEditorStore from "./store/editorStore.jsx";
+import useArchiveStore from "./store/archiveStore.jsx";
+
+//이미지 import
 import loadingGif from "../../assets/loading.gif";
 import warning from "../../assets/icon/warning.png";
-//
 
 const TranslateViewer = () => {
   const { docsId } = useParams();
@@ -33,7 +36,11 @@ const TranslateViewer = () => {
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [processedCount, setProcessedCount] = useState(0);
+  //각 문단 별 상태 저장 및 추적
   const [buttonStates, setButtonStates] = useState({});
+  const [docpartStates, setDocpartStates] = useState({});
+  const [heightStates, setHeightStates] = useState({});
+  //
   const [mousePositions, setMousePositions] = useState({}); // 마우스 위치를 저장할 state 추가
   const [checkComplete, setCheckComplete] = useState(false);
   const docData = useRef([]);
@@ -42,18 +49,17 @@ const TranslateViewer = () => {
 
   const { isTest } = useTestStore();
 
-  // 알림창 관련
-  const { isAlertOpen, toggleAlert } = useAlertStore();
-
   //indexedDB 관련 변수
   const dbName = "docs";
   const objectStoreName = docsId;
   const [isDbInitialized, setIsDbInitialized] = useState(false);
-
-  //번역 에디터, 투표 관련 모달
-  const { openEditor, openArchive } = useModalStore();
-  const { transList, toggleArchive } = useArchiveStore();
-  const { toggleEditor } = useEditorStore();
+  //번역 관련 상태
+  const { transList } = useArchiveStore();
+  const { bestTrans } = useEditorStore();
+  //모달 관련 상태
+  const { isAlertOpen, toggleAlert } = useAlertStore();
+  const { openEditor, openArchive, toggleArchive, toggleEditor } =
+    useModalStore();
 
   //ui 관련
   const toggleButton = (partId, e) => {
@@ -78,6 +84,28 @@ const TranslateViewer = () => {
     }));
 
     setButtonStates((prev) => ({
+      ...Object.keys(prev).reduce((acc, key) => {
+        if (key !== partId) {
+          acc[key] = false;
+        }
+        return acc;
+      }, {}),
+      [partId]: !prev[partId],
+    }));
+  };
+
+  const toggleDocpart = (partId, height) => {
+    setHeightStates((prev) => ({
+      ...Object.keys(prev).reduce((acc, key) => {
+        if (key !== partId) {
+          acc[key] = height;
+        }
+        return acc;
+      }, {}),
+      [partId]: height,
+    }));
+
+    setDocpartStates((prev) => ({
       ...Object.keys(prev).reduce((acc, key) => {
         if (key !== partId) {
           acc[key] = false;
@@ -123,7 +151,7 @@ const TranslateViewer = () => {
   useEffect(() => {
     let isMounted = true; // 컴포넌트 마운트 상태 추적
     closeAllConnections();
-    toggleAlert(3000); // 새로운 문서에 들어갈 경우를 위해 기존 db와 연결 해제
+    toggleAlert(1000); // 새로운 문서에 들어갈 경우를 위해 기존 db와 연결 해제
     // 상태 초기화
     setDocParts([]);
     setProcessedCount(0);
@@ -216,27 +244,45 @@ const TranslateViewer = () => {
           "[서비스 이용 안내]\n\n" +
           "1. 이 번역본은 공식 번역이 아니며, 원본의 정확성과 완전성을 보장하지 않습니다.\n" +
           "2. 참고용으로만 사용하시고, 공식 정보를 확인하시려면 원본 문서를 직접 참조하시기 바랍니다.\n\n" +
-          "3. 본 서비스는 공익적인 목적을 위해 제공되며, 상업적 이용 시 발생하는 모든 법적 책임은 해당 사용자에게 있으며, 서비스 제공자는 이에 대한 책임을 지지 않습니다."
+          "3. 본 서비스는 공익적인 목적을 위해 제공되며, 상업적 이용 시 발생하는 모든 법적 책임은ただ의 사용자에게 있으며, 서비스 제공자는 이에 대한 책임을 지지 않습니다."
         }
         isVisible={isAlertOpen}
       />
+
       <div className="flex flex-col gap-4">
         {docParts.map((part, index) => (
           <div key={index} className="flex flex-row gap-4 relative">
             <div
+              ref={(element) => {
+                if (element) {
+                  const height = element.offsetHeight;
+                  const tailwindHeight = height + "px";
+                  heightStates[part.id] = tailwindHeight;
+                }
+              }}
               onClick={async (e) => {
                 e.stopPropagation();
                 toggleButton(part.id, e);
                 fetchBestTranslate(part.docsId, "", isTest);
-                console.log(part.originId);
-                console.log("제발 좀 출력돼라", transList);
-                if (transList[0].originId === part.originId) {
+                if (
+                  transList !== undefined &&
+                  transList[0].originId === part.originId
+                ) {
                   useEditorStore.setState({ bestTrans: transList[0].content });
+                } else {
+                  useEditorStore.setState({ bestTrans: "" });
                 }
+
+                toggleDocpart(part.id, heightStates[part.id]);
+                console.log(heightStates[part.id]);
               }}
-              className="cursor-pointer p-5 rounded-xl text-[#424242] bg-[#E4DCD4] hover:bg-[#cfccc9] hover:shadow-lg transition-all duration-200 ease-in-out flex flex-col w-full shadow-md"
+              className="cursor-pointer p-5 rounded-xl text-[#424242] bg-[#E4DCD4] hover:bg-[#cfccc9] hover:shadow-lg flex flex-col w-full shadow-md"
             >
-              <ToastViewer content={part.content} />
+              {!docpartStates[part.id] ? (
+                <ToastViewer content={part.content} />
+              ) : (
+                <ToastViewer content={useEditorStore.getState().bestTrans} />
+              )}
             </div>
             {buttonStates[part.id] && (
               <motion.div

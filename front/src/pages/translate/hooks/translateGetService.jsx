@@ -44,14 +44,14 @@ export const fetchBestTranslate = async (docsId, isBest, test) => {
   const status = isBest ? "best" : "";
   try {
     if (!test) {
-      console.log("번역데이터 가져오기 시작");
+      // console.log("번역데이터 가져오기 시작");
       const response = await axios.get(
         `${baseUrl}/${docsId}/trans?status=${status}`
       );
       const data = response.data;
-      console.log(data);
+      // console.log(data);
       useArchiveStore.setState({ transList: data });
-      console.log(useArchiveStore.getState().transList[0]);
+      // console.log(useArchiveStore.getState().transList[0]);
     } else {
       return TmpBestData.transList;
     }

@@ -4,6 +4,10 @@ import "@toast-ui/editor/dist/toastui-editor-viewer.css";
 import PropTypes from "prop-types";
 
 const ToastViewer = ({ content }) => {
+  if (content === "") {
+    content = "<p>첫 번째 번역의 주인공이 되세요!</p>";
+  }
+
   const viewerRef = useRef(null);
   const containerRef = useRef(null);
 
@@ -30,6 +34,7 @@ const ToastViewer = ({ content }) => {
 
 ToastViewer.propTypes = {
   content: PropTypes.string,
+  height: PropTypes.string,
 };
 
 export default ToastViewer;

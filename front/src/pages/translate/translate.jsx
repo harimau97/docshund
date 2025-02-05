@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate, NavLink } from "react-router-dom";
 import useDocsStore from "./store/docsStore";
 import useTestStore from "./store/testStore";
-import { fetchDocsList } from "./hooks/translateService";
+import { fetchDocsList } from "./hooks/translateGetService";
 import { motion } from "framer-motion";
 
 const TransLatePage = () => {
