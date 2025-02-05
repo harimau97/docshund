@@ -46,9 +46,6 @@ public class DocsController {
 	@PostMapping("")
 	public ResponseEntity<DocumentDto> postDocs(@RequestBody DocumentDto documentDto) {
 		User user = userUtil.getUser();
-		if (user == null) {
-			throw new IllegalArgumentException("User not found");
-		}
 		DocumentDto createdDocument = docsService.createDocument(documentDto, user);
 		return ResponseEntity.ok(createdDocument);
 	}
@@ -87,12 +84,6 @@ public class DocsController {
 		@RequestParam String content
 	) {
 		User user = userUtil.getUser();
-		if (user == null) {
-			throw new IllegalArgumentException("User not found");
-		}
-		if (content == null || content.trim().isEmpty()) {
-			throw new IllegalArgumentException("Content is empty or null");
-		}
 		List<OriginDocumentDto> createdDocs = docsService.createOriginDocuments(docsId, content, user);
 		return ResponseEntity.ok(createdDocs);
 	}
