@@ -51,7 +51,7 @@ public class UserUtil {
 
 	@Transactional(readOnly = true)
 	public boolean isActiveUser(User user) {
-		if (user.getStatus() == Status.ACTIVE) {
+		if (user == null || user.getStatus() == Status.ACTIVE) {
 			return true;
 		}
 
@@ -61,7 +61,7 @@ public class UserUtil {
 
 	@Transactional(readOnly = true)
 	public boolean isAdmin(User user) {
-		if (user.getRole() != Role.ROLE_ADMIN) {
+		if (user == null || user.getRole() != Role.ROLE_ADMIN) {
 			log.info("is Not Admin");
 			return false;
 		}
@@ -72,7 +72,7 @@ public class UserUtil {
 
 	@Transactional(readOnly = true)
 	public boolean isMine(Long userId, User user) {
-		if (!user.getUserId().equals(userId)) {
+		if (user == null || !user.getUserId().equals(userId)) {
 			log.info("is Not Mine");
 			return false;
 		}
