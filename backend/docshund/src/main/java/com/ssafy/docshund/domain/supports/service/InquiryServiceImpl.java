@@ -1,11 +1,14 @@
 package com.ssafy.docshund.domain.supports.service;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.ssafy.docshund.domain.supports.dto.inquiry.AnswerRequestDto;
 import com.ssafy.docshund.domain.supports.dto.inquiry.InquiryRequestDto;
+import com.ssafy.docshund.domain.supports.dto.inquiry.page.InquiryAndAnswerDto;
 import com.ssafy.docshund.domain.supports.entity.Answer;
 import com.ssafy.docshund.domain.supports.entity.Inquiry;
 import com.ssafy.docshund.domain.supports.repository.AnswerRepository;
@@ -48,8 +51,17 @@ public class InquiryServiceImpl implements InquiryService {
 	}
 
 	@Override
-	public void getInquiries() {
+	public Page<InquiryAndAnswerDto> getInquiries(Long userId, Pageable pageable) {
+		User user = userUtil.getUser();
+		if (user == null) {
+			throw new SecurityException("조회할 수 있는 권한이 없습니다.");
+		}
+		
+		if (userUtil.isAdmin(user) || (userId != null && userUtil.isMine(userId, user))) {
+			return inquiryRepository.searchInquiryAndAnswer(userId, pageable);
+		}
 
+		throw new SecurityException("조회할 수 있는 권한이 없습니다.");
 	}
 
 	@Override
