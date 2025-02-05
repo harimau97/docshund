@@ -127,6 +127,7 @@ class DocsServiceImplTest {
 		);
 
 		// when
+		Mockito.when(userUtil.getUser()).thenReturn(user1);
 		Mockito.when(userUtil.isAdmin(Mockito.any())).thenReturn(true);
 		User user = userUtil.getUser();
 		DocumentDto result = docsService.createDocument(documentDto, user);
@@ -179,7 +180,6 @@ class DocsServiceImplTest {
 	}
 
 	@Test
-	@WithMockCustomOAuth2User
 	@DisplayName("원본 문서 등록 테스트")
 	void createOriginDocuments() {
 		// given
@@ -187,8 +187,10 @@ class DocsServiceImplTest {
 		String content = "<p>문서 내용</p>";
 
 		// when
+		Mockito.when(userUtil.getUser()).thenReturn(user1);
 		Mockito.when(userUtil.isAdmin(Mockito.any())).thenReturn(true);
 		User user = userUtil.getUser();
+
 		List<OriginDocumentDto> result = docsService.createOriginDocuments(docsId, content, user);
 
 		// then

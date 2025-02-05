@@ -131,7 +131,7 @@ public class DocsServiceImpl implements DocsService {
 	@Transactional
 	public DocumentDto createDocument(DocumentDto documentDto, User user) {
 
-		if(userUtil.isAdmin(user)) {
+		if(!userUtil.isAdmin(user)) {
 			throw new SecurityException("Only admins can create documents.");
 		}
 
@@ -245,7 +245,7 @@ public class DocsServiceImpl implements DocsService {
 			throw new IllegalArgumentException("User not found");
 		}
 		// 관리자가 아닐 시 예외 처리
-		if (userUtil.isAdmin(user)) {
+		if (!userUtil.isAdmin(user)) {
 			throw new SecurityException("Only admins can create origin documents.");
 		}
 		// 내용이 없을 시 예외 처리
