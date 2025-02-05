@@ -23,10 +23,8 @@ import com.ssafy.docshund.domain.forums.repository.ArticleLikeRepository;
 import com.ssafy.docshund.domain.forums.repository.ArticleRepository;
 import com.ssafy.docshund.domain.users.entity.Provider;
 import com.ssafy.docshund.domain.users.entity.User;
-import com.ssafy.docshund.domain.users.repository.UserRepository;
 import com.ssafy.docshund.fixture.UserTestHelper;
 import com.ssafy.docshund.fixture.WithMockCustomOAuth2User;
-import com.ssafy.docshund.global.util.user.UserUtil;
 
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
@@ -40,9 +38,6 @@ public class ArticleServiceTest {
 
     @Autowired
     UserTestHelper userTestHelper;
-
-    @Autowired
-    private UserUtil userUtil;
 
     @Autowired
     private ArticleRepository articleRepository;
