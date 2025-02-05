@@ -1,5 +1,6 @@
 package com.ssafy.docshund.domain.supports.entity;
 
+import com.ssafy.docshund.domain.supports.dto.inquiry.InquiryRequestDto;
 import com.ssafy.docshund.domain.users.entity.User;
 import com.ssafy.docshund.global.audit.BaseTimeEntity;
 
@@ -14,8 +15,10 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.Getter;
 
 @Entity
+@Getter
 @Table(name = "inquiry")
 public class Inquiry extends BaseTimeEntity {
 
@@ -47,4 +50,20 @@ public class Inquiry extends BaseTimeEntity {
 	@Column(name = "is_answered", nullable = false)
 	private Boolean isAnswered;  // 답변 여부
 
+	public static Inquiry createInquiry(User user, InquiryRequestDto inquiryRequestDto, String imageUrl) {
+		Inquiry inquiry = new Inquiry();
+		inquiry.user = user;
+		inquiry.email = inquiryRequestDto.getEmail();
+		inquiry.title = inquiryRequestDto.getTitle();
+		inquiry.category = InquiryCategory.valueOf(inquiryRequestDto.getCategory());
+		inquiry.content = inquiryRequestDto.getContent();
+		inquiry.file = imageUrl;
+		inquiry.isAnswered = false;
+
+		return inquiry;
+	}
+
+	public void isAnsweredTrue() {
+		this.isAnswered = true;
+	}
 }
