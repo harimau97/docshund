@@ -1,9 +1,8 @@
-import ArticleItemService from "./hooks/articleItemService";
+import ArticleItemService from "./services/articleItemService";
 import communityArticleStore from "../../store/communityStore/communityArticleStore";
 import CommunityHeader from "./components/communityHeader";
 import ReplyList from "./replyList";
 
-import axios from "axios";
 import { useEffect } from "react";
 import { useParams } from "react-router-dom";
 
