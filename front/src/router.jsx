@@ -44,7 +44,9 @@ function AppRoutes() {
       {/* UpperNav 바로가기 주소 */}
       <Route path="/" element={<LandingPage />} />
       {/* 번역 관련 주소 */}
-      <Route path="/translate" element={<TranslatePage />}></Route>
+      <Route path="/translate" element={<TranslatePage />} />
+      <Route path="/translate/viewer/:docsId" element={<TranslateViewer />} />
+
       {/* 커뮤니티 관련 주소 */}
       <Route path="/community" element={<CommunityPage />}>
         <Route index element={<Navigate to="list" replace />} />
@@ -65,17 +67,6 @@ function AppRoutes() {
       <Route path="/terms" element={<TermsPage />} />
       <Route path="/privacy" element={<PrivacyPage />} />
 
-      {/* 번역뷰어 */}
-      <Route
-        path="translate/viewer/:docsId"
-        element={<TranslateViewer />}
-      ></Route>
-
-      {/* 번역뷰어 */}
-      <Route
-        path="translate/viewer/:docsId"
-        element={<TranslateViewer key={window.location.pathname} />}
-      ></Route>
       {/* 비로그인 접근 불가 */}
       <Route element={<ProtectedRoute />}>
         {/* 마이페이지 관련 주소 */}

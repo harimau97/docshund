@@ -10,7 +10,7 @@ const baseUrl = "http://i12a703.p.ssafy.io:8081/api/v1/docshund/docs";
 
 export const fetchLikedList = async (docsId) => {
   try {
-    const respone = await axiosJsonInstance.get(`${baseUrl}/${docsId}/likes`);
+    const response = await axiosJsonInstance.get(`${baseUrl}/${docsId}/likes`);
     const data = response.data;
     return data;
   } catch (error) {

@@ -51,13 +51,15 @@ function App() {
           onClick={toggleChat}
           className="fixed bottom-4 right-4 z-[1900] group"
         >
-          <div className="rounded-full w-16 h-16 bg-gradient-to-r from-[#BC5B39] to-[#E4DCD4] flex justify-center items-center cursor-pointer shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 border-2 border-white">
-            <img
-              className="group-hover:rotate-12 transition-transform duration-300"
-              src={chatImg}
-              alt="챗봇 아이콘"
-            />
-          </div>
+          {localStorage.getItem("token") && (
+            <div className="rounded-full w-16 h-16 bg-gradient-to-r from-[#BC5B39] to-[#E4DCD4] flex justify-center items-center cursor-pointer shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 border-2 border-white">
+              <img
+                className="group-hover:rotate-12 transition-transform duration-300"
+                src={chatImg}
+                alt="챗봇 아이콘"
+              />
+            </div>
+          )}
         </div>
       ) : null}
       {isChatVisible && <Chat />}

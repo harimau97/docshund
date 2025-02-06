@@ -248,7 +248,9 @@ const TranslateViewer = () => {
             <div
               onClick={async (e) => {
                 e.stopPropagation();
-                toggleButton(part.id, e);
+                if (localStorage.getItem("token")) {
+                  toggleButton(part.id, e);
+                }
                 fetchBestTranslate(part.docsId, "best", isTest);
                 if (transList !== undefined) {
                   const filteredTranslations = transList.filter(
@@ -291,11 +293,13 @@ const TranslateViewer = () => {
                     <ToastViewer
                       content={useEditorStore.getState().bestTrans}
                     />
-                    <img
-                      className="w-10 h-10"
-                      src={best}
-                      alt="베스트 번역 아이콘"
-                    />
+                    {bestTrans !== "" && (
+                      <img
+                        className="w-10 h-10"
+                        src={best}
+                        alt="베스트 번역 아이콘"
+                      />
+                    )}
                   </div>
                 )}
               </div>

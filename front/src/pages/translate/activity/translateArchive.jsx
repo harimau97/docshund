@@ -54,7 +54,8 @@ const TranslateArchive = () => {
       newState[transId] = !prev[transId];
       return newState;
     });
-    likeTranslate(docsId, transId);
+    await likeTranslate(docsId, transId);
+    fetchBestTranslate(docsId, "", isTest);
   };
 
   const changeOrderBy = (category) => {
@@ -88,13 +89,13 @@ const TranslateArchive = () => {
           zIndex: 2000,
         },
       }}
-      onKeyDown={(e) => {
-        {
-          if (e.key === "Escape") {
-            toggleArchive();
-          }
-        }
-      }}
+      // onKeyDown={(e) => {
+      //   {
+      //     if (e.key === "Escape") {
+      //       toggleArchive();
+      //     }
+      //   }
+      // }}
       className="border-box w-full h-full flex items-center justify-center"
     >
       <AnimatePresence>
@@ -195,28 +196,18 @@ const TranslateArchive = () => {
                               handleLike(docsId, trans.transId);
                             }}
                             className={`flex w-1/5 items-center gap-2 px-4 py-2 rounded-lg transition-all duration-300 cursor-pointer right-5 top-1/2  ${
-                              (likedStates[trans.transId] &&
-                                !trans.likeUserIds.includes(
-                                  Number(localStorage.getItem("userId"))
-                                )) ||
-                              (!likedStates[trans.transId] &&
-                                trans.likeUserIds.includes(
-                                  Number(localStorage.getItem("userId"))
-                                ))
+                              trans.likeUserIds.includes(
+                                Number(localStorage.getItem("userId"))
+                              )
                                 ? "bg-red-600 text-white"
                                 : "bg-gray-300"
                             }`}
                           >
                             <span
                               className={
-                                (likedStates[trans.transId] &&
-                                  !trans.likeUserIds.includes(
-                                    Number(localStorage.getItem("userId"))
-                                  )) ||
-                                (!likedStates[trans.transId] &&
-                                  trans.likeUserIds.includes(
-                                    Number(localStorage.getItem("userId"))
-                                  ))
+                                trans.likeUserIds.includes(
+                                  Number(localStorage.getItem("userId"))
+                                )
                                   ? "text-white"
                                   : "text-slate-700"
                               }
@@ -225,19 +216,14 @@ const TranslateArchive = () => {
                             </span>
                             <span
                               className={`font-semibold ${
-                                (likedStates[trans.transId] &&
-                                  !trans.likeUserIds.includes(
-                                    Number(localStorage.getItem("userId"))
-                                  )) ||
-                                (!likedStates[trans.transId] &&
-                                  trans.likeUserIds.includes(
-                                    Number(localStorage.getItem("userId"))
-                                  ))
+                                trans.likeUserIds.includes(
+                                  Number(localStorage.getItem("userId"))
+                                )
                                   ? "text-white"
                                   : "text-slate-900"
                               }`}
                             >
-                              {/* {trans.likeCount} */}
+                              {trans.likeCount}
                             </span>
                           </div>
                         </div>
