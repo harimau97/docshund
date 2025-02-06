@@ -13,7 +13,7 @@ const communityArticleStore = create((set) => ({
   // article list의 초기값 설정
   articles: [],
   totalPages: 0,
-  currentPage: 1,
+  currentPage: 0,
 
   // article list의 메소드 설정
   setArticles: (articles) => set({ articles }),

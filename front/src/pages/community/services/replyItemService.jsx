@@ -1,26 +1,26 @@
 import { axiosJsonInstance } from "../../../utils/axiosInstance";
-import proptypes from "prop-types";
+import propTypes from "prop-types";
 
-const MyCommentService = {
-  async fetchComments(userId) {
+const ReplyItemService = {
+  async fetchReplyItem(articleId) {
     try {
+      // TODO: axios로 변경 필요
       const response = await axiosJsonInstance.get(
-        `forums/comments/user/${userId}`
+        `forums/${articleId}/comments`
       );
 
       const data = response.data;
-
       return data;
     } catch (error) {
       //TODO: error handling -> 에러 페이지 제작후 연결까지 구현
-      console.error(error);
+      console.log(error);
       return null;
     }
   },
 };
 
-MyCommentService.fetchComments.propTypes = {
-  userId: proptypes.number,
+ReplyItemService.fetchReplyItem.propTypes = {
+  articleId: propTypes.number.isRequired,
 };
 
-export default MyCommentService;
+export default ReplyItemService;
