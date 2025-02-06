@@ -27,4 +27,16 @@ public class ChatInfoDto {
         this.nickName = nickName;
         this.profileImg = profileImg;
     }
+
+    public static ChatInfoDto from(Chat chat) {
+
+        return new ChatInfoDto(
+                chat.getDocument().getDocsId(),
+                chat.getChatId(),
+                chat.getContent(),
+                chat.getUser().getUserId(),
+                chat.getUser().getNickname(),
+                chat.getUser().getProfileImage()
+        );
+    }
 }
