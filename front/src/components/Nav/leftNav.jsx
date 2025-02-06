@@ -1,15 +1,24 @@
 import { useState, useEffect } from "react";
-import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 import { FaPlus } from "react-icons/fa6";
 import { NavLink, useNavigate } from "react-router-dom";
-
-import modalStore from "../../pages/myPage/store/modalStore.jsx";
 import EditorModal from "../../pages/myPage/components/EditorModal.jsx";
-import docsList from "../../assets/icon/docsList.png";
-import notification from "../../assets/icon/notification.png";
-import memo from "../../assets/icon/memo.png";
-import navToggle from "../../assets/icon/navToggle.png";
 import RoundCornerBtn from "../button/roundCornerBtn.jsx";
+import { fetchDocsList } from "../../pages/translate/hooks/translateGetService.jsx";
+
+// 상태 import
+import useDocsStore from "../../pages/translate/store/docsStore.jsx";
+import modalStore from "../../pages/myPage/store/modalStore.jsx";
+//
+
+//이미지 주소 import
+import Logo from "../../assets/logo.png";
+import menuDown from "../../assets/icon/menu-down.png";
+import menuUp from "../../assets/icon/menu-up.png";
+import notification from "../../assets/icon/notification.png";
+import ListIcon from "../../assets/icon/docsList.png";
+import memo from "../../assets/icon/memo.png";
+import navToggle2 from "../../assets/icon/navToggle2.png";
+//
 
 const LeftNav = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -17,12 +26,13 @@ const LeftNav = () => {
   const [memos, setMemo] = useState([]);
   const [isNavOpen, setIsNavOpen] = useState(false);
   const [btnToggled, setBtnToggled] = useState(
-    "absolute top-25 -right-3 transform rotate-180"
+    "absolute top-15 -right-6 transform"
   );
   const [showNav, setShowNav] = useState(
-    "max-w-[15%] min-w-fit w-60 h-[80%] bg-[#F0EEE5] flex flex-col border-box border-2 border-black absolute top-1/2 -translate-y-1/2 rounded-br-4xl rounded-tr-4xl transform transition-transform duration-250 -translate-x-[95%] z-[1500]"
-  ); // leftNav가 화면 최상위에 오도록 z-index 설정
+    "max-w-[15%] min-w-fit w-60 h-[80%] bg-[#F8F7F3] flex flex-col border-box border-2 border-[#E0DED9] absolute top-1/2 -translate-y-1/2 rounded-br-4xl rounded-tr-4xl transform transition-all duration-400 -translate-x-[90%] z-[1500]"
+  ); // 배경색 및 테두리 색상 변경, 애니메이션 효과 조정
   const { isOpen, openModal, closeModal } = modalStore();
+  //메모 관련 상태
   const [memoData, setMemoData] = useState({
     title: "",
     content: "",
@@ -37,30 +47,34 @@ const LeftNav = () => {
   };
 
   const handleSubmit = (data) => {
-    console.log("Memo Saved:", data); // 메모 저장 처리
+    // console.log("Memo Saved:", data); // 메모 저장 처리
     // 예를 들어, 데이터를 서버로 전송하거나 상태 업데이트 처리
     closeModal();
   };
 
+  //문서 목록 관련 상태
+  const { docsList } = useDocsStore();
+
+  useEffect(() => {
+    fetchDocsList(true);
+  }, [docsList]);
+
   function toggleNav() {
-    console.log(isNavOpen);
     if (isNavOpen === true) {
-      console.log("nav 닫는다.");
       setIsNavOpen(false);
       setBtnToggled(
-        "absolute top-25 -right-3 transform transition-transform duration-300 rotate-180"
+        "absolute top-15 -right-6 transform transition-transform duration-300 "
       );
       setShowNav(
-        "max-w-[15%] min-w-fit w-60 h-[80%] bg-[#F0EEE5] flex flex-col border-box border-2 border-black absolute top-1/2 -translate-y-1/2 rounded-br-4xl rounded-tr-4xl transform transition-transform duration-400 -translate-x-[90%] z-[1500]"
+        "max-w-[15%] min-w-fit w-60 h-[80%] bg-[#F8F7F3] flex flex-col border-box border-2 border-[#E0DED9] absolute top-1/2 -translate-y-1/2 rounded-br-4xl rounded-tr-4xl transform transition-all duration-400 -translate-x-[90%] z-[1500]"
       );
     } else if (isNavOpen === false) {
-      console.log("nav 연다.");
       setIsNavOpen(true);
       setBtnToggled(
-        "absolute top-25 -right-3 transform transition-transform duration-300 "
+        "absolute top-15 -right-6 transform transition-transform duration-300 rotate-180"
       );
       setShowNav(
-        "max-w-[15%] min-w-fit w-60 h-[80%] bg-[#F0EEE5] flex flex-col border-box border-2 border-black absolute top-1/2 -translate-y-1/2 rounded-br-4xl rounded-tr-4xl transform transition-transform duration-400 z-[1500]"
+        "max-w-[15%] min-w-fit w-60 h-[80%] bg-[#F8F7F3] flex flex-col border-box border-2 border-[#E0DED9] absolute top-1/2 -translate-y-1/2 rounded-br-4xl rounded-tr-4xl transform transition-all duration-400 z-[1500]"
       );
     }
   }
@@ -69,86 +83,100 @@ const LeftNav = () => {
     <div className="h-screen">
       <div
         className={showNav}
-        onMouseLeave={() => toggleNav()}
-        onMouseEnter={() => toggleNav()}
+        // onMouseLeave={() => toggleNav()}
+        // onMouseEnter={() => toggleNav()}
       >
         <button className={btnToggled}>
           <img
-            className="w-[24px] h-[24px] cursor-pointer"
-            src={navToggle}
+            className="w-[48px] h-[48px] cursor-pointer"
+            src={navToggle2}
             alt="nav 토글 버튼"
+            onClick={() => toggleNav()}
           />
         </button>
         <div className="p-5 text-center">
           <NavLink to="/translate">
             <img
-              src="https://cdn.discordapp.com/attachments/1325677272572891136/1334006138638958713/docshund.png?ex=679af588&is=6799a408&hm=29441a9c35dd323776e3a367f2cc18daea6dd7883f1cfef1a225f3b6a1bb63cb&"
+              className="w-[clamp(120px,10vw,148px)] h-auto hover:opacity-80 transition-opacity duration-200"
+              src={Logo}
               alt="닥스훈트 로고"
             />
           </NavLink>
         </div>
-
-        <div className="mb-5">
-          <div
-            className="px-5 py-2.5 flex items-center cursor-pointer hover:bg-gray-50"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-          >
-            <img src={docsList} alt="문서목록 아이콘" />
-            <span className="ml-5">문서목록</span>
-            {isMenuOpen ? (
-              <IoIosArrowUp className="right-0 mr-5" />
-            ) : (
-              <IoIosArrowDown className="right-0 mr-5" />
-            )}
-          </div>
-          {isMenuOpen && (
-            <div className="h-[200px] overflow-y-scroll ">
-              <div className="px-5">
-                {docs.map((doc, index) => (
-                  <div
-                    key={index}
-                    className="py-2.5 flex justify-between items-center border-b border-gray-100"
-                  >
-                    {doc}
-                  </div>
-                ))}
+        {/* 문서목록 토글 */}
+        <div className="flex-1 overflow-y-scroll">
+          <div className="mb-5">
+            <div
+              className="px-5 py-2.5 flex flex-row items-center  cursor-pointer hover:bg-[#F5F4F0] transition-colors duration-200"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+            >
+              <img src={ListIcon} alt="문서목록 아이콘" />
+              <span className="ml-5 font-medium text-[#4A4A4A]">문서목록</span>
+              <div className="flex w-1/5 justify-end items-center">
+                {" "}
+                {isMenuOpen ? (
+                  <img src={menuUp} className="w-4 h-4 right-0" />
+                ) : (
+                  <img src={menuDown} className="w-4 h-4 right-0" />
+                )}
               </div>
             </div>
-          )}
-        </div>
-
-        <div className="mb-5 flex items-center">
-          <img
-            className="w-[24px] h-[24px] ml-5"
-            src={notification}
-            alt="알림 아이콘"
-          />
-          <div className="px-5 py-2.5 flex items-center gap-2.5 ">
-            <span>알림</span>
-          </div>
-        </div>
-
-        <div className="flex-1 overflow-y-auto">
-          <div className="px-5 py-2.5 flex items-center">
-            <img className="w-[24px] h-[24px]" src={memo} alt="메모 아이콘" />
-            <span className="ml-5">MEMO</span>
-            <FaPlus
-              onClick={openModal}
-              className="cursor-pointer absolute right-0 mr-5 hover:text-[#BC5B39]"
-            />
-          </div>
-          <div className="px-5">
-            {memos.map((memo, index) => (
-              <div
-                key={index}
-                className="py-2.5 flex justify-between items-center border-b border-gray-100"
-              >
-                {memo}
-                <button className="text-gray-600 hover:text-black cursor-pointer text-sm">
-                  보기
-                </button>
+            {isMenuOpen && (
+              <div className="h-[200px] overflow-y-scroll ">
+                <div className="px-5">
+                  {docsList.map((doc, index) => (
+                    <div
+                      onClick={() =>
+                        window.location.replace(
+                          `/translate/viewer/${doc.docsId}`
+                        )
+                      }
+                      key={index}
+                      className="cursor-pointer py-2.5 flex justify-between items-center border-b border-[#E0DED9] hover:bg-[#F5F4F0] transition-colors duration-200"
+                    >
+                      <span className="text-[#4A4A4A]">{doc.documentName}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
-            ))}
+            )}
+          </div>
+          {/* 알림 리스트 */}
+          <div className="mb-5 flex items-center">
+            <img
+              className="w-[24px] h-[24px] ml-5"
+              src={notification}
+              alt="알림 아이콘"
+            />
+            <div className="px-5 py-2.5 flex items-center gap-2.5 hover:bg-[#F5F4F0] transition-colors duration-200">
+              <span className="font-medium text-[#4A4A4A]">알림</span>
+            </div>
+          </div>
+          {/* 메모 리스트 */}
+          <div className="flex-1 overflow-y-auto">
+            <div className="px-5 py-2.5 w-full flex items-center hover:bg-[#F5F4F0] transition-colors duration-200">
+              <img className="w-[24px] h-[24px]" src={memo} alt="메모 아이콘" />
+              <span className="ml-5 font-medium text-[#4A4A4A]">MEMO</span>
+              <div className="flex w-full right-0 justify-end items-center">
+                <FaPlus
+                  onClick={openModal}
+                  className="cursor-pointer hover:text-[#BC5B39]"
+                />
+              </div>
+            </div>
+            <div className="px-5">
+              {memos.map((memo, index) => (
+                <div
+                  key={index}
+                  className="py-2.5 flex justify-between items-center border-b border-[#E0DED9] hover:bg-[#F5F4F0] transition-colors duration-200"
+                >
+                  <span className="text-[#4A4A4A]">{memo}</span>
+                  <button className="text-[#6B6B6B] hover:text-[#4A4A4A] cursor-pointer text-sm transition-colors duration-200">
+                    보기
+                  </button>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
         <div className="items-center justify-center flex mb-10">
@@ -158,24 +186,26 @@ const LeftNav = () => {
           />
         </div>
       </div>
-      <EditorModal
-        title="새 메모"
-        fields={[
-          {
-            label: "제목",
-            name: "title",
-            type: "text",
-            placeholder: "제목을 입력하세요",
-            value: memoData.title,
-            onChange: handleInputChange,
-            required: true,
-          },
-        ]}
-        buttonText="작성 완료"
-        isOpen={isOpen}
-        closeModal={closeModal}
-        onSubmit={handleSubmit}
-      />
+      <div className="absolute z-[2500]">
+        <EditorModal
+          title="새 메모"
+          fields={[
+            {
+              label: "제목",
+              name: "title",
+              type: "text",
+              placeholder: "제목을 입력하세요",
+              value: memoData.title,
+              onChange: handleInputChange,
+              required: true,
+            },
+          ]}
+          buttonText="작성 완료"
+          isOpen={isOpen}
+          closeModal={closeModal}
+          onSubmit={handleSubmit}
+        />
+      </div>
     </div>
   );
 };

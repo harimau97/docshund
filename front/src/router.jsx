@@ -50,10 +50,15 @@ function AppRoutes() {
       <Route path="/helpDesk" element={<HelpDesk />} />
       {/* 번역뷰어 */}
       <Route
-        path="translate/viewer/:docsName"
+        path="translate/viewer/:docsId"
         element={<TranslateViewer />}
       ></Route>
 
+      {/* 번역뷰어 */}
+      <Route
+        path="translate/viewer/:docsId"
+        element={<TranslateViewer key={window.location.pathname} />}
+      ></Route>
       {/* 비로그인 접근 불가 */}
       <Route element={<ProtectedRoute />}>
         {/* 마이페이지 관련 주소 */}
