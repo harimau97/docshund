@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-const likeDocsStore = create((set) => ({
+const TranslationStore = create((set) => ({
   // 초기값 설정
   isLoading: false,
   error: null,
@@ -9,10 +9,10 @@ const likeDocsStore = create((set) => ({
   setError: (error) => set({ error }),
 
   // state 정의
-  docs: [],
+  translations: [], // 좋아요한 번역 목록
 
-  // 메소드 설정
-  setDocs: (docs) => set({ docs }),
+  // set(메소드) 정의
+  setTranslations: (translations) => set({ translations }),
 }));
 
-export default likeDocsStore;
+export default TranslationStore;

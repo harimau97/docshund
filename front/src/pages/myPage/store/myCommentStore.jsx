@@ -1,24 +1,18 @@
 import { create } from "zustand";
 
-const myCommentStore = create(() => ({
-  comments: [
-    {
-      articleId: 1,
-      commentContent: "좋은 글 감사합니다!",
-      createdAt: "2025-01-20",
-    },
-    {
-      articleId: 2,
-      commentContent: "유익한 정보네요!",
-      createdAt: "2025-01-22",
-    },
-    {
-      articleId: 3,
-      commentContent:
-        "ㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅㄱㅅ",
-      createdAt: "2025-01-22",
-    },
-  ],
+const myCommentStore = create((set) => ({
+  // 초기값 설정
+  isLoading: false,
+  error: null,
+  // 메소드 설정
+  setLoading: (isLoading) => set({ isLoading }),
+  setError: (error) => set({ error }),
+
+  // store에 저장할 데이터들
+  comments: [],
+
+  // store에 저장할 메소드들
+  setComments: (comments) => set({ comments }),
 }));
 
 export default myCommentStore;
