@@ -47,6 +47,8 @@ const TranslateViewer = () => {
   const loadingRef = useRef(null);
   const chunk_size = 20;
 
+  const initialHeights = useRef({}); // 초기 높이를 저장할 ref
+
   const { isTest } = useTestStore();
 
   //indexedDB 관련 변수
@@ -94,17 +96,7 @@ const TranslateViewer = () => {
     }));
   };
 
-  const toggleDocpart = (partId, height) => {
-    setHeightStates((prev) => ({
-      ...Object.keys(prev).reduce((acc, key) => {
-        if (key !== partId) {
-          acc[key] = height;
-        }
-        return acc;
-      }, {}),
-      [partId]: height,
-    }));
-
+  const toggleDocpart = (partId) => {
     setDocpartStates((prev) => ({
       ...Object.keys(prev).reduce((acc, key) => {
         if (key !== partId) {
@@ -253,13 +245,6 @@ const TranslateViewer = () => {
         {docParts.map((part, index) => (
           <div key={index} className="flex flex-row gap-4 relative">
             <div
-              ref={(element) => {
-                if (element) {
-                  const height = element.offsetHeight;
-                  const tailwindHeight = height + "px";
-                  heightStates[part.id] = tailwindHeight;
-                }
-              }}
               onClick={async (e) => {
                 e.stopPropagation();
                 toggleButton(part.id, e);
@@ -272,17 +257,32 @@ const TranslateViewer = () => {
                 } else {
                   useEditorStore.setState({ bestTrans: "" });
                 }
-
-                toggleDocpart(part.id, heightStates[part.id]);
-                console.log(heightStates[part.id]);
+                toggleDocpart(part.id);
               }}
               className="cursor-pointer p-5 rounded-xl text-[#424242] bg-[#E4DCD4] hover:bg-[#cfccc9] hover:shadow-lg flex flex-col w-full shadow-md"
             >
-              {!docpartStates[part.id] ? (
-                <ToastViewer content={part.content} />
-              ) : (
-                <ToastViewer content={useEditorStore.getState().bestTrans} />
-              )}
+              <div
+                ref={(element) => {
+                  if (element && !initialHeights.current[part.id]) {
+                    // ToastViewer가 렌더링된 후 약간의 지연을 주고 높이를 측정
+                    setTimeout(() => {
+                      const height = element.offsetHeight;
+                      initialHeights.current[part.id] = height + "px";
+                      setHeightStates((prev) => ({
+                        ...prev,
+                        [part.id]: initialHeights.current[part.id],
+                      }));
+                    }, 100);
+                  }
+                }}
+                style={{ height: heightStates[part.id] }}
+              >
+                {!docpartStates[part.id] ? (
+                  <ToastViewer content={part.content} />
+                ) : (
+                  <ToastViewer content={useEditorStore.getState().bestTrans} />
+                )}
+              </div>
             </div>
             {buttonStates[part.id] && (
               <motion.div
