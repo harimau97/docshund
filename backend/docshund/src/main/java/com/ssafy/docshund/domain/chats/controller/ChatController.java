@@ -6,6 +6,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,15 +25,15 @@ public class ChatController {
 
     private final ChatService chatService;
 
-    @MessageMapping("/chat/{docsId}")
-    @SendTo("/sub/chat/{docsId}")
-    public ChatInfoDto sendChat(ChatDto chatDto, @DestinationVariable Integer docsId) {
+    @MessageMapping("/chats/{docsId}")
+    @SendTo("/sub/chats/{docsId}")
+    public ChatInfoDto sendChat(@DestinationVariable Integer docsId, @Payload ChatDto chatDto) {
 
         Chat savedChat = chatService.createChat(docsId, chatDto);
         return ChatInfoDto.from(savedChat);
     }
 
-    @GetMapping("/chat/{docsId}")
+    @GetMapping("/api/v1/docshund/chats/{docsId}")
     public ResponseEntity<Page<ChatInfoDto>> getChats(
             @PathVariable Integer docsId,
             @PageableDefault(page = 0, size = 50) Pageable pageable
