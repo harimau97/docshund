@@ -116,10 +116,15 @@ public class ArticleServiceImpl implements ArticleService {
 	}
 
 	@Override
+	@Transactional
 	public ArticleInfoDto getArticleDetail(Integer articleId) {
 
 		User user =  userUtil.getUser();
 		Long userId = (user != null) ? user.getUserId() : 0L;
+
+		Article article = articleRepository.findById(articleId).orElseThrow(
+				() -> new NoSuchElementException("NOT EXISTS ARTICLE"));
+		article.increaseViewCount();
 
 		ArticleInfoDto articleInfo = articleRepository.findArticleById(articleId, userId);
 
