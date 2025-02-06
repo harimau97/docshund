@@ -11,7 +11,6 @@ import com.ssafy.docshund.domain.docs.entity.TranslatedDocument;
 import com.ssafy.docshund.domain.forums.entity.Article;
 import com.ssafy.docshund.domain.forums.entity.Comment;
 import com.ssafy.docshund.domain.supports.entity.Inquiry;
-import com.sun.jdi.LongValue;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
@@ -63,12 +62,16 @@ public class AlertsServiceImpl implements AlertsService {
 	 */
 	@Override
 	@Transactional
-	public SseEmitter subscribe(User user) {
-		Long userId = user.getUserId();
-		SseEmitter emitter = new SseEmitter(60 * 60 * 1000L);
+	public SseEmitter subscribe(Long userId) {
+		SseEmitter emitter = new SseEmitter(30 * 60 * 1000L);	// 30분 적용
 		emitters.put(userId, emitter);
 		emitter.onCompletion(() -> emitters.remove(userId));
-		emitter.onTimeout(() -> emitters.remove(userId));
+		emitter.onTimeout(() -> {
+			emitters.remove(userId);
+			// 타임아웃 시 재연결
+			sendToClient(userId, "SSE 타임아웃! 다시 연결하세요.");
+		});
+		System.out.println("SSE 연결 완료!");
 		sendToClient(userId, "SSE 연결 완료!");
 		return emitter;
 	}

@@ -22,7 +22,7 @@ public interface AlertsService {
 	AlertOutputDto getAlert(Long alertId);
 
 	// 알림 받아오기 SSE 연결
-	SseEmitter subscribe(User user);
+	SseEmitter subscribe(Long userId);
 
 	// 알림 삭제
 	void deleteAlert(Long alertId);

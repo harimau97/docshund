@@ -86,8 +86,11 @@ public class AlertsController {
 	// 알림 받기 (SSE 연결)
 	@GetMapping(value = "/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
 	public SseEmitter subscribe() {
-		User user = userUtil.getUser();
-		return alertsService.subscribe(user);
+		if(userUtil.getUser() == null) {
+			throw new SecurityException("로그인이 필요합니다.");
+		}
+		Long userId = userUtil.getUser().getUserId();
+		return alertsService.subscribe(userId);
 	}
 
 }
