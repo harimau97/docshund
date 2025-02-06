@@ -23,6 +23,7 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class ArticleServiceImpl implements ArticleService {
 
 	private final UserUtil userUtil;
@@ -86,7 +87,6 @@ public class ArticleServiceImpl implements ArticleService {
 	@Override
 	public Page<ArticleInfoDto> getArticles(String sort, Position filterPosition, String filterDocName,
 		String keyword, String searchType, Pageable pageable) {
-
 
 		User user =  userUtil.getUser();
 		Long userId = (user != null) ? user.getUserId() : 0L;
