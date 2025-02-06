@@ -38,6 +38,7 @@ public class DocsController {
 		@RequestParam(value = "order", defaultValue = "asc") String order // 기본 정렬 순서: asc
 	) {
 		List<DocumentDto> documents = docsService.getAllDocuments(sort, order);
+
 		return ResponseEntity.ok(documents);
 	}
 
@@ -45,9 +46,6 @@ public class DocsController {
 	@PostMapping("")
 	public ResponseEntity<DocumentDto> postDocs(@RequestBody DocumentDto documentDto) {
 		User user = userUtil.getUser();
-		if (user == null) {
-			throw new IllegalArgumentException("User not found");
-		}
 		DocumentDto createdDocument = docsService.createDocument(documentDto, user);
 		return ResponseEntity.ok(createdDocument);
 	}
@@ -62,8 +60,8 @@ public class DocsController {
 	// 관심 문서 등록 및 해제
 	@PostMapping("/{docsId}/likes")
 	public ResponseEntity<DocumentDto> toggleLikes(@PathVariable Integer docsId) {
-		long currentUserId = userUtil.getUser().getUserId();
-		DocumentDto document = docsService.toggleLikes(docsId, currentUserId);
+		User user = userUtil.getUser();
+		DocumentDto document = docsService.toggleLikes(docsId, user);
 		return ResponseEntity.ok(document);
 	}
 
@@ -73,7 +71,6 @@ public class DocsController {
 		@RequestParam(required = false) Long userId
 	) {
 		if (userId == null) {
-			// 유저 아이디가 없을 시 에러 반환
 			throw new IllegalArgumentException("User not found");
 		}
 		List<DocumentDto> documents = docsService.getLikesDocument(userId);
@@ -87,12 +84,6 @@ public class DocsController {
 		@RequestParam String content
 	) {
 		User user = userUtil.getUser();
-		if (user == null) {
-			throw new IllegalArgumentException("User not found");
-		}
-		if (content == null || content.trim().isEmpty()) {
-			throw new IllegalArgumentException("Content is empty or null");
-		}
 		List<OriginDocumentDto> createdDocs = docsService.createOriginDocuments(docsId, content, user);
 		return ResponseEntity.ok(createdDocs);
 	}
@@ -141,7 +132,8 @@ public class DocsController {
 		@RequestParam(defaultValue = "like") String sort,
 		@RequestParam(defaultValue = "desc") String order
 	) {
-		List<TranslatedDocumentDto> translatedDocuments = docsService.getTranslatedDocuments(docsId, originId, sort, order);
+		List<TranslatedDocumentDto> translatedDocuments = docsService.getTranslatedDocuments(docsId, originId, sort,
+			order);
 
 		return ResponseEntity.ok(translatedDocuments);
 	}
@@ -231,7 +223,7 @@ public class DocsController {
 		return ResponseEntity.ok().body(Map.of("message", "Translation deleted successfully."));
 	}
 
-	// 번역 좋아요 하기
+	// 번역 투표 / 투표 해제 하기
 	@PostMapping("/{docsId}/trans/paragraph/{transId}/votes")
 	public ResponseEntity<?> postTransVotes(
 		@PathVariable Integer docsId,
@@ -244,8 +236,8 @@ public class DocsController {
 
 		boolean isLiked = docsService.toggleVotes(docsId, transId, user);
 		return ResponseEntity.ok().body(Map.of(
-				"message", isLiked ? "Translation liked successfully." : "Translation unliked successfully.",
-				"liked", isLiked
+			"message", isLiked ? "Translation liked successfully." : "Translation unliked successfully.",
+			"liked", isLiked
 		));
 	}
 

@@ -30,17 +30,19 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 		CustomOAuth2User userDetails = (CustomOAuth2User)authentication.getPrincipal();
 
 		String personalId = userDetails.getPersonalId();
+		Long userId = userDetails.getUserId();
 
 		String role = authentication.getAuthorities().stream()
 			.findFirst()
 			.map(GrantedAuthority::getAuthority)
 			.orElse("ROLE_USER");
 
-		String token = jwtUtil.createJwt(personalId, role, TOKEN_EXPIRATION);
+		String token = jwtUtil.createJwt(userId, personalId, role, TOKEN_EXPIRATION);
 		log.info("Token: " + token);
 
-		response.addHeader("Authorization", "Bearer " + token);
-		response.sendRedirect("http://localhost:3000/");
+		//프론트엔드 URL로 리디렉트하면서 토큰을 전달
+		String redirectUrl = "http://localhost:5173?token=" + token;
+		response.sendRedirect(redirectUrl);
 	}
 
 }

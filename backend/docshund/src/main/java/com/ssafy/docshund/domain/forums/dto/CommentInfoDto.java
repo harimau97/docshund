@@ -49,7 +49,7 @@ public class CommentInfoDto {
 			comment.getUpdatedAt(),
 			isHidden ? null : comment.getUser().getUserId(),
 			isHidden ? "멍멍이" : comment.getUser().getNickname(),
-			isHidden ? "defaultImage" : comment.getUser().getProfileImage(),
+			isHidden ? "https://docshundbucket.s3.ap-northeast-2.amazonaws.com/small_logo.png" : comment.getUser().getProfileImage(),
 			filteredReplies
 		));
 	}

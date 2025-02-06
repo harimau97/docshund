@@ -30,7 +30,7 @@ public interface DocsService {
 	List<OriginDocumentDto> createOriginDocuments(Integer docsId, String content, User user);
 
 	// 관심문서 등록/취소
-	DocumentDto toggleLikes(Integer docsId, Long currentUserId);
+	DocumentDto toggleLikes(Integer docsId, User user);
 
 	// 특정 유저 관심 문서 조회
 	List<DocumentDto> getLikesDocument(Long userId);
@@ -61,7 +61,7 @@ public interface DocsService {
 
 	// 번역 투표 / 투표해제
 	boolean toggleVotes(Integer docsId, Integer transId, User user);
-	
+
 	// 유저가 좋아한 번역본 목록 조회
 	List<TranslatedDocumentDto> getUserLikedTrans(Long userId);
 }

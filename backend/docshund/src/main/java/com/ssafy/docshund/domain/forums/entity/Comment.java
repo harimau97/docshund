@@ -58,6 +58,23 @@ public class Comment extends BaseTimeEntityWithUpdatedAt {
 	@Column(name = "status", nullable = false, columnDefinition = "ENUM('VISIBLE', 'INVISIBLE', 'DELETED') DEFAULT 'VISIBLE'")
 	private Status status;
 
+	public Comment(Comment parentComment, User user, Article article, String content) {
+		this.parentComment = parentComment;
+		this.user = user;
+		this.article = article;
+		this.content = content;
+		this.reportCount = 0;
+		this.status = Status.VISIBLE;
+
+		if (parentComment != null) {
+			parentComment.getReplies().add(this);
+		}
+	}
+
+	public void modifyContent(String content) {
+		this.content = content;
+	}
+
 	public void modifyToDelete() {
 		this.status = Status.DELETED;
 	}
@@ -65,5 +82,4 @@ public class Comment extends BaseTimeEntityWithUpdatedAt {
 	public void modifyToInvisible() {
 		this.status = Status.INVISIBLE;
 	}
-
 }

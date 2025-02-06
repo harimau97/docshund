@@ -54,9 +54,10 @@ public class JwtUtil {
 			.before(new Date());
 	}
 
-	public String createJwt(String personalId, String role, Long expiredMs) {
+	public String createJwt(Long userId, String personalId, String role, Long expiredMs) {
 
 		return Jwts.builder()
+			.claim("userId", userId)
 			.claim("personalId", personalId)
 			.claim("role", role)
 			.issuedAt(new Date(System.currentTimeMillis()))
