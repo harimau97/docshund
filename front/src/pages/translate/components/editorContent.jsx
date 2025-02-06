@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useRef, useEffect } from "react";
 import { Editor } from "@toast-ui/react-editor";
 import useEditorStore from "../store/editorStore";
 import "@toast-ui/editor/dist/toastui-editor.css";
@@ -14,6 +14,10 @@ const EditorContent = () => {
       setCurrentUserText(markdownContent);
     }
   };
+
+  useEffect(() => {
+    setCurrentUserText(docsPart);
+  }, [docsPart]);
 
   return (
     <div className="flex flex-col h-full w-full">

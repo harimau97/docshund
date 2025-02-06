@@ -1,6 +1,7 @@
 import Modal from "react-modal";
 import { useState, useEffect } from "react";
 import * as motion from "motion/react-client";
+import { registTranslate } from "../hooks/translatePostService";
 import { AnimatePresence } from "motion/react";
 import AlertModal from "../../../components/emptyModal/alertModal";
 import TextContent from "../components/textContent";
@@ -28,6 +29,10 @@ const TranslateEditor = () => {
     toggleArchive,
   } = useModalStore();
   const [alertTitle, setAlertTitle] = useState("");
+
+  const handleSubmit = async (docsId, originId, currentUserText) => {
+    registTranslate(docsId, originId, currentUserText);
+  };
 
   return (
     <Modal
@@ -95,6 +100,8 @@ const TranslateEditor = () => {
                   />
                   <RectBtn
                     onClick={async () => {
+                      useEditorStore.setState({ submitData: currentUserText });
+                      await handleSubmit(docsId, originId, currentUserText);
                       setAlertTitle("제출 완료");
                       setIsVisible(true);
                       setTimeout(() => setIsVisible(false), 1500);

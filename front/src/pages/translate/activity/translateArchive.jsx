@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { fetchBestTranslate } from "../hooks/translateGetService.jsx";
+import { likeTranslate } from "../hooks/translatePostService.jsx";
 import * as motion from "motion/react-client";
 import { AnimatePresence } from "motion/react";
 import Modal from "react-modal";
@@ -8,9 +9,11 @@ import GoBack from "../../../assets/icon/goBack.png";
 import useEditorStore from "../store/editorStore";
 import useArchiveStore from "../store/archiveStore";
 import useTestStore from "../store/testStore.jsx";
+import ToastViewer from "../components/toastViewer.jsx";
 
 const TranslateArchive = () => {
   const [transStates, setTransStates] = useState({});
+  const [likedStates, setLikedStates] = useState({});
   const { docsPart, bestTrans, docsId, originId, currentUserText } =
     useEditorStore();
   const {
@@ -41,6 +44,15 @@ const TranslateArchive = () => {
     }));
   };
 
+  const handleLike = async (docsId, transId) => {
+    setLikedStates((prev) => {
+      const newState = { ...prev };
+      newState[transId] = !prev[transId];
+      return newState;
+    });
+    likeTranslate(docsId, transId);
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       const data = await fetchBestTranslate(docsId, "", isTest);
@@ -55,6 +67,7 @@ const TranslateArchive = () => {
     //   originId
     // );
     fetchData();
+    console.log(transList);
   }, []);
 
   return (
@@ -145,49 +158,72 @@ const TranslateArchive = () => {
                   )}
                 </div>
                 {transList.map((trans) => {
-                  return (
-                    <div key={trans.transId}>
-                      {trans.originId === originId && (
+                  if (trans.originId === originId) {
+                    return (
+                      <div
+                        key={trans.transId}
+                        className="w-full flex flex-col bg-white border border-[#87867F] py-4 px-5 rounded-xl hover:shadow-lg transition-all duration-300 ease-in-out relative"
+                      >
                         <div
-                          key={trans.transId}
-                          className="w-full flex flex-col bg-white border border-[#87867F] py-4 px-5 rounded-xl hover:shadow-lg transition-all duration-300 ease-in-out"
+                          onClick={() => {
+                            toggleTransContent(trans.transId);
+                          }}
+                          className="flex flex-row justify-between cursor-pointer items-center"
                         >
-                          <div
-                            onClick={() => {
-                              toggleTransContent(trans.transId);
-                            }}
-                            className="flex flex-row justify-between cursor-pointer items-center"
-                          >
-                            <div className="flex flex-col gap-1">
-                              <div className="text-lg font-medium">
-                                {trans.userId}님의 번역본
-                              </div>
-                              <div className="text-sm text-gray-500">
-                                {trans.updatedAt}
-                              </div>
+                          <div className="flex flex-col gap-1">
+                            <div className="text-lg font-medium">
+                              {trans.userId}님의 번역본
                             </div>
-                            <div className="flex items-center gap-2 bg-slate-50 px-4 py-2 rounded-lg">
-                              <span className="text-slate-700">좋아요</span>
-                              <span className="font-semibold text-slate-900">
-                                {trans.likeCount}
-                              </span>
-                            </div>
-                          </div>
-                          <div
-                            className={`overflow-hidden transition-all duration-300 ease-in-out ${
-                              transStates[trans.transId]
-                                ? "max-h-[500px] opacity-100"
-                                : "max-h-0 opacity-0"
-                            }`}
-                          >
-                            <div className="border-t border-slate-200 mt-4 pt-4 px-2 text-slate-700 leading-relaxed">
-                              {trans.content}
+                            <div className="text-sm text-gray-500">
+                              {trans.updatedAt}
                             </div>
                           </div>
                         </div>
-                      )}
-                    </div>
-                  );
+                        <div
+                          onClick={() => {
+                            handleLike(docsId, trans.transId);
+                          }}
+                          className={`flex w-1/5 items-center gap-2 px-4 py-2 rounded-lg transition-all duration-300 cursor-pointer absolute right-10 top-1/2 -translate-y-1/2 ${
+                            likedStates[trans.transId]
+                              ? "bg-red-600 text-white"
+                              : "bg-gray-300"
+                          }`}
+                        >
+                          <span
+                            className={
+                              likedStates[trans.transId]
+                                ? "text-white"
+                                : "text-slate-700"
+                            }
+                          >
+                            좋아요
+                          </span>
+                          <span
+                            className={`font-semibold ${
+                              likedStates[trans.transId]
+                                ? "text-white"
+                                : "text-slate-900"
+                            }`}
+                          >
+                            {trans.likeCount +
+                              (likedStates[trans.transId] ? 1 : 0)}
+                          </span>
+                        </div>
+                        <div
+                          className={`overflow-hidden transition-all duration-300 ease-in-out ${
+                            transStates[trans.transId]
+                              ? "max-h-[500px] opacity-100"
+                              : "max-h-0 opacity-0"
+                          }`}
+                        >
+                          <div className="border-t border-slate-200 mt-4 pt-4 px-2 text-slate-700 leading-relaxed">
+                            <ToastViewer content={trans.content} />
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  }
+                  return null;
                 })}
               </div>
             </div>
