@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,13 +33,16 @@ public class AlertsServiceImpl implements AlertsService {
 	// 알림 전체 조회
 	@Override
 	public List<AlertOutputDto> getAllAlerts(Long userId) {
-		return List.of();
+		List<Alert> alerts = alertRepository.findByUserUserId(userId);
+		return alerts.stream().map(this::convertToOutputDto).collect(Collectors.toList());
 	}
 
 	// 알림 단일 조회
 	@Override
 	public AlertOutputDto getAlert(Long alertId) {
-		return null;
+		Alert alert = alertRepository.findById(alertId)
+			.orElseThrow(() -> new IllegalArgumentException("알림을 찾을 수 없습니다."));
+		return convertToOutputDto(alert);
 	}
 
 	/*
@@ -48,27 +52,26 @@ public class AlertsServiceImpl implements AlertsService {
 	@Transactional
 	public SseEmitter subscribe(User user) {
 		Long userId = user.getUserId();
-		SseEmitter emitter = new SseEmitter(60 * 1000L);
-
+		SseEmitter emitter = new SseEmitter(60 * 60 * 1000L);
 		emitters.put(userId, emitter);
-
 		emitter.onCompletion(() -> emitters.remove(userId));
 		emitter.onTimeout(() -> emitters.remove(userId));
-
+		sendToClient(userId, "SSE 연결 완료!");
 		return emitter;
 	}
 
-	// 알림 생성 및 실시간 전송
 	public void sendAlert(Alert alert) {
 		alertRepository.save(alert);
+		sendToClient(alert.getUser().getUserId(), convertToOutputDto(alert));
+	}
 
-		SseEmitter emitter = emitters.get(alert.getUser().getUserId());
+	private void sendToClient(Long userId, Object data) {
+		SseEmitter emitter = emitters.get(userId);
 		if (emitter != null) {
 			try {
-				AlertOutputDto outputDto = convertToOutputDto(alert);
-				emitter.send(SseEmitter.event().name("alert").data(outputDto));
+				emitter.send(SseEmitter.event().name("alert").data(data));
 			} catch (IOException e) {
-				emitters.remove(alert.getUser().getUserId());
+				emitters.remove(userId);
 			}
 		}
 	}

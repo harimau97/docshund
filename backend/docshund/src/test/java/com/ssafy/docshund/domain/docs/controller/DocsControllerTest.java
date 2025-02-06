@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import com.ssafy.docshund.domain.docs.dto.UserTransDocumentDto;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -307,21 +308,23 @@ class DocsControllerTest {
 	@DisplayName("특정 유저의 번역 조회 API 테스트")
 	void getUserTransDocsTest() throws Exception {
 		// given
-		List<TranslatedDocumentDto> userTranslatedDocs = List.of(
-			new TranslatedDocumentDto(1L, 1, 100L, "유저 번역 내용", 0, Status.VISIBLE, LocalDateTime.now(),
-				LocalDateTime.now(), 3, List.of(1L))
+		List<UserTransDocumentDto> userTranslatedDocs = List.of(
+				new UserTransDocumentDto(1L, 1, 1, "유저 번역 내용",
+						0, 100L, "번역 내용", 0, Status.VISIBLE, LocalDateTime.now(),
+						LocalDateTime.now(), 3, List.of(1L))
 		);
 
 		when(docsService.getUserTransDocument(100L)).thenReturn(userTranslatedDocs);
 
 		// when & then
 		mockMvc.perform(get("/api/v1/docshund/docs/trans")
-				.param("userId", "100"))
-			.andExpect(status().isOk())
-			.andExpect(jsonPath("$.size()").value(1));
+						.param("userId", "100"))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.size()").value(1));
 
 		verify(docsService, times(1)).getUserTransDocument(100L);
 	}
+
 
 	// 번역 작성
 	@Test
@@ -433,10 +436,10 @@ class DocsControllerTest {
 	@DisplayName("특정 유저가 좋아한 번역 목록 조회 API 테스트")
 	void getUserLikedTransTest() throws Exception {
 		// given
-		List<TranslatedDocumentDto> likedTrans = List.of(
-			new TranslatedDocumentDto(1L, 1, 100L, "좋아요한 번역 1", 0, Status.VISIBLE, LocalDateTime.now(),
+		List<UserTransDocumentDto> likedTrans = List.of(
+			new UserTransDocumentDto(1L, 1, 1, "문서1", 1, 2L, "좋아요한 번역 1", 0, Status.VISIBLE, LocalDateTime.now(),
 				LocalDateTime.now(), 5, List.of(1L, 2L)),
-			new TranslatedDocumentDto(2L, 1, 101L, "좋아요한 번역 2", 0, Status.VISIBLE, LocalDateTime.now(),
+			new UserTransDocumentDto(2L, 2, 2, "문서2", 3, 3L, "좋아요한 번역 2", 0, Status.VISIBLE, LocalDateTime.now(),
 				LocalDateTime.now(), 8, List.of(3L))
 		);
 
