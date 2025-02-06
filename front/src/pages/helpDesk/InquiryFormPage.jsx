@@ -23,14 +23,22 @@ const InquiryFormPage = () => {
       userId = decodedToken.userId;
     }
 
-    const formData = new FormData();
-    formData.append("title", title);
-    formData.append("category", category);
-    formData.append("content", content);
-    formData.append("email", email);
+    const inquiry = {
+      title,
+      category,
+      content,
+      email,
+    };
+
     if (userId) {
-      formData.append("userId", userId);
+      inquiry.userId = userId;
     }
+
+    const formData = new FormData();
+    formData.append(
+      "inquiry",
+      new Blob([JSON.stringify(inquiry)], { type: "application/json" })
+    );
     if (file) {
       formData.append("file", file);
     }
@@ -75,9 +83,9 @@ const InquiryFormPage = () => {
             className="mt-1 block w-full py-2 px-3 border bg-white rounded-md shadow-sm focus:outline-none focus:ring-[#bc5b39] focus:border-[#bc5b39] sm:text-sm"
           >
             <option value="">카테고리를 선택하세요</option>
-            <option value="문서등록요청">문서등록요청</option>
-            <option value="회원관련">회원관련</option>
-            <option value="신고관련">신고관련</option>
+            <option value="DOCUMENT_REQUEST">문서등록요청</option>
+            <option value="MEMBER">회원관련</option>
+            <option value="REPORT">신고관련</option>
           </select>
         </div>
         <div className="mb-6">
