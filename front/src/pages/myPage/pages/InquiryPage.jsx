@@ -1,13 +1,71 @@
 import { useNavigate } from "react-router-dom";
+
 import modalStore from "../store/modalStore";
 import inquiryStore from "../store/inquiryStore";
 import InquiryModal from "../components/InquiryModal";
-import ListRender from "../components/ListRender";
+import ListRender from "../../../components/pagination/listRender";
+import InquiryService from "../services/inquiryService";
+
+import { useEffect, useState } from "react";
+import { jwtDecode } from "jwt-decode";
 
 const InquiryPage = () => {
   const navigate = useNavigate();
+
+  const token = localStorage.getItem("token");
+
+  // inquiryStore에서 inquiries와 setInquiries를 가져온다.
   const inquiries = inquiryStore((state) => state.inquiries);
+  const setInquiries = inquiryStore((state) => state.setInquiries);
+
+  const totalPages = inquiryStore((state) => state.totalPages);
+  const setTotalPages = inquiryStore((state) => state.setTotalPages);
+  const currentPage = inquiryStore((state) => state.currentPage);
+  const setCurrentPage = inquiryStore((state) => state.setCurrentPage);
+
+  const setLoading = inquiryStore((state) => state.setLoading);
+  const setError = inquiryStore((state) => state.setError);
+
   const { setOpenId, openId, closeModal } = modalStore();
+
+  const [itemsPerPage, setItmesPerPage] = useState(15); // 페이지당 보여줄 게시글 수
+
+  useEffect(() => {
+    setLoading(true);
+
+    // inquiries 데이터를 가져오는 함수
+    const fetchInquiries = async () => {
+      try {
+        // 토큰이 존재하면 userId 추출
+        if (token) {
+          const decodedToken = jwtDecode(token);
+          const userId = decodedToken.userId;
+
+          // inquiryService의 fetchInquiries 함수를 호출한다.
+          const data = await InquiryService.fetchInquiries(
+            currentPage,
+            itemsPerPage,
+            userId
+          );
+
+          // data가 존재하면 setInquiries로 데이터를 저장한다.
+          if (data) {
+            setInquiries(data);
+            setCurrentPage(data.pageable.pageNumber);
+            setTotalPages(data.totalPages);
+            setItmesPerPage(data.size);
+          }
+        }
+      } catch (error) {
+        setError(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    // fetchInquiries 함수를 호출한다.
+    fetchInquiries();
+  }, [currentPage, itemsPerPage, token]);
 
   const renderInquiry = (item) => {
     return (
@@ -59,7 +117,10 @@ const InquiryPage = () => {
       <ListRender
         data={inquiries}
         renderItem={renderInquiry}
-        itemsPerPage={5}
+        totalPages={totalPages}
+        currentPage={currentPage}
+        setCurrentPage={setCurrentPage}
+        itemCategory="inquiry"
       />
     </div>
   );

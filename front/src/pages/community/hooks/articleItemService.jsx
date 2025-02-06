@@ -8,7 +8,7 @@ const ArticleItemService = {
       // TODO: 데이터 axios로 변경 필요
       // axios를 사용하여 서버에 GET 요청
       const response = await axios.get(
-        `https://f1887553-e372-4944-90d7-8fe76ae8d764.mock.pstmn.io/forums/${articleId}`
+        `http://i12a703.p.ssafy.io:8081/api/v1/docshund/forums/${articleId}`
       );
       const data = response.data;
       // 가져온 데이터를 반환

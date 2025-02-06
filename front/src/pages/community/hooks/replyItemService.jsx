@@ -5,7 +5,7 @@ const ReplyItemService = {
     try {
       // TODO: axios로 변경 필요
       const response = await axios.get(
-        `https://f1887553-e372-4944-90d7-8fe76ae8d764.mock.pstmn.io/forums/${articleId}/comments`
+        `http://i12a703.p.ssafy.io:8081/api/v1/docshund/forums/${articleId}/comments`
       );
 
       const data = response.data;

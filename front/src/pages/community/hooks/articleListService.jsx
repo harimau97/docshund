@@ -17,7 +17,7 @@ const ArticleListService = {
       // TODO: 데이터 axios로 변경 필요
       const response = await axios.get(
         // postman forked mock server endpoint
-        `https://f1887553-e372-4944-90d7-8fe76ae8d764.mock.pstmn.io/forums?sort=${sortType}&filter=${filter}&keyword=${keyword}&searchType=${searchType}&page=${page}&size=${itemsPerPage}`
+        `http://i12a703.p.ssafy.io:8081/api/v1/docshund/forums?sort=${sortType}&filter=${filter}&keyword=${keyword}&searchType=${searchType}&page=${page}&size=${itemsPerPage}`
       );
 
       const data = response.data;
