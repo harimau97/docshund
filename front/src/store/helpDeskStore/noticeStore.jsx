@@ -6,7 +6,7 @@ const useNoticeStore = create((set) => ({
   isLoading: false,
   error: null,
   totalPages: 0,
-  currentPage: 1,
+  currentPage: 0,
 
   setNotices: (notices) => set({ notices }),
   setNoticeDetail: (noticeDetail) => set({ noticeDetail }),
