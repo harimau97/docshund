@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.ssafy.docshund.domain.docs.dto.DocumentDto;
 import com.ssafy.docshund.domain.docs.dto.OriginDocumentDto;
 import com.ssafy.docshund.domain.docs.dto.TranslatedDocumentDto;
+import com.ssafy.docshund.domain.docs.dto.UserTransDocumentDto;
 import com.ssafy.docshund.domain.docs.service.DocsService;
 import com.ssafy.docshund.domain.users.entity.User;
 import com.ssafy.docshund.global.util.user.UserUtil;
@@ -140,10 +141,10 @@ public class DocsController {
 
 	// 번역 조회하기 (현재 특정 유저 번역만 조회하게 구현)
 	@GetMapping("/trans")
-	public ResponseEntity<?> getTransDocs(
+	public ResponseEntity<List<UserTransDocumentDto>> getTransDocs(
 		@RequestParam(required = false) Long userId
 	) {
-		List<TranslatedDocumentDto> translatedDocuments;
+		List<UserTransDocumentDto> translatedDocuments;
 
 		if (userId == null) {
 			// 유저 아이디가 없을 시 에러 반환
@@ -246,7 +247,7 @@ public class DocsController {
 	public ResponseEntity<?> getTransVotes(
 		@RequestParam Long userId
 	) {
-		List<TranslatedDocumentDto> likedTrans;
+		List<UserTransDocumentDto> likedTrans;
 
 		if (userId == null) {
 			// 유저 아이디가 없을 시 에러 반환

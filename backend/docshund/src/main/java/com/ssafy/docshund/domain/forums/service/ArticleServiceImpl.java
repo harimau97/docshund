@@ -2,6 +2,7 @@ package com.ssafy.docshund.domain.forums.service;
 
 import java.util.NoSuchElementException;
 
+import com.ssafy.docshund.domain.alerts.service.AlertsService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
@@ -30,6 +31,7 @@ public class ArticleServiceImpl implements ArticleService {
 	private final ArticleRepository articleRepository;
 	private final ArticleLikeRepository articleLikeRepository;
 	private final DocumentRepository documentRepository;
+	private final AlertsService alertsService;
 
 	@Override
 	@Transactional
@@ -116,10 +118,15 @@ public class ArticleServiceImpl implements ArticleService {
 	}
 
 	@Override
+	@Transactional
 	public ArticleInfoDto getArticleDetail(Integer articleId) {
 
 		User user =  userUtil.getUser();
 		Long userId = (user != null) ? user.getUserId() : 0L;
+
+		Article article = articleRepository.findById(articleId).orElseThrow(
+				() -> new NoSuchElementException("NOT EXISTS ARTICLE"));
+		article.increaseViewCount();
 
 		ArticleInfoDto articleInfo = articleRepository.findArticleById(articleId, userId);
 
