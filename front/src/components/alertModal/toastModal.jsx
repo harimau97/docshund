@@ -1,4 +1,4 @@
-import { toast, ToastContainer } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 
 const ToastModal = () => {
   return (
@@ -9,10 +9,10 @@ const ToastModal = () => {
       newestOnTop={false}
       closeOnClick
       rtl={false}
-      pauseOnFocusLoss
-      draggable
+      pauseOnFocusLoss={false}
+      draggable={false}
       pauseOnHover={false}
-      theme="colored"
+      theme="light"
     />
   );
 };

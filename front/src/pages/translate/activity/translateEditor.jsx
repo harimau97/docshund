@@ -1,5 +1,5 @@
 import Modal from "react-modal";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import * as motion from "motion/react-client";
 import { fetchBestTranslate } from "../hooks/translateGetService";
 import { registTranslate } from "../hooks/translatePostService";
@@ -8,7 +8,6 @@ import { toast } from "react-toastify";
 import TextContent from "../components/textContent";
 import EditorContent from "../components/editorContent";
 import RectBtn from "../../../components/button/rectBtn";
-import check from "../../../assets/icon/check.svg";
 
 //상태 관련
 import useModalStore from "../store/modalStore";
@@ -29,7 +28,6 @@ const TranslateEditor = () => {
     toggleEditor,
     toggleArchive,
   } = useModalStore();
-  const [alertTitle, setAlertTitle] = useState("");
 
   const handleSubmit = async (docsId, originId, currentUserText) => {
     registTranslate(docsId, originId, currentUserText);

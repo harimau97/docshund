@@ -8,6 +8,7 @@ import { fetchDocsList } from "../../pages/translate/hooks/translateGetService.j
 // 상태 import
 import useDocsStore from "../../pages/translate/store/docsStore.jsx";
 import modalStore from "../../pages/myPage/store/modalStore.jsx";
+import useEditorStore from "../../pages/translate/store/editorStore.jsx";
 //
 
 //이미지 주소 import
@@ -185,7 +186,9 @@ const LeftNav = () => {
         </div>
         <div className="items-center justify-center flex mb-10">
           <RoundCornerBtn
-            onClick={() => navigate("/translate")}
+            onClick={() => {
+              window.location.replace("/translate");
+            }}
             text="뷰어 나가기"
           />
         </div>

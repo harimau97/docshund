@@ -18,6 +18,7 @@ import ChatBotStore from "./store/chatBotStore.jsx";
 import Chat from "./pages/chat/chat.jsx";
 import ChatStore from "./store/chatStore.jsx";
 import chatImg from "./assets/icon/chat.png";
+import chatBot from "./assets/icon/chatBot.png";
 
 Modal.setAppElement("#root");
 
@@ -47,12 +48,12 @@ function App() {
         <AppRouter />
       </div>
       {isTranslateViewerPage ? (
-        <div
-          onClick={toggleChat}
-          className="fixed bottom-4 right-4 z-[1900] group"
-        >
+        <div className="fixed bottom-4 right-4 z-[1900] group">
           {localStorage.getItem("token") && (
-            <div className="rounded-full w-16 h-16 bg-gradient-to-r from-[#BC5B39] to-[#E4DCD4] flex justify-center items-center cursor-pointer shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 border-2 border-white">
+            <div
+              onClick={toggleChat}
+              className="rounded-full w-16 h-16 bg-gradient-to-r from-[#BC5B39] to-[#E4DCD4] flex justify-center items-center cursor-pointer shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 border-2 border-white"
+            >
               <img
                 className="group-hover:rotate-12 transition-transform duration-300"
                 src={chatImg}
@@ -62,7 +63,24 @@ function App() {
           )}
         </div>
       ) : null}
+      {isTranslateViewerPage ? (
+        <div className="fixed bottom-4 left-4 z-[1900] group">
+          {localStorage.getItem("token") && (
+            <div
+              onClick={toggleChatBot}
+              className="rounded-full w-16 h-16 bg-gradient-to-r from-[#BC5B39] to-[#E4DCD4] flex justify-center items-center cursor-pointer shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 border-2 border-white"
+            >
+              <img
+                className="group-hover:rotate-12 transition-transform duration-300"
+                src={chatBot}
+                alt="챗봇 아이콘"
+              />
+            </div>
+          )}
+        </div>
+      ) : null}
       {isChatVisible && <Chat />}
+      {isChatBotVisible && <ChatBot />}
       {isTranslateViewerPage ? null : <Footer />}
       <LoginModal />
     </div>
