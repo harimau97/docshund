@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import com.ssafy.docshund.domain.docs.dto.DocumentDto;
 import com.ssafy.docshund.domain.docs.dto.OriginDocumentDto;
 import com.ssafy.docshund.domain.docs.dto.TranslatedDocumentDto;
+import com.ssafy.docshund.domain.docs.dto.UserTransDocumentDto;
 import com.ssafy.docshund.domain.users.entity.User;
 
 @Service
@@ -48,7 +49,7 @@ public interface DocsService {
 	TranslatedDocumentDto createTranslatedDocument(Integer docsId, Integer originId, User user, String content);
 
 	// 특정 유저의 번역본 조회
-	List<TranslatedDocumentDto> getUserTransDocument(Long userId);
+	List<UserTransDocumentDto> getUserTransDocument(Long userId);
 
 	// 번역 상세보기
 	TranslatedDocumentDto getTranslatedDocumentDetail(Integer docsId, Integer transId);
@@ -63,5 +64,5 @@ public interface DocsService {
 	boolean toggleVotes(Integer docsId, Integer transId, User user);
 
 	// 유저가 좋아한 번역본 목록 조회
-	List<TranslatedDocumentDto> getUserLikedTrans(Long userId);
+	List<UserTransDocumentDto> getUserLikedTrans(Long userId);
 }

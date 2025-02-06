@@ -6,6 +6,7 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.ssafy.docshund.domain.alerts.service.AlertsService;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,6 +29,7 @@ public class CommentServiceImpl implements CommentService {
 	private final ArticleRepository articleRepository;
 	private final CommentRepository commentRepository;
 	private final UserUtil userUtil;
+	private final AlertsService alertsService;
 
 	@Override
 	@Transactional(readOnly = true)
@@ -66,6 +68,10 @@ public class CommentServiceImpl implements CommentService {
 		}
 
 		Comment savedComment = commentRepository.save(new Comment(null, user, article, commentDto.getContent()));
+
+		// 실시간 알림 보내기
+		alertsService.sendCommentAlert(article, user);
+
 		return new CommentInfoDto(savedComment.getArticle().getArticleId(), savedComment.getCommentId(),
 			savedComment.getContent(),
 			savedComment.getCreatedAt(), savedComment.getUpdatedAt(),
@@ -91,6 +97,11 @@ public class CommentServiceImpl implements CommentService {
 
 		Comment savedComment = commentRepository.save(
 			new Comment(parentComment, user, article, commentDto.getContent()));
+
+		// 실시간 알림 보내기
+		alertsService.sendCommentAlert(article, user);	// 게시글 작성자에게도 알림
+		alertsService.sendCommentReplyAlert(parentComment, user);	// 댓글 작성자에게도 알림
+
 		return new CommentInfoDto(savedComment.getArticle().getArticleId(), savedComment.getCommentId(),
 			savedComment.getContent(),
 			savedComment.getCreatedAt(), savedComment.getUpdatedAt(),

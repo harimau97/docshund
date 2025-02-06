@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.ssafy.docshund.domain.alerts.service.AlertsService;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +18,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssafy.docshund.domain.docs.dto.DocumentDto;
 import com.ssafy.docshund.domain.docs.dto.OriginDocumentDto;
 import com.ssafy.docshund.domain.docs.dto.TranslatedDocumentDto;
+import com.ssafy.docshund.domain.docs.dto.UserTransDocumentDto;
 import com.ssafy.docshund.domain.docs.entity.Document;
 import com.ssafy.docshund.domain.docs.entity.DocumentLike;
 import com.ssafy.docshund.domain.docs.entity.OriginDocument;
@@ -45,6 +47,7 @@ public class DocsServiceImpl implements DocsService {
 	private final CustomDocumentRepository customDocumentRepository;
 	private final TranslatedDocumentRepository translatedDocumentRepository;
 	private final TranslatedDocumentLikeRepository translatedDocumentLikeRepository;
+	private final AlertsService alertsService;
 	private final ObjectMapper objectMapper = new ObjectMapper();
 	private final UserUtil userUtil;
 
@@ -131,7 +134,7 @@ public class DocsServiceImpl implements DocsService {
 	@Transactional
 	public DocumentDto createDocument(DocumentDto documentDto, User user) {
 
-		if(!userUtil.isAdmin(user)) {
+		if (!userUtil.isAdmin(user)) {
 			throw new SecurityException("Only admins can create documents.");
 		}
 
@@ -435,7 +438,7 @@ public class DocsServiceImpl implements DocsService {
 	// 특정 유저가 작성한 번역 조회
 	@Transactional(readOnly = true)
 	@Override
-	public List<TranslatedDocumentDto> getUserTransDocument(Long userId) {
+	public List<UserTransDocumentDto> getUserTransDocument(Long userId) {
 		List<TranslatedDocument> userTransDocuments = translatedDocumentRepository.findByUser_UserId(userId);
 
 		// 번역 문서 ID 목록 추출
@@ -451,9 +454,12 @@ public class DocsServiceImpl implements DocsService {
 
 		return userTransDocuments.stream().map(transDoc -> {
 			List<Long> likeUserIds = likeUsersMap.getOrDefault(transDoc.getTransId(), List.of());
-			return new TranslatedDocumentDto(
+			return new UserTransDocumentDto(
 				transDoc.getTransId(),
 				transDoc.getOriginDocument().getOriginId(),
+				transDoc.getOriginDocument().getDocument().getDocsId(),
+				transDoc.getOriginDocument().getDocument().getDocumentName(),
+				transDoc.getOriginDocument().getPOrder(),
 				transDoc.getUser().getUserId(),
 				transDoc.getContent(),
 				transDoc.getReportCount(),
@@ -564,6 +570,7 @@ public class DocsServiceImpl implements DocsService {
 				Long.valueOf(transId), user.getUserId());
 		} else {
 			translatedDocumentLikeRepository.addVote(translatedDocument, user);
+			alertsService.sendTranslationVoteAlert(translatedDocument, user);
 		}
 
 		return !hasVoted;
@@ -571,7 +578,7 @@ public class DocsServiceImpl implements DocsService {
 
 	// 특정 유저가 좋아한 번역본 목록 조회
 	@Override
-	public List<TranslatedDocumentDto> getUserLikedTrans(Long userId) {
+	public List<UserTransDocumentDto> getUserLikedTrans(Long userId) {
 		List<TranslatedDocument> userLikedTrans =
 			translatedDocumentLikeRepository.findLikedTranslatedDocsByUserId(userId);
 
@@ -586,9 +593,12 @@ public class DocsServiceImpl implements DocsService {
 
 		return userLikedTrans.stream().map(transDoc -> {
 			List<Long> likeUserIds = likeUsersMap.getOrDefault(transDoc.getTransId(), List.of());
-			return new TranslatedDocumentDto(
+			return new UserTransDocumentDto(
 				transDoc.getTransId(),
 				transDoc.getOriginDocument().getOriginId(),
+				transDoc.getOriginDocument().getDocument().getDocsId(),
+				transDoc.getOriginDocument().getDocument().getDocumentName(),
+				transDoc.getOriginDocument().getPOrder(),
 				transDoc.getUser().getUserId(),
 				transDoc.getContent(),
 				transDoc.getReportCount(),
