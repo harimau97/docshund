@@ -41,7 +41,7 @@ public class AlertsController {
 	}
 
 	// 알림 상세 조회
-	@GetMapping("{alertId}")
+	@GetMapping("/{alertId}")
 	public ResponseEntity<AlertOutputDto> getAlert(
 		@PathVariable Long alertId
 	) {
@@ -50,7 +50,7 @@ public class AlertsController {
 	}
 
 	// 알림 삭제
-	@DeleteMapping("{alertId}/delete")
+	@DeleteMapping("/{alertId}/delete")
 	public ResponseEntity<?> deleteAlert(
 		@PathVariable Long alertId
 	) {
@@ -67,7 +67,7 @@ public class AlertsController {
 	}
 
 	// 알림 조회 처리
-	@PostMapping("{alertId}/read")
+	@PostMapping("/{alertId}/read")
 	public ResponseEntity<?> readAlert(
 		@PathVariable Long alertId
 	) {

@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.ssafy.docshund.domain.alerts.service.AlertsService;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -46,6 +47,7 @@ public class DocsServiceImpl implements DocsService {
 	private final CustomDocumentRepository customDocumentRepository;
 	private final TranslatedDocumentRepository translatedDocumentRepository;
 	private final TranslatedDocumentLikeRepository translatedDocumentLikeRepository;
+	private final AlertsService alertsService;
 	private final ObjectMapper objectMapper = new ObjectMapper();
 	private final UserUtil userUtil;
 
@@ -568,6 +570,7 @@ public class DocsServiceImpl implements DocsService {
 				Long.valueOf(transId), user.getUserId());
 		} else {
 			translatedDocumentLikeRepository.addVote(translatedDocument, user);
+			alertsService.sendTranslationVoteAlert(translatedDocument, user);
 		}
 
 		return !hasVoted;

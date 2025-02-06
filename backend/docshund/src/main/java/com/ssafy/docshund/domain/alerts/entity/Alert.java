@@ -59,4 +59,15 @@ public class Alert extends BaseTimeEntity {
 	@Column(name = "checked_at")
 	private LocalDateTime checkedAt;
 
+	public Alert(String title, User user, TranslatedDocument translatedDocument, Article article, Comment comment, Inquiry inquiry, LocalDateTime checkedAt) {
+		this.title = title;
+		this.user = user;
+		this.translatedDocument = translatedDocument;
+		this.article = article;
+		this.comment = comment;
+		this.inquiry = inquiry;
+		this.checkedAt = checkedAt;
+	}
 }
+
+

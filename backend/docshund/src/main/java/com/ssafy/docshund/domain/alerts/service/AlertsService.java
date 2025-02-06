@@ -2,6 +2,10 @@ package com.ssafy.docshund.domain.alerts.service;
 
 import java.util.List;
 
+import com.ssafy.docshund.domain.docs.entity.TranslatedDocument;
+import com.ssafy.docshund.domain.forums.entity.Article;
+import com.ssafy.docshund.domain.forums.entity.Comment;
+import com.ssafy.docshund.domain.supports.entity.Inquiry;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
@@ -31,4 +35,19 @@ public interface AlertsService {
 
 	// 알림 일괄 읽음 처리
 	void readAlerts();
+
+	// 번역 알림 전송
+	void sendTranslationVoteAlert(TranslatedDocument translatedDocument, User user);
+
+	// 게시글 좋아요 알림 전송 (고도화시 고려)
+//	void sendArticleLikeAlert(Article article, User user);
+
+	// 게시글 댓글 알림 전송
+	void sendCommentAlert(Article article, User user);
+
+	// 게시글 대댓글 알림 전송
+	void sendCommentReplyAlert(Comment parentComment, User user);
+	
+	// 문의에 답변이 달렸을 시 알림 전송
+	void sendInquiryAnswerAlert(Inquiry inquiry);
 }

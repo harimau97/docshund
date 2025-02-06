@@ -7,6 +7,11 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
+import com.ssafy.docshund.domain.docs.entity.TranslatedDocument;
+import com.ssafy.docshund.domain.forums.entity.Article;
+import com.ssafy.docshund.domain.forums.entity.Comment;
+import com.ssafy.docshund.domain.supports.entity.Inquiry;
+import com.sun.jdi.LongValue;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
@@ -33,6 +38,10 @@ public class AlertsServiceImpl implements AlertsService {
 	// 알림 전체 조회
 	@Override
 	public List<AlertOutputDto> getAllAlerts(Long userId) {
+		User currentUser = userUtil.getUser();
+		if(!currentUser.getUserId().equals(userId) || !userUtil.isAdmin(currentUser)) {
+			throw new SecurityException("관리자 외에는 본인의 알림만 조회할 수 있습니다.");
+		}
 		List<Alert> alerts = alertRepository.findByUserUserId(userId);
 		return alerts.stream().map(this::convertToOutputDto).collect(Collectors.toList());
 	}
@@ -42,6 +51,10 @@ public class AlertsServiceImpl implements AlertsService {
 	public AlertOutputDto getAlert(Long alertId) {
 		Alert alert = alertRepository.findById(alertId)
 			.orElseThrow(() -> new IllegalArgumentException("알림을 찾을 수 없습니다."));
+		User currentUser = userUtil.getUser();
+		if(!currentUser.equals(alert.getUser()) || !userUtil.isAdmin(currentUser)) {
+			throw new SecurityException("관리자 외에는 본인의 알림만 조회할 수 있습니다.");
+		}
 		return convertToOutputDto(alert);
 	}
 
@@ -82,6 +95,7 @@ public class AlertsServiceImpl implements AlertsService {
 		Integer categoryId;
 		String title;
 		String content;
+		Integer originArticleId;
 
 		if (alert.getTranslatedDocument() != null) {
 			category = Category.TRANS;
@@ -91,26 +105,30 @@ public class AlertsServiceImpl implements AlertsService {
 				.getDocument()
 				.getDocumentName(); // 번역 문서 제목 추가
 			String sentence = alert.getTranslatedDocument().getContent(); // 번역 문장 추가
-			title = "🤎 번역 문서에 좋아요가 추가되었습니다!";
+			title = alert.getTitle();
 			content = "[ " + docTitle + " ] 문서에서 번역한 문장 '" + getShortContent(sentence) + "'이(가) 좋아요를 받았습니다!";
+			originArticleId = null;
 		} else if (alert.getArticle() != null) {
 			category = Category.ARTICLE;
 			categoryId = alert.getArticle().getArticleId();
 			String articleTitle = alert.getArticle().getTitle(); // 게시글 제목 추가
-			title = "💬 새로운 댓글이 달렸어요!";
-			content = "게시글 [ " + articleTitle + " ]에 새로운 댓글이 달렸습니다!";
+			title = alert.getTitle();
+			content = "[ " + articleTitle + " ] 에 새로운 댓글이 달렸습니다!";
+			originArticleId = null;
 		} else if (alert.getComment() != null) {
 			category = Category.COMMENT;
 			categoryId = alert.getComment().getCommentId();
 			String commentContent = alert.getComment().getContent(); // 댓글 내용 일부 가져오기
-			title = "💬 댓글에 답글이 달렸어요!";
-			content = "댓글 [ " + getShortContent(commentContent) + " ]에 새로운 대댓글이 달렸습니다!";
+			title = alert.getTitle();
+			content = "댓글 [ " + getShortContent(commentContent) + " ] 에 새로운 대댓글이 달렸습니다!";
+			originArticleId = alert.getComment().getArticle().getArticleId();
 		} else if (alert.getInquiry() != null) {
 			category = Category.INQUIRY;
 			categoryId = alert.getInquiry().getInquiryId();
 			String inquiryTitle = alert.getInquiry().getTitle();    // 문의 제목 추가
-			title = "💌 문의에 대한 답변이 등록되었습니다!";
-			content = "당신의 문의 [ " + inquiryTitle + " ]에 대한 답변이 등록되었습니다!";
+			title = alert.getTitle();
+			content = "당신의 문의 [ " + inquiryTitle + " ] 에 대한 답변이 등록되었습니다!";
+			originArticleId = null;
 		} else {
 			throw new IllegalArgumentException("알 수 없는 카테고리입니다.");
 		}
@@ -122,6 +140,7 @@ public class AlertsServiceImpl implements AlertsService {
 			categoryId,
 			title,
 			content,
+			originArticleId,
 			alert.getCreatedAt(),
 			alert.getCheckedAt()
 		);
@@ -186,4 +205,113 @@ public class AlertsServiceImpl implements AlertsService {
 			}
 		}
 	}
+
+	// 번역 좋아요 알림 전송
+	@Override
+	@Transactional
+	public void sendTranslationVoteAlert(TranslatedDocument translatedDocument, User voter) {
+		User author = translatedDocument.getUser(); // 번역을 작성한 유저
+
+		// 본인이 자신의 번역에 좋아요하면 알림을 보내지 않음
+		if (author.equals(voter)) {
+			return;
+		}
+
+		// 새로운 알림 생성
+		Alert alert = new Alert(
+				"🤎 내가 번역한 문서에 좋아요가 추가되었어요!",
+				author,
+				translatedDocument, null, null, null,
+				null
+		);
+
+		alertRepository.save(alert);
+
+		// SSE 실시간 알림 전송
+		sendToClient(author.getUserId(), convertToOutputDto(alert));
+	}
+
+	// 게시글 좋아요 알림 (고도화시 고려)
+//	@Override
+//	@Transactional
+//	public void sendArticleLikeAlert(Article article, User liker) {
+//		// 게시글 작성자
+//		User author = article.getUser();
+//
+//		// 본인이 자신의 게시글에 좋아요하면 알림을 보내지 않음
+//		if (author.equals(liker)) {
+//			return;
+//		}
+//	}
+
+	// 게시글 댓글 알림 전송
+	@Override
+	public void sendCommentAlert(Article article, User user) {
+		// 게시글 작성자
+		User author = article.getUser();
+
+		// 본인이 자신의 게시글에 댓글을 달면 알림을 보내지 않음
+		if (author.equals(user)) {
+			return;
+		}
+
+		// 새로운 알림 생성
+		Alert alert = new Alert(
+				"💬 내 게시글에 새로운 댓글이 달렸어요!",
+				author,
+				null, article, null, null,
+				null
+		);
+
+		alertRepository.save(alert);
+
+		// SSE 실시간 알림 전송
+		sendToClient(author.getUserId(), convertToOutputDto(alert));
+
+	}
+
+	// 게시글 대댓글 알림 전송
+	@Override
+	public void sendCommentReplyAlert(Comment parentComment, User user) {
+		// 댓글 작성자
+		User author = parentComment.getUser();
+
+		// 자신의 대댓글인 경우 알림을 보내지 않음
+		if (author.equals(user)) {
+			return;
+		}
+
+		// 새로운 알림 생성
+		Alert alert = new Alert(
+				"💬 내 댓글에 대댓글이 달렸어요!",
+				author,
+				null, null, parentComment, null,
+				null
+		);
+
+		alertRepository.save(alert);
+
+		sendToClient(author.getUserId(), convertToOutputDto(alert));
+	}
+
+	// 문의에 답변이 달렸을 시 알림 전송
+	@Override
+	public void sendInquiryAnswerAlert(Inquiry inquiry) {
+		// 문의 작성자
+		User author = inquiry.getUser();
+
+		// 새로운 알림 생성
+		Alert alert = new Alert(
+				"💌 문의에 대한 답변이 등록되었습니다!",
+				author,
+				null, null, null, inquiry,
+				null
+		);
+
+		alertRepository.save(alert);
+
+		// SSE 실시간 알림 전송
+		sendToClient(author.getUserId(), convertToOutputDto(alert));
+	}
+
 }

@@ -2,6 +2,7 @@ package com.ssafy.docshund.domain.forums.service;
 
 import java.util.NoSuchElementException;
 
+import com.ssafy.docshund.domain.alerts.service.AlertsService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
@@ -29,6 +30,7 @@ public class ArticleServiceImpl implements ArticleService {
 	private final ArticleRepository articleRepository;
 	private final ArticleLikeRepository articleLikeRepository;
 	private final DocumentRepository documentRepository;
+	private final AlertsService alertsService;
 
 	@Override
 	@Transactional

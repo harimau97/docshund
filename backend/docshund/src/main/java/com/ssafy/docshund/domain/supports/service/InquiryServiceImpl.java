@@ -1,5 +1,6 @@
 package com.ssafy.docshund.domain.supports.service;
 
+import com.ssafy.docshund.domain.alerts.service.AlertsService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -31,6 +32,7 @@ public class InquiryServiceImpl implements InquiryService {
 	private final MailSendService mailSendService;
 	private final S3FileUploadService fileUploadService;
 	private final UserUtil userUtil;
+	private final AlertsService alertsService;
 
 	@Override
 	@Transactional
@@ -72,11 +74,12 @@ public class InquiryServiceImpl implements InquiryService {
 
 		Answer answer = Answer.createAnswer(answerRequestDto, inquiry);
 
-		mailSendService.sendEmail(inquiry.getEmail(), inquiry.getTitle() + "에 대한 답변이 등록되었습니다.", answer.getContent(),
-			null);
+//		mailSendService.sendEmail(inquiry.getEmail(), inquiry.getTitle() + "에 대한 답변이 등록되었습니다.", answer.getContent(),
+//			null);
 
 		inquiry.isAnsweredTrue();
 		answerRepository.save(answer);
+		alertsService.sendInquiryAnswerAlert(inquiry);
 	}
 
 }
