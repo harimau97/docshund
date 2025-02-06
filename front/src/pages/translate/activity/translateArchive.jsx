@@ -57,27 +57,24 @@ const TranslateArchive = () => {
     likeTranslate(docsId, transId);
   };
 
+  const changeOrderBy = (category) => {
+    if (category === "like") {
+      transList.sort((a, b) => b.likeCount - a.likeCount);
+    } else if (category === "newest") {
+      transList.sort((a, b) => {
+        const dateA = new Date(a.updatedAt);
+        const dateB = new Date(b.updatedAt);
+        return dateB - dateA;
+      });
+    }
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       const data = await fetchBestTranslate(docsId, "", isTest);
       setTransList(data);
     };
-
-    // const checkLiked = async () => {
-    //   translateLikes.current = await fetchLikedTranslateList(
-    //     localStorage.getItem("userId")
-    //   );
-    // };
-    // console.log(
-    //   "검색 기준이 변경되었습니다. 다시 검색합니다. 현재 검색 기준: ",
-    //   orderBy,
-    //   "docsID",
-    //   docsId,
-    //   "originID",
-    //   originId
-    // );
     fetchData();
-    // checkLiked();
     console.log("번역 전체", transList);
   }, []);
 
@@ -138,6 +135,7 @@ const TranslateArchive = () => {
                         orderByUpdatedAt: true,
                         orderBy: "newest",
                       });
+                      changeOrderBy("newest");
                     }}
                     className={`${
                       orderByUpdatedAt ? toggledStyle : defaultStyle
@@ -152,6 +150,7 @@ const TranslateArchive = () => {
                         orderByUpdatedAt: false,
                         orderBy: "like",
                       });
+                      changeOrderBy("like");
                     }}
                     className={`${
                       orderByLike ? toggledStyle : defaultStyle

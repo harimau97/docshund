@@ -343,6 +343,7 @@ const TranslateViewer = () => {
                         docsId: part.docsId,
                         originId: part.originId,
                       });
+                      await fetchBestTranslate(part.docsId, "", isTest);
                       await openArchive();
                       toggleArchive();
                     }}

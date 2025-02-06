@@ -1,6 +1,7 @@
 import Modal from "react-modal";
 import { useState, useEffect } from "react";
 import * as motion from "motion/react-client";
+import { fetchBestTranslate } from "../hooks/translateGetService";
 import { registTranslate } from "../hooks/translatePostService";
 import { AnimatePresence } from "motion/react";
 import AlertModal from "../../../components/emptyModal/alertModal";
@@ -103,6 +104,7 @@ const TranslateEditor = () => {
                       useEditorStore.setState({ submitData: currentUserText });
                       await handleSubmit(docsId, originId, currentUserText);
                       setAlertTitle("제출 완료");
+                      fetchBestTranslate(docsId, "", false);
                       setIsVisible(true);
                       setTimeout(() => setIsVisible(false), 1500);
                       setTimeout(() => toggleEditor(), 1500);
