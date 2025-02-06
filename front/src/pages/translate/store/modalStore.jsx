@@ -2,14 +2,21 @@ import { create } from "zustand";
 import useEditorStore from "./editorStore";
 
 const modalStore = create((set) => ({
-  isEditorOpen: false,
-  isArchiveOpen: false,
+  isEditorOpen: false, // 번역 에디터 모달 표시
+  isEditorVisible: false, // 번역 에디터 애니메이션
+  isArchiveOpen: false, //번역 기록 페이지 모달 표시
+  isArchiveVisible: false, //번역 기록 페이지 애니메이션
   openEditor: () => {
     set({ isEditorOpen: true });
   },
   closeEditor: () => {
     set({ isEditorOpen: false });
-    useEditorStore.getState().clearAll();
+    useEditorStore.getState().clearEditor();
+  },
+  toggleEditor: () => {
+    set((state) => ({
+      isEditorVisible: !state.isEditorVisible,
+    }));
   },
   openArchive: () => {
     set({ isArchiveOpen: true });
@@ -17,6 +24,11 @@ const modalStore = create((set) => ({
   closeArchive: () => {
     set({ isArchiveOpen: false });
     useEditorStore.getState().clearAll();
+  },
+  toggleArchive: () => {
+    set((state) => ({
+      isArchiveVisible: !state.isArchiveVisible,
+    }));
   },
 }));
 

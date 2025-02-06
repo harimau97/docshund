@@ -1,66 +1,84 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
 import { useNavigate, NavLink } from "react-router-dom";
+import useDocsStore from "./store/docsStore";
+import useTestStore from "./store/testStore";
+import { fetchDocsList } from "./hooks/translateGetService";
+import { motion } from "framer-motion";
 
 const TransLatePage = () => {
-  const [docsList, setDocsList] = useState([
-    "kafka",
-    "rabbitmq",
-    "elasticsearch",
-    "kafka",
-    "springboot",
-    "kafka",
-    "mysql",
-  ]);
-  const [docsCategories, setDocsCategories] = useState([
-    "frontend",
-    "backend",
-    "DB",
-  ]);
+  const [docsCategories, setDocsCategories] = useState(["Spring", "MyBatis"]);
+
+  const { docsList } = useDocsStore();
+  const { isTest } = useTestStore();
   const navigate = useNavigate();
 
+  const slogan = "번역 문서";
+  const [showSlogan, setShowSlogan] = useState(false);
+
+  useEffect(() => {
+    fetchDocsList(isTest);
+    setShowSlogan(true);
+  }, []);
+
   return (
-    <div>
-      <div className="box-border text-gray-950 text-center text-[56px] text-semibold relative flex items-center justify-center">
-        번역 문서
-      </div>
-      <div>
-        {docsCategories.map((docsCategory, index) => {
-          return (
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 py-8 px-4 max-w-screen-xl mx-auto">
+      <div className="max-w-7xl mx-auto">
+        <div className="text-center mb-12">
+          <motion.h1
+            className="text-2xl md:text-4xl lg:text-6xl font-bold mb-6 bg-gradient-to-r from-[#bc5b39] to-[#C96442] text-transparent bg-clip-text"
+            key={showSlogan}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            style={{ whiteSpace: "pre-line", lineHeight: "1.5" }}
+          >
+            {slogan}
+          </motion.h1>
+          <p className="text-gray-600">
+            원하시는 문서를 선택하여 번역을 시작하세요
+          </p>
+        </div>
+
+        <div className="flex flex-wrap gap-3 justify-center mb-10">
+          {docsCategories.map((docsCategory, index) => (
             <button
-              className="mr-2 ml-2 border-black border-2 p-1 rounded-xl cursor-pointer"
+              className="cursor-pointer px-6 py-2 rounded-full bg-white text-gray-700 hover:text-white hover:bg-[rgba(188,91,57,0.8)] transition-all duration-200 shadow-sm border border-gray-200 font-medium"
               key={index}
             >
               {docsCategory}
             </button>
-          );
-        })}
-      </div>
-      <div className="h-screen w-full flex flex-wrap items-center justify-center">
-        {docsList.map((docs, index) => {
-          return (
+          ))}
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
+          {docsList.map((docs, index) => (
             <div
               key={index}
-              className="box-border srhink-0 w-[300px] h-[300px] relative mr-2 ml-2 "
+              className="group relative bg-white rounded-xl overflow-hidden hover:shadow-xl transition-all duration-300 border border-gray-100"
             >
-              <div className="flex items-center justify-center flex-col rounded-[4px] border-solid border-[#787f8f] border-[0.5px] w-full h-full absolute shadow-[inset_0px_0px_10px_0px_rgba(42,42,48,0.25),_0px_7px_35px_4px_rgba(32,31,49,0.20)]">
-                <img
-                  className="w-[50%] h-[50%] relative"
-                  src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAMAAABF0y+mAAAAzFBMVEVHcExwLIZpK4PIIDjJIDfXQS85KGyRHVP1lSKPL27odCbJIjflbSiZI2S5IEeGJnWpIFewIE6rIFWrIFMqJmPQNDPEIDvKJDfLIDb0kSPFIDvxjCPeWSvFIDvJIDe/IEDfWSvfWyvXQC+0IEx+KHyFJnaDJneBJ3m8IETOKTTjainoeSf0lSPndCfLIDbeWCzjaSl+KHuKJXN6KX27IER/KHu2IEmbImWGJnV/KHvKIDazIEy/IEDOJjTaSy7hYCrqeyaJJXPpeCbdVSxkhj7EAAAAOnRSTlMANkom8usWBP0MG8P5Ht7M96m24UdcpDeviP5xPpjl+NzOwUgkqbfgk/Jx5ufdiKnelGOdyo72UWrsTLVmUAAAANZJREFUKJF90VeTgjAUhuGAwQRFql13FcGuW3TXkgSw/P//5Dhe+oVzmWfeM5mEkLfpcV57P33NgHPe09jwsuF8gK3246wvN83a7yJ2nC22Vh6Pi2IFjVnWJL/HNsSvbGLl1hBahdJ6li07ED9E/VOILkPWobQrBK3gUD3DNgxtd9RW/X4Lhol0/5Qa4a2BDA5SLaCxKAqldBsQG34YST+Blp6uoR8c8cux2dzzpjtoxP6fna9TbMTw9vNffBvCbDPVZM+1pt6IYZSgWdUba5aE1VJEv/gAhbgShVrVkEQAAAAASUVORK5CYII="
-                  alt="문서 아이콘"
-                />
-                <div>{docs}</div>
+              <div className="p-6 flex flex-col items-center">
+                <div className="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center mb-4">
+                  <img
+                    className="w-10 h-10 opacity-80"
+                    src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAMAAABF0y+mAAAAzFBMVEVHcExwLIZpK4PIIDjJIDfXQS85KGyRHVP1lSKPL27odCbJIjflbSiZI2S5IEeGJnWpIFewIE6rIFWrIFMqJmPQNDPEIDvKJDfLIDb0kSPFIDvxjCPeWSvFIDvJIDe/IEDfWSvfWyvXQC+0IEx+KHyFJnaDJneBJ3m8IETOKTTjainoeSf0lSPndCfLIDbeWCzjaSl+KHuKJXN6KX27IER/KHu2IEmbImWGJnV/KHvKIDazIEy/IEDOJjTaSy7hYCrqeyaJJXPpeCbdVSxkhj7EAAAAOnRSTlMANkom8usWBP0MG8P5Ht7M96m24UdcpDeviP5xPpjl+NzOwUgkqbfgk/Jx5ufdiKnelGOdyo72UWrsTLVmUAAAANZJREFUKJF90VeTgjAUhuGAwQRFql13FcGuW3TXkgSw/P//5Dhe+oVzmWfeM5mEkLfpcV57P33NgHPe09jwsuF8gK3246wvN83a7yJ2nC22Vh6Pi2IFjVnWJL/HNsSvbGLl1hBahdJ6li07ED9E/VOILkPWobQrBK3gUD3DNgxtd9RW/X4Lhol0/5Qa4a2BDA5SLaCxKAqldBsQG34YST+Blp6uoR8c8cux2dzzpjtoxP6fna9TbMTw9vNffBvCbDPVZM+1pt6IYZSgWdUba5aE1VJEv/gAhbgShVrVkEQAAAAASUVORK5CYII="
+                    alt="문서 아이콘"
+                  />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-800 mb-3">
+                  {docs.documentName}
+                </h3>
                 <button
-                  className="cursor-pointer border"
-                  onClick={() => navigate(`/translate/viewer/${docs}`)}
+                  onClick={() => {
+                    navigate(`/translate/viewer/${docs.docsId}`);
+                  }}
+                  className="cursor-pointer mt-4 px-6 py-2 bg-[rgba(188,91,57,1)] text-white rounded-lg hover:bg-[rgba(188,91,57,0.8)] transition-colors duration-200 font-medium"
                 >
                   번역하기
                 </button>
               </div>
-              <div className="bg-[linear-gradient(90deg,_rgba(0,0,0,0.00)_14.58333283662796%,_rgba(26,29,55,0.10)_48.40801954269409%,_rgba(0,0,0,0.00)_85.41666865348816%)] w-[13px] absolute left-[12px] bottom-[0px] top-[0px]"></div>
             </div>
-          );
-        })}
+          ))}
+        </div>
       </div>
     </div>
   );

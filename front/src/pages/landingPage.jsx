@@ -137,6 +137,11 @@ const LandingPage = () => {
         </div>
       </motion.section>
 
+      {/* Separator */}
+      <div className="flex justify-center ">
+        <div className="w-1/5 border-t border-gray-300"></div>
+      </div>
+
       {/* How It Works Section*/}
       <motion.section className="py-16 bg-white">
         <div className="max-w-6xl mx-auto px-4">
@@ -343,6 +348,11 @@ const LandingPage = () => {
           </div>
         </div>
       </motion.section>
+
+      {/* Separator */}
+      <div className="flex justify-center ">
+        <div className="w-1/5 border-t border-gray-300"></div>
+      </div>
 
       {/* FAQ Section */}
       <motion.section

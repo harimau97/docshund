@@ -1,5 +1,5 @@
 let db;
-//indexedDB를 초기화한 후 연결
+//1. indexedDB를 초기화한 후 연결
 export const initDB = (dbName, objectStoreName) => {
   return new Promise((resolve, reject) => {
     const request = window.indexedDB.open(dbName);
@@ -81,4 +81,12 @@ export const loadData = (objectStoreName) => {
       reject("데이터 가져오기 실패: " + event.target.error);
     };
   });
+};
+
+//4. 현재 버전 indexedDB와 연결 해제(버전 업 작업을 위해서 먼저 연결해제하는 게 필수)
+export const closeAllConnections = () => {
+  if (db) {
+    db.close();
+    db = null;
+  }
 };
