@@ -29,6 +29,7 @@ import useArchiveStore from "./store/archiveStore.jsx";
 //이미지 import
 import loadingGif from "../../assets/loading.gif";
 import warning from "../../assets/icon/warning.png";
+import best from "../../assets/icon/best.png";
 
 const TranslateViewer = () => {
   const { docsId } = useParams();
@@ -248,12 +249,18 @@ const TranslateViewer = () => {
               onClick={async (e) => {
                 e.stopPropagation();
                 toggleButton(part.id, e);
-                fetchBestTranslate(part.docsId, "", isTest);
-                if (
-                  transList !== undefined &&
-                  transList[0].originId === part.originId
-                ) {
-                  useEditorStore.setState({ bestTrans: transList[0].content });
+                fetchBestTranslate(part.docsId, "best", isTest);
+                if (transList !== undefined) {
+                  const filteredTranslations = transList.filter(
+                    (item) => item.originId === part.originId
+                  );
+                  if (filteredTranslations.length > 0) {
+                    useEditorStore.setState({
+                      bestTrans: filteredTranslations[0].content,
+                    });
+                  } else {
+                    useEditorStore.setState({ bestTrans: "" });
+                  }
                 } else {
                   useEditorStore.setState({ bestTrans: "" });
                 }
@@ -280,7 +287,16 @@ const TranslateViewer = () => {
                 {!docpartStates[part.id] ? (
                   <ToastViewer content={part.content} />
                 ) : (
-                  <ToastViewer content={useEditorStore.getState().bestTrans} />
+                  <div className="flex justify-between">
+                    <ToastViewer
+                      content={useEditorStore.getState().bestTrans}
+                    />
+                    <img
+                      className="w-10 h-10"
+                      src={best}
+                      alt="베스트 번역 아이콘"
+                    />
+                  </div>
                 )}
               </div>
             </div>

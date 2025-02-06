@@ -1,5 +1,8 @@
-import { useState, useEffect } from "react";
-import { fetchBestTranslate } from "../hooks/translateGetService.jsx";
+import { useState, useEffect, useRef } from "react";
+import {
+  fetchBestTranslate,
+  fetchLikedTranslateList,
+} from "../hooks/translateGetService.jsx";
 import { likeTranslate } from "../hooks/translatePostService.jsx";
 import * as motion from "motion/react-client";
 import { AnimatePresence } from "motion/react";
@@ -12,6 +15,7 @@ import useTestStore from "../store/testStore.jsx";
 import ToastViewer from "../components/toastViewer.jsx";
 
 const TranslateArchive = () => {
+  const translateLikes = useRef([]);
   const [transStates, setTransStates] = useState({});
   const [likedStates, setLikedStates] = useState({});
   const { docsPart, bestTrans, docsId, originId, currentUserText } =
@@ -58,6 +62,12 @@ const TranslateArchive = () => {
       const data = await fetchBestTranslate(docsId, "", isTest);
       setTransList(data);
     };
+
+    // const checkLiked = async () => {
+    //   translateLikes.current = await fetchLikedTranslateList(
+    //     localStorage.getItem("userId")
+    //   );
+    // };
     // console.log(
     //   "검색 기준이 변경되었습니다. 다시 검색합니다. 현재 검색 기준: ",
     //   orderBy,
@@ -67,7 +77,8 @@ const TranslateArchive = () => {
     //   originId
     // );
     fetchData();
-    console.log(transList);
+    // checkLiked();
+    console.log("번역 전체", transList);
   }, []);
 
   return (
@@ -162,7 +173,7 @@ const TranslateArchive = () => {
                     return (
                       <div
                         key={trans.transId}
-                        className="w-full flex flex-col bg-white border border-[#87867F] py-4 px-5 rounded-xl hover:shadow-lg transition-all duration-300 ease-in-out relative"
+                        className="w-full flex flex-col bg-white border border-[#87867F] py-4 px-5 rounded-xl hover:shadow-lg transition-all duration-300 ease-in-out"
                       >
                         <div
                           onClick={() => {
@@ -178,37 +189,60 @@ const TranslateArchive = () => {
                               {trans.updatedAt}
                             </div>
                           </div>
-                        </div>
-                        <div
-                          onClick={() => {
-                            handleLike(docsId, trans.transId);
-                          }}
-                          className={`flex w-1/5 items-center gap-2 px-4 py-2 rounded-lg transition-all duration-300 cursor-pointer absolute right-10 top-1/2 -translate-y-1/2 ${
-                            likedStates[trans.transId]
-                              ? "bg-red-600 text-white"
-                              : "bg-gray-300"
-                          }`}
-                        >
-                          <span
-                            className={
-                              likedStates[trans.transId]
-                                ? "text-white"
-                                : "text-slate-700"
-                            }
-                          >
-                            좋아요
-                          </span>
-                          <span
-                            className={`font-semibold ${
-                              likedStates[trans.transId]
-                                ? "text-white"
-                                : "text-slate-900"
+
+                          <div
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleLike(docsId, trans.transId);
+                            }}
+                            className={`flex w-1/5 items-center gap-2 px-4 py-2 rounded-lg transition-all duration-300 cursor-pointer right-5 top-1/2  ${
+                              (likedStates[trans.transId] &&
+                                !trans.likeUserIds.includes(
+                                  Number(localStorage.getItem("userId"))
+                                )) ||
+                              (!likedStates[trans.transId] &&
+                                trans.likeUserIds.includes(
+                                  Number(localStorage.getItem("userId"))
+                                ))
+                                ? "bg-red-600 text-white"
+                                : "bg-gray-300"
                             }`}
                           >
-                            {trans.likeCount +
-                              (likedStates[trans.transId] ? 1 : 0)}
-                          </span>
+                            <span
+                              className={
+                                (likedStates[trans.transId] &&
+                                  !trans.likeUserIds.includes(
+                                    Number(localStorage.getItem("userId"))
+                                  )) ||
+                                (!likedStates[trans.transId] &&
+                                  trans.likeUserIds.includes(
+                                    Number(localStorage.getItem("userId"))
+                                  ))
+                                  ? "text-white"
+                                  : "text-slate-700"
+                              }
+                            >
+                              좋아요
+                            </span>
+                            <span
+                              className={`font-semibold ${
+                                (likedStates[trans.transId] &&
+                                  !trans.likeUserIds.includes(
+                                    Number(localStorage.getItem("userId"))
+                                  )) ||
+                                (!likedStates[trans.transId] &&
+                                  trans.likeUserIds.includes(
+                                    Number(localStorage.getItem("userId"))
+                                  ))
+                                  ? "text-white"
+                                  : "text-slate-900"
+                              }`}
+                            >
+                              {/* {trans.likeCount} */}
+                            </span>
+                          </div>
                         </div>
+
                         <div
                           className={`overflow-hidden transition-all duration-300 ease-in-out ${
                             transStates[trans.transId]

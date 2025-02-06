@@ -1,8 +1,8 @@
 import { axiosJsonInstance } from "../../../utils/axiosInstance";
 import PropTypes from "prop-types";
-import TmpBestData from "../store/tmpBestData";
 import TmpTranslateData from "../store/tmpTranslateData";
 import TmpDocsList from "../store/tmpDocsList";
+import useEditorStore from "../store/editorStore";
 import useArchiveStore from "../store/archiveStore";
 import useDocsStore from "../store/docsStore";
 
@@ -54,7 +54,14 @@ export const fetchTranslateData = async (docsId, test) => {
 export const fetchBestTranslate = async (docsId, isBest, test) => {
   const status = isBest ? "best" : "";
   try {
-    if (!test) {
+    if (isBest === "best") {
+      const response = await axiosJsonInstance.get(
+        `${baseUrl}/${docsId}/trans?status=${status}`
+      );
+      const data = response.data;
+      console.log("베스트 번역본", data);
+      useArchiveStore.setState({ transList: data });
+    } else {
       // console.log("번역데이터 가져오기 시작");
       const response = await axiosJsonInstance.get(
         `${baseUrl}/${docsId}/trans?status=${status}`
@@ -63,12 +70,22 @@ export const fetchBestTranslate = async (docsId, isBest, test) => {
       console.log(data);
       useArchiveStore.setState({ transList: data });
       // console.log(useArchiveStore.getState().transList[0]);
-    } else {
-      return TmpBestData.transList;
     }
   } catch (error) {
     console.log(error);
     return null;
+  }
+};
+
+export const fetchLikedTranslateList = async (userId) => {
+  try {
+    const response = await axiosJsonInstance.get(`${baseUrl}/trans/votes`, {
+      params: { userId: userId },
+    });
+    const data = response.data;
+    return data;
+  } catch (error) {
+    console.log("좋아요 번역 조회 실패", error);
   }
 };
 

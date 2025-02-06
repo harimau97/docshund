@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
 import logo from "../assets/logo.png";
 import google from "../assets/google.png";
 import github from "../assets/github.png";
@@ -21,6 +22,9 @@ const LoginModal = () => {
     if (urlToken) {
       setToken(urlToken);
       localStorage.setItem("token", urlToken);
+      const decodedToken = jwtDecode(urlToken);
+      const userId = decodedToken.userId;
+      localStorage.setItem("userId", userId);
       closeModal();
       navigate("/"); // 로그인 후 홈으로 리다이렉트
     }
