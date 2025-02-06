@@ -18,9 +18,15 @@ const useUserProfileStore = create((set) => ({
   },
 
   // 프로필 업데이트
-  updateProfile: async (updatedProfile) => {
+  updateProfile: async (userId, formData) => {
     set({ isLoading: true, error: null });
-    const status = await userProfileService.updateProfile(updatedProfile);
+    const status = await userProfileService.updateProfile(userId, formData);
+    if (status) {
+      const updatedProfile = JSON.parse(formData.get("profile"));
+      set({ profile: updatedProfile, isLoading: false });
+    } else {
+      set({ error: "프로필 업데이트에 실패했습니다.", isLoading: false });
+    }
   },
 }));
 

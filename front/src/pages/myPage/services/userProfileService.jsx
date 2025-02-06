@@ -1,4 +1,7 @@
-import { axiosJsonInstance } from "../../../utils/axiosInstance";
+import {
+  axiosJsonInstance,
+  axiosMultipartInstance,
+} from "../../../utils/axiosInstance";
 
 const userProfileService = {
   // 프로필 데이터 가져오기
@@ -13,16 +16,12 @@ const userProfileService = {
   },
 
   // 프로필 업데이트
-  async updateProfile(updatedProfile) {
+  async updateProfile(userId, formData) {
     try {
-      const response = await axiosJsonInstance.patch(
-        `/users/profile/${updatedProfile.userId}`,
-        updatedProfile
+      const response = await axiosMultipartInstance.patch(
+        `/users/profile/${userId}`,
+        formData
       );
-
-      //test
-      console.log(updatedProfile);
-
       return response.status;
     } catch (error) {
       console.error("프로필 데이터를 업데이트하는 중 오류 발생:", error);

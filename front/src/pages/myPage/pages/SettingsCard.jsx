@@ -1,15 +1,12 @@
 import PropTypes from "prop-types";
 
-const Setting = ({ profile, isEditing }) => {
-  if (!profile) {
-    return <div>Loading...</div>;
-  }
-
+const SettingsCard = (props) => {
+  const { isEditing, editedProfile, handleThemeChange } = props;
   return (
     <div className="w-auto bg-white p-10 rounded-xl border-1 border-[#E1E1DF] text-[#424242]">
       <div className="flex mb-4">
         <h3 className="w-30">이메일</h3>
-        <p className="font-semibold">{profile.email}</p>
+        <p className="font-semibold">{editedProfile.email}</p>
       </div>
       <div className="flex mb-4">
         <h3 className="w-30">모드설정</h3>
@@ -18,7 +15,9 @@ const Setting = ({ profile, isEditing }) => {
             type="radio"
             className="mr-2"
             name="theme"
-            checked={!profile.isDarkmode}
+            value="light"
+            checked={!editedProfile.isDarkmode}
+            onChange={handleThemeChange}
             disabled={!isEditing}
           />
           라이트 모드
@@ -28,7 +27,9 @@ const Setting = ({ profile, isEditing }) => {
             type="radio"
             className="mr-2"
             name="theme"
-            checked={profile.isDarkmode}
+            value="dark"
+            checked={editedProfile.isDarkmode}
+            onChange={handleThemeChange}
             disabled={!isEditing}
           />
           다크 모드
@@ -38,12 +39,13 @@ const Setting = ({ profile, isEditing }) => {
   );
 };
 
-Setting.propTypes = {
-  profile: PropTypes.shape({
-    email: PropTypes.string,
-    isDarkmode: PropTypes.bool,
-  }),
+SettingsCard.propTypes = {
   isEditing: PropTypes.bool.isRequired,
+  editedProfile: PropTypes.shape({
+    email: PropTypes.string.isRequired,
+    isDarkmode: PropTypes.bool.isRequired,
+  }).isRequired,
+  handleThemeChange: PropTypes.func.isRequired,
 };
 
-export default Setting;
+export default SettingsCard;

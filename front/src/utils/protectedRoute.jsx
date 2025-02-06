@@ -1,8 +1,8 @@
 import { Navigate, Outlet } from "react-router-dom";
-import useAuth from "./useAuth.jsx";
+import authService from "../services/authService";
 
 const ProtectedRoute = () => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated } = authService();
 
   // 인증되어 있으면 자식 라우트를 렌더링하고, 아니면 "/"로 리다이렉트
   return isAuthenticated() ? <Outlet /> : <Navigate to="/" replace />;

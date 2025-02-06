@@ -1,15 +1,11 @@
 import PropTypes from "prop-types";
 
 const ProfileCard = ({
-  profile,
   isEditing,
+  editedProfile,
   handleChange,
   handleImageChange,
 }) => {
-  if (!profile) {
-    return <div>Loading...</div>;
-  }
-
   return (
     <div className="w-auto bg-white p-10 rounded-xl border-1 border-[#E1E1DF] text-[#424242] mb-5">
       <div className="flex mb-4">
@@ -17,7 +13,7 @@ const ProfileCard = ({
         {isEditing ? (
           <>
             <img
-              src={profile.profileImage}
+              src={editedProfile.profileImage}
               alt="Profile"
               className="w-32 h-32 rounded-full"
             />
@@ -39,7 +35,7 @@ const ProfileCard = ({
           </>
         ) : (
           <img
-            src={profile.profileImage}
+            src={editedProfile.profileImage}
             alt="Profile"
             className="w-32 h-32 rounded-full"
           />
@@ -51,13 +47,13 @@ const ProfileCard = ({
           <input
             type="text"
             name="nickname"
-            value={profile.nickname || ""}
+            value={editedProfile.nickname || ""}
             onChange={handleChange}
             placeholder="닉네임을 입력해주세요."
             className="border p-2 rounded focus:outline-none focus:ring-1"
           />
         ) : (
-          <p className="font-semibold ">{profile.nickname}</p>
+          <p className="font-semibold ">{editedProfile.nickname}</p>
         )}
       </div>
       <div className="flex mb-4">
@@ -66,41 +62,41 @@ const ProfileCard = ({
           <input
             type="text"
             name="hobby"
-            value={profile.hobby || ""}
+            value={editedProfile.hobby || ""}
             onChange={handleChange}
             placeholder="관심분야를 입력해주세요."
             className="border p-2 rounded focus:outline-none focus:ring-1"
           />
         ) : (
-          <p>{profile.hobby}</p>
+          <p>{editedProfile.hobby}</p>
         )}
       </div>
       <h3 className="w-30 mb-4">자기소개</h3>
       {isEditing ? (
         <textarea
           name="introduce"
-          value={profile.introduce || ""}
+          value={editedProfile.introduce || ""}
           onChange={handleChange}
           placeholder="자기소개를 입력해주세요."
           className="border p-2 rounded w-full focus:outline-none focus:ring-1"
         />
       ) : (
-        <p>{profile.introduce}</p>
+        <p>{editedProfile.introduce}</p>
       )}
     </div>
   );
 };
 
 ProfileCard.propTypes = {
-  profile: PropTypes.shape({
+  isEditing: PropTypes.bool.isRequired,
+  editedProfile: PropTypes.shape({
     profileImage: PropTypes.string,
     nickname: PropTypes.string,
     hobby: PropTypes.string,
     introduce: PropTypes.string,
-  }),
-  isEditing: PropTypes.bool.isRequired,
-  handleImageChange: PropTypes.func.isRequired,
+  }).isRequired,
   handleChange: PropTypes.func.isRequired,
+  handleImageChange: PropTypes.func.isRequired,
 };
 
 export default ProfileCard;
