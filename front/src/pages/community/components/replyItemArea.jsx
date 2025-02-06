@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { useParams } from "react-router-dom";
 
 import communityArticleStore from "../../../store/communityStore/communityArticleStore";
-import ReplyItemService from "../hooks/replyItemService";
+import ReplyItemService from "../services/replyItemService";
 import ListRender from "../../../components/pagination/listRender";
 import ReplyRenderItem from "./replyRenderItem";
 

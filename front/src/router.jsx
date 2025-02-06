@@ -77,25 +77,25 @@ function AppRoutes() {
         element={<TranslateViewer key={window.location.pathname} />}
       ></Route>
       {/* 비로그인 접근 불가 */}
-      {/* <Route element={<ProtectedRoute />}> */}
-      {/* 마이페이지 관련 주소 */}
-      <Route path="/myPage" element={<MyPage />}>
-        <Route index element={<Navigate to="profile" replace />} />
-        <Route path="profile" element={<MyProfilePage />} />
-        <Route path="archive" element={<ArchivePage />}>
-          <Route path="likeTrans" element={<LikeTranslationPage />} />
-          <Route path="likeArticle" element={<LikeArticlePage />} />
-          <Route path="likeDocs" element={<LikeDocsPage />} />
+      <Route element={<ProtectedRoute />}>
+        {/* 마이페이지 관련 주소 */}
+        <Route path="/myPage" element={<MyPage />}>
+          <Route index element={<Navigate to="profile" replace />} />
+          <Route path="profile" element={<MyProfilePage />} />
+          <Route path="archive" element={<ArchivePage />}>
+            <Route path="likeTrans" element={<LikeTranslationPage />} />
+            <Route path="likeArticle" element={<LikeArticlePage />} />
+            <Route path="likeDocs" element={<LikeDocsPage />} />
+          </Route>
+          <Route path="activity" element={<ActivityPage />}>
+            <Route path="myTrans" element={<MyTranslationPage />} />
+            <Route path="myArticle" element={<MyArticlePage />} />
+            <Route path="myComment" element={<MyCommentPage />} />
+          </Route>
+          <Route path="memo" element={<MemoPage />} />
+          <Route path="inquiry" element={<InquiryPage />} />
         </Route>
-        <Route path="activity" element={<ActivityPage />}>
-          <Route path="myTrans" element={<MyTranslationPage />} />
-          <Route path="myArticle" element={<MyArticlePage />} />
-          <Route path="myComment" element={<MyCommentPage />} />
-        </Route>
-        <Route path="memo" element={<MemoPage />} />
-        <Route path="inquiry" element={<InquiryPage />} />
       </Route>
-      {/* </Route> */}
     </Routes>
   );
 }

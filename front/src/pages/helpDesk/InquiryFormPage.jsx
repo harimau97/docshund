@@ -1,8 +1,12 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
+
 import InquiryService from "../../services/helpDeskServices/inquiryService";
 
 const InquiryFormPage = () => {
+  const navigate = useNavigate();
+
   const [category, setCategory] = useState("");
   const [title, setTitle] = useState("");
   const [email, setEmail] = useState("");
@@ -49,6 +53,7 @@ const InquiryFormPage = () => {
     }
 
     try {
+      // 문의 제출 API 호출
       await InquiryService.submitInquiry(formData);
       alert("문의가 성공적으로 제출되었습니다.");
       setCategory("");
@@ -56,6 +61,9 @@ const InquiryFormPage = () => {
       setEmail("");
       setContent("");
       setFile(null);
+
+      // 문의 제출 후 마이페이지로 이동
+      navigate("/mypage/inquiry");
     } catch (error) {
       alert("문의 제출 중 오류가 발생했습니다.");
       console.log("문의 등록 실패", error);

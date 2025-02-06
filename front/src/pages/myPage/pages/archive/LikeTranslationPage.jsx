@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { jwtDecode } from "jwt-decode";
 
 import TranslationStore from "../../store/translationStore";
 import ListRender from "../../../../components/pagination/listRender";
@@ -8,13 +9,14 @@ import likeCancel from "../../../../assets/icon/heartEmpty24.png";
 import LikeTranslationService from "../../services/likeTranslationService";
 
 const LikeTranslationPage = () => {
+  const token = localStorage.getItem("token");
+
   const translations = TranslationStore((state) => state.translations);
   const setTranslations = TranslationStore((state) => state.setTranslations);
   const setLoading = TranslationStore((state) => state.setLoading);
   const setError = TranslationStore((state) => state.setError);
 
-  const [userId] = useState(2);
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(0);
   const [itemsPerPage] = useState(15);
   const [totalPages, setTotalPages] = useState(1);
   const [currentData, setCurrentData] = useState([]);
@@ -24,9 +26,15 @@ const LikeTranslationPage = () => {
     setLoading(true);
     const fetchTranslations = async () => {
       try {
-        const data = await LikeTranslationService.fetchTranslations(userId);
-        if (data.length > 0) {
-          setTranslations(data);
+        if (token) {
+          const decoded = jwtDecode(token);
+          const userId = decoded.userId;
+
+          const data = await LikeTranslationService.fetchTranslations(userId);
+
+          if (data.length > 0) {
+            setTranslations(data);
+          }
         }
       } catch (error) {
         setError(error);
@@ -35,12 +43,12 @@ const LikeTranslationPage = () => {
       }
     };
     fetchTranslations();
-  }, [userId]);
+  }, [token]);
 
   // 페이지네이션 관련 상태들을 하나의 useEffect로 통합
   useEffect(() => {
     if (translations.length > 0) {
-      const startIndex = (currentPage - 1) * itemsPerPage;
+      const startIndex = currentPage * itemsPerPage;
       const endIndex = Math.min(startIndex + itemsPerPage, translations.length);
       const newTotalPages = Math.ceil(translations.length / itemsPerPage);
 

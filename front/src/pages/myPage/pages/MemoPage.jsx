@@ -1,38 +1,55 @@
 import { useEffect } from "react";
+import { jwtDecode } from "jwt-decode";
+
 import MemoList from "../components/MemoList";
 import EditorModal from "../components/EditorModal";
 import modalStore from "../store/modalStore";
 import useMemoStore from "../store/memoStore";
-import useUserProfileStore from "../store/userProfileStore";
 
 const MemoPage = () => {
+  const token = localStorage.getItem("token");
+
   const { isOpen, openId, openModal, closeModal } = modalStore();
   const { memos, fetchMemos, addMemo, updateMemo, deleteMemo } = useMemoStore();
-  const { profile } = useUserProfileStore();
-  const userId = profile?.id || 2; // 로그인한 사용자 ID
 
   useEffect(() => {
-    if (userId) fetchMemos(userId);
-  }, [userId, fetchMemos]);
+    if (token) {
+      const decoded = jwtDecode(token);
+      const userId = decoded.userId;
+      if (userId) fetchMemos(userId);
+    }
+  }, [token, fetchMemos]);
 
   const handleCreateMemo = async (memoData) => {
-    if (userId) {
-      await addMemo(userId, memoData);
-      closeModal();
+    if (token) {
+      const decoded = jwtDecode(token);
+      const userId = decoded.userId;
+      if (userId) {
+        await addMemo(userId, memoData);
+        closeModal();
+      }
     }
   };
 
   const handleEditMemo = async (memoId, memoData) => {
-    if (userId) {
-      await updateMemo(userId, memoId, memoData);
-      closeModal();
+    if (token) {
+      const decoded = jwtDecode(token);
+      const userId = decoded.userId;
+      if (userId) {
+        await updateMemo(userId, memoId, memoData);
+        closeModal();
+      }
     }
   };
 
   const handleDeleteMemo = async (memoId) => {
-    if (userId) {
-      await deleteMemo(userId, memoId);
-      closeModal();
+    if (token) {
+      const decoded = jwtDecode(token);
+      const userId = decoded.userId;
+      if (userId) {
+        await deleteMemo(userId, memoId);
+        closeModal();
+      }
     }
   };
 

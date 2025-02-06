@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { jwtDecode } from "jwt-decode";
 
 import likeDocsService from "../../services/likeDocsService";
 import ListRender from "../../../../components/pagination/listRender";
@@ -9,14 +10,15 @@ import like from "../../../../assets/icon/heartFilled24.png";
 import likeCancel from "../../../../assets/icon/heartEmpty24.png";
 
 const LikeDocsPage = () => {
+  const token = localStorage.getItem("token");
+
   const docs = likeDocsStore((state) => state.docs);
   const setDocs = likeDocsStore((state) => state.setDocs);
 
   const setLoading = likeDocsStore((state) => state.setLoading);
   const setError = likeDocsStore((state) => state.setError);
 
-  const [userId] = useState(2);
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(0);
   const [itemsPerPage] = useState(15);
   const [totalPages, setTotalPages] = useState(1);
   const [currentData, setCurrentData] = useState([]);
@@ -25,9 +27,15 @@ const LikeDocsPage = () => {
     setLoading(true);
     const fetchTranslations = async () => {
       try {
-        const data = await likeDocsService.fetchDocs(userId);
-        if (data.length > 0) {
-          setDocs(data);
+        if (token) {
+          const decoded = jwtDecode(token);
+          const userId = decoded.userId;
+
+          const data = await likeDocsService.fetchDocs(userId);
+
+          if (data.length > 0) {
+            setDocs(data);
+          }
         }
       } catch (error) {
         setError(error);
@@ -36,12 +44,12 @@ const LikeDocsPage = () => {
       }
     };
     fetchTranslations();
-  }, [userId]);
+  }, [token]);
 
   // 페이지네이션 관련 상태들을 하나의 useEffect로 통합
   useEffect(() => {
     if (docs.length > 0) {
-      const startIndex = (currentPage - 1) * itemsPerPage;
+      const startIndex = currentPage * itemsPerPage;
       const endIndex = Math.min(startIndex + itemsPerPage, docs.length);
       const newTotalPages = Math.ceil(docs.length / itemsPerPage);
 

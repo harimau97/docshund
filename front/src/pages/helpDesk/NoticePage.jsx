@@ -59,6 +59,7 @@ const NoticePage = () => {
         totalPages={totalPages}
         currentPage={currentPage}
         setCurrentPage={setCurrentPage}
+        itemCategory="notice"
       />
     </div>
   );

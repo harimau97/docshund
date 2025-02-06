@@ -1,17 +1,18 @@
-import axios from "axios";
+import { axiosJsonInstance } from "../../../utils/axiosInstance";
 import propTypes from "prop-types";
 
 const InquiryService = {
   async fetchInquiries(page, size, userId) {
     try {
-      const response = await axios.get(
-        `http://i12a703.p.ssafy.io:8081/api/v1/docshund/supports/inquiry?page=${page}&size=${size}&userId=${userId}`
+      const response = await axiosJsonInstance.get(
+        `supports/inquiry?page=${page}&size=${size}&userId=${userId}`
       );
 
       const data = response.data;
 
       return data;
     } catch (error) {
+      //TODO: error handling -> 에러 페이지 제작후 연결까지 구현
       console.error(error);
       return null;
     }

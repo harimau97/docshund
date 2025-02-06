@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { jwtDecode } from "jwt-decode";
 
 import TranslationStore from "../../store/translationStore";
 import MyTranslationService from "../../services/myTranslationService";
@@ -7,6 +8,8 @@ import ListRender from "../../../../components/pagination/listRender";
 import like from "../../../../assets/icon/heartFilled24.png";
 
 const MyTranslationPage = () => {
+  const token = localStorage.getItem("token");
+
   // store에서 데이터를 가져오기 위해 store의 상태 정의
   const translations = TranslationStore((state) => state.translations);
 
@@ -15,8 +18,7 @@ const MyTranslationPage = () => {
   const setLoading = TranslationStore((state) => state.setLoading);
   const setError = TranslationStore((state) => state.setError);
 
-  const [userId] = useState(2);
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(0);
   const [itemsPerPage] = useState(15);
   const [totalPages, setTotalPages] = useState(1);
   const [currentData, setCurrentData] = useState([]);
@@ -29,10 +31,14 @@ const MyTranslationPage = () => {
     // translations 데이터를 가져오는 함수
     const fetchTranslations = async () => {
       try {
-        const data = await MyTranslationService.fetchTranslations(userId);
-        // data가 존재하면 setTranslations로 데이터를 저장
-        if (data.length > 0) {
-          setTranslations(data);
+        if (token) {
+          const decoded = jwtDecode(token);
+          const userId = decoded.userId;
+          const data = await MyTranslationService.fetchTranslations(userId);
+          // data가 존재하면 setTranslations로 데이터를 저장
+          if (data.length > 0) {
+            setTranslations(data);
+          }
         }
       } catch (error) {
         setError(error);
@@ -41,12 +47,12 @@ const MyTranslationPage = () => {
       }
     };
     fetchTranslations();
-  }, [userId]);
+  }, [token]);
 
   // 페이지네이션 관련 상태들을 하나의 useEffect로 통합
   useEffect(() => {
     if (translations.length > 0) {
-      const startIndex = (currentPage - 1) * itemsPerPage;
+      const startIndex = currentPage * itemsPerPage;
       const endIndex = Math.min(startIndex + itemsPerPage, translations.length);
       const newTotalPages = Math.ceil(translations.length / itemsPerPage);
 

@@ -6,13 +6,13 @@ const InquiryModal = ({ item }) => {
       <div className="w-1/2">
         <h4 className="text-[#7D7C77] mb-2">[사용자 문의]</h4>
         <p className="mb-2 p-4 bg-white rounded-xl border border-[#E1E1DF]">
-          {item.content}
+          {item.inquiryContent}
         </p>
       </div>
       <div className="w-1/2">
         <h4 className="text-[#7D7C77] mb-2">[관리자 답변]</h4>
         <p className="mb-2 p-4 bg-white rounded-xl border border-[#E1E1DF]">
-          {item.isAnswered ? item.answer : "답변 대기 중..."}
+          {item.answered ? item.answerContent : "답변 대기 중..."}
         </p>
       </div>
     </div>
@@ -21,10 +21,9 @@ const InquiryModal = ({ item }) => {
 
 InquiryModal.propTypes = {
   item: PropTypes.shape({
-    id: PropTypes.number.isRequired,
-    content: PropTypes.string.isRequired,
-    isAnswered: PropTypes.bool.isRequired,
-    answer: PropTypes.string,
+    inquiryContent: PropTypes.string.isRequired,
+    answered: PropTypes.bool.isRequired,
+    answerContent: PropTypes.string,
   }).isRequired,
 };
 
