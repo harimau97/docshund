@@ -16,15 +16,23 @@ const EditorContent = () => {
   };
 
   return (
-    <div className="flex flex-col h-full w-1/2">
+    <div className="flex flex-col h-full w-full">
       <Editor
         ref={editorRef}
-        initialValue={"첫 번째 번역의 주인공이 되세요!"}
-        height="95%"
+        initialValue={docsPart}
+        height="100%"
         initialEditType="markdown" // or 'wysiwyg'
-        previewStyle="vertical" // or 'tab'
+        previewStyle="tab" // or 'tab'
         onChange={handleEditorChange}
         theme="dark" // 필요에 따라 테마 설정
+        toolbarItems={[
+          ["heading", "bold", "italic", "strike"], // 기본 버튼만 추가
+          ["hr", "quote"],
+          ["ul", "ol", "task"],
+          ["table", "link"], // 이미지 버튼 제외
+          ["code", "codeblock"],
+        ]}
+        useImageUpload={false}
       />
     </div>
   );
