@@ -3,23 +3,17 @@ import { create } from "zustand";
 const editorStore = create((set) => ({
   docsPart: "",
   bestTrans: "",
-  porder: 0,
   docsId: 0,
   originId: 0,
   currentUserText: "",
   tempSave: "",
   submitData: "",
-
   clearDocsPart: () => {
     set({ docsPart: "" });
   },
 
   clearBestTrans: () => {
     set({ bestTrans: "" });
-  },
-
-  clearPorder: () => {
-    set({ porder: 0 });
   },
 
   clearDocsId: () => {
@@ -43,6 +37,15 @@ const editorStore = create((set) => ({
   clearSubmitData: () => {
     set({ submitData: "" });
   },
+  clearEditor: () => {
+    set({
+      docsPart: "",
+      bestTrans: "",
+      porder: 0,
+      tempSave: "",
+      submitData: "",
+    });
+  },
   clearAll: () => {
     set({
       docsPart: "",
@@ -50,6 +53,7 @@ const editorStore = create((set) => ({
       porder: 0,
       docsId: 0,
       originId: 0,
+      currentUserText: "",
       tempSave: "",
       submitData: "",
     });
