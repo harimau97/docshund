@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { jwtDecode } from "jwt-decode";
 
-import TranslationStore from "../../store/translationStore";
+import TranslationStore from "../../../../store/myPageStore/translationStore";
 import ListRender from "../../../../components/pagination/listRender";
 import like from "../../../../assets/icon/heartFilled24.png";
 import likeCancel from "../../../../assets/icon/heartEmpty24.png";

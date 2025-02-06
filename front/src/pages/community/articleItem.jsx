@@ -1,21 +1,31 @@
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import { format, isSameDay } from "date-fns";
+
 import ArticleItemService from "./services/articleItemService";
 import communityArticleStore from "../../store/communityStore/communityArticleStore";
 import CommunityHeader from "./components/communityHeader";
+import ArticleFooter from "./components/articleFooter";
 import ReplyList from "./replyList";
 
-import { useEffect } from "react";
-import { useParams } from "react-router-dom";
+import RectBtn from "../../components/button/rectBtn";
+import like from "../../assets/icon/heartFilled24.png";
+import likeCancel from "../../assets/icon/heartEmpty24.png";
 
 const ArticleItem = () => {
   const { articleId } = useParams();
+  const [isLiked, setIsLiked] = useState(false);
 
   const articleData = communityArticleStore((state) => state.articleItems);
+  const storeArticleId = communityArticleStore((state) => state.articleId);
+  const likeCount = communityArticleStore((state) => state.likeCount);
 
   // store의 메소드를 가져오기 위해 정의
   const setArticleId = communityArticleStore((state) => state.setArticleId);
   const setArticleItems = communityArticleStore(
     (state) => state.setArticleItems
   );
+  const setLikeCount = communityArticleStore((state) => state.setLikeCount);
   const setLoading = communityArticleStore((state) => state.setLoading);
   const setError = communityArticleStore((state) => state.setError);
 
@@ -33,6 +43,8 @@ const ArticleItem = () => {
         if (data) {
           setArticleId(articleId);
           setArticleItems(data);
+          setIsLiked(data.liked);
+          setLikeCount(data.likeCount);
         }
       } catch (error) {
         setError(error);
@@ -43,7 +55,7 @@ const ArticleItem = () => {
 
     // 게시글 아이템을 가져오는 fetchArticleItems 함수 호출
     fetchArticleItems(articleId);
-  }, [articleId]);
+  }, [storeArticleId]);
 
   return (
     <div className="flex justify-center w-full">
@@ -54,20 +66,54 @@ const ArticleItem = () => {
         {/* 게시글 전체 박스 영역 */}
         <div className="bg-white rounded-tl-xl rounded-tr-xl border-t rounded-bl-xl rounded-br-xl border-b border-l border-r  border-[#E1E1DF]">
           <div className="p-6">
-            {/* TODO: 헤더 구현 */}
             {/* 게시글 헤더 */}
             <div className="border-b border-[#E1E1DF] pb-4 mb-4">
-              <h1 className="text-2xl font-bold mb-2">{articleData.title}</h1>
+              <div className="flex w-full justify-between items-center mb-4">
+                <h1 className="text-2xl font-bold">{articleData.title}</h1>
+                <div className="flex gap-2 text-sm text-gray-500">
+                  <button
+                    className="hover:text-gray-700 cursor-pointer"
+                    onClick={() =>
+                      // 수정 페이지로 이동
+                      console.log("수정 페이지로 이동", articleId)
+                    }
+                  >
+                    수정
+                  </button>
+                  <span>|</span>
+                  <button
+                    className="hover:text-gray-700 cursor-pointer"
+                    onClick={() =>
+                      ArticleItemService.deleteArticleItem(articleId)
+                    }
+                  >
+                    삭제
+                  </button>
+                  <span>|</span>
+                  {/* TODO: 신고 기능 추가: 모달 or 페이지 or 그냥 바로? */}
+                  <button className="hover:text-gray-700 cursor-pointer">
+                    신고
+                  </button>
+                </div>
+              </div>
               <div className="flex justify-between items-center text-[#7d7c77]">
                 <div className="flex items-center gap-4">
                   <img
                     src={articleData.profileImage}
-                    alt="프로필"
-                    className="w-8 h-8 rounded-full"
+                    alt={`${articleData.nickname}의 프로필`}
+                    className="w-8 h-8 rounded-full object-cover"
                   />
                   <span className="font-medium">{articleData.nickname}</span>
-                  {/* TODO: date 양식 변경 */}
-                  <span>{articleData.createdAt}</span>
+                  <span>
+                    {/* {isSameDay(new Date(articleData.createdAt), new Date()) */}
+                    {/* ? format(new Date(articleData.createdAt), "HH:mm") */}
+                    {/* : format(new Date(articleData.createdAt), "yyyy-MM-dd")} */}
+                    {articleData?.createdAt
+                      ? isSameDay(new Date(articleData.createdAt), new Date())
+                        ? format(new Date(articleData.createdAt), "HH:mm")
+                        : format(new Date(articleData.createdAt), "yyyy-MM-dd")
+                      : "표시할 수 없는 날짜입니다."}
+                  </span>
                 </div>
                 <div className="flex items-center gap-6">
                   <div className="flex items-center gap-2">
@@ -82,28 +128,58 @@ const ArticleItem = () => {
               </div>
             </div>
 
-            {/* TODO: 본문 구현 */}
+            {/* TODO: 본문 이미지 구현 관련...? */}
             {/* 게시글 본문 */}
             <div className="border-b border-[#E1E1DF] pb-4 mb-4">
               <div className="min-h-[200px] whitespace-pre-wrap mb-6">
                 {articleData.content}
               </div>
+              <div className="flex justify-center items-center gap-4">
+                <RectBtn
+                  onClick={async () => {
+                    // 좋아요 api 날리기
+                    const response = await ArticleItemService.likeArticleItem(
+                      articleId
+                    );
+
+                    const status = response.status;
+
+                    // status가 204이면 좋아요 성공
+                    if (status == 204) {
+                      setIsLiked(!isLiked); // 좋아요 상태 변경
+                      setLikeCount(isLiked ? likeCount - 1 : likeCount + 1); // 좋아요 상태에 따라 수 변경
+                    }
+                  }}
+                  text={`${likeCount}`} // 출력할 좋아요 수
+                  className="px-4 py-2 text-base"
+                ></RectBtn>
+              </div>
             </div>
 
-            {/* 문서 참조 정보 */}
-            <div className="bg-gray-50 p-4 rounded-lg mb-6">
-              <p className="font-medium mb-2">참조된 문서:</p>
-              <p>{articleData.documentName}</p>
-              <p className="text-sm text-[#7d7c77]">
-                위치: {articleData.position}
-              </p>
-            </div>
-
-            {/* 본문 footer */}
+            {/* 게시글 본문 푸터 */}
+            <ArticleFooter articleData={articleData} />
           </div>
         </div>
+        {/* TODO: 댓글 쓰기 창 구현 */}
         <ReplyList articleData={articleData} />
       </main>
+      {/* 
+      articleId: 16
+      commentCount: 0
+      content: "1234567890123456789012345678901234567890"
+      createdAt: "2025-02-06T13:26:28.42431"
+      docsId: 1
+      documentName: "Spring Framework"
+      likeCount: 0
+      liked: false
+      nickname: "gg_788544"
+      position: "BACKEND"
+      profileImage: "https://docshundbucket.s3.ap-northeast-2.amazonaws.com/small_logo.png"
+      title: "제목 16입니다"
+      updatedAt: "2025-02-06T13:26:28.42431"
+      userId: 43
+      viewCount: 0
+      */}
     </div>
   );
 };

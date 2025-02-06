@@ -19,9 +19,9 @@ const ReplyHeader = ({ replyCount }) => {
         <span className="inline-flex">{replyCount}개의 댓글이 있습니다.</span>
       </h2>
       <div className="flex gap-2 mb-4 text-gray-600">
-        <button className="hover:text-[#C65D21]">등록순</button>
+        <button className="hover:text-[#C65D21] cursor-pointer">등록순</button>
         <span>|</span>
-        <button className="hover:text-[#C65D21]">최신순</button>
+        <button className="hover:text-[#C65D21] cursor-pointer">최신순</button>
       </div>
     </div>
   );

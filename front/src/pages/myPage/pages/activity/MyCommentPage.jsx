@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { jwtDecode } from "jwt-decode";
 
 import MyCommentService from "../../services/myCommentService";
-import myCommentStore from "../../store/myCommentStore";
+import myCommentStore from "../../../../store/myPageStore/myCommentStore";
 import ListRender from "../../../../components/pagination/listRender";
 
 const MyCommentPage = () => {

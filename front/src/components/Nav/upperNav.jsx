@@ -41,16 +41,14 @@ const UpperNav = () => {
         <div className="flex w-2/4 justify-between">
           <NavLink
             to="/"
-            className={
-              location.pathname.startsWith === "/" ? activeLink : inactiveLink
-            }
+            className={location.pathname === "/" ? activeLink : inactiveLink}
           >
             홈
           </NavLink>
           <NavLink
             to="/translate"
             className={
-              location.pathname.startsWith === "/translate"
+              location.pathname.startsWith("/translate")
                 ? activeLink
                 : inactiveLink
             }
@@ -70,7 +68,7 @@ const UpperNav = () => {
           <NavLink
             to="/helpDesk"
             className={
-              location.pathname.startsWith === "/helpDesk"
+              location.pathname.startsWith("/helpDesk")
                 ? activeLink
                 : inactiveLink
             }

@@ -3,11 +3,11 @@ import { fetchBestTranslate } from "../hooks/translateGetService.jsx";
 import * as motion from "motion/react-client";
 import { AnimatePresence } from "motion/react";
 import Modal from "react-modal";
-import useModalStore from "../store/modalStore";
+import useModalStore from "../../../store/modalStore";
 import GoBack from "../../../assets/icon/goBack.png";
-import useEditorStore from "../store/editorStore";
-import useArchiveStore from "../store/archiveStore";
-import useTestStore from "../store/testStore.jsx";
+import useEditorStore from "../../../store/translateStore/editorStore.jsx";
+import useArchiveStore from "../../../store/translateStore/archiveStore.jsx";
+import useTestStore from "../../../store/translateStore/testStore.jsx";
 
 const TranslateArchive = () => {
   const [transStates, setTransStates] = useState({});

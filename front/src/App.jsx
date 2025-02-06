@@ -9,7 +9,7 @@ import LoginModal from "./components/LoginModal.jsx";
 //챗봇
 import ChatBot from "./pages/chatBot/chatBot.jsx";
 import chatBotImg from "./assets/icon/chatBot.png";
-import ChatBotStore from "./store/chatBotStore.jsx";
+import ChatBotStore from "./store/chatBotStore";
 
 Modal.setAppElement("#root");
 

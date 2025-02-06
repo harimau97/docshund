@@ -68,7 +68,7 @@ const ArticleList = () => {
           setArticles(data.content); // 게시글 목록 설정
           setTotalPages(data.totalPages); // 전체 페이지 수
           setCurrentPage(data.pageable.pageNumber); // 현재 페이지
-          setItmesPerPage(data.numberOfElements); // 페이지당 보여줄 게시글 수
+          setItmesPerPage(data.size); // 페이지당 보여줄 게시글 수
         }
       } catch (error) {
         setError(error);

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { jwtDecode } from "jwt-decode";
-import useUserProfileStore from "../store/userProfileStore";
+import useUserProfileStore from "../../../store/myPageStore/userProfileStore";
 import ProfileCard from "../components/ProfileCard";
 import Setting from "../components/Setting";
 

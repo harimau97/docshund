@@ -9,8 +9,8 @@ import RectBtn from "../../../components/button/rectBtn";
 import check from "../../../assets/icon/check.svg";
 
 //상태 관련
-import useModalStore from "../store/modalStore";
-import useEditorStore from "../store/editorStore";
+import useModalStore from "../../../store/modalStore";
+import useEditorStore from "../../../store/translateStore/editorStore";
 //
 
 const TranslateEditor = () => {

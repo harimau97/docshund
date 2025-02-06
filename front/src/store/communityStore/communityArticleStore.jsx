@@ -23,10 +23,12 @@ const communityArticleStore = create((set) => ({
   // article item의 초기값 설정
   articleId: 0,
   articleItems: {},
+  likeCount: 0,
 
   // article item의 메소드 설정
   setArticleId: (articleId) => set({ articleId }),
   setArticleItems: (articleItems) => set({ articleItems }),
+  setLikeCount: (likeCount) => set({ likeCount }),
 
   // 좋아요한 article list의 초기값 설정
   likeArticles: [],

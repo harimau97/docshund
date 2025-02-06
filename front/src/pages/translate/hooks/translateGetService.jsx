@@ -1,10 +1,10 @@
 import axios from "axios";
 import PropTypes from "prop-types";
-import TmpBestData from "../store/tmpBestData";
-import TmpTranslateData from "../store/tmpTranslateData";
-import TmpDocsList from "../store/tmpDocsList";
-import useArchiveStore from "../store/archiveStore";
-import useDocsStore from "../store/docsStore";
+import TmpBestData from "../../../store/translateStore/tmpBestData";
+import TmpTranslateData from "../../../store/translateStore/tmpTranslateData";
+import TmpDocsList from "../../../store/translateStore/tmpDocsList";
+import useArchiveStore from "../../../store/translateStore/archiveStore";
+import useDocsStore from "../../../store/translateStore/docsStore";
 
 // const baseUrl = "http://localhost:8080/api/v1/docshund/docs";
 const baseUrl = "http://i12a703.p.ssafy.io:8081/api/v1/docshund/docs";
