@@ -74,8 +74,8 @@ public class InquiryServiceImpl implements InquiryService {
 
 		Answer answer = Answer.createAnswer(answerRequestDto, inquiry);
 
-//		mailSendService.sendEmail(inquiry.getEmail(), inquiry.getTitle() + "에 대한 답변이 등록되었습니다.", answer.getContent(),
-//			null);
+		mailSendService.sendEmail(inquiry.getEmail(), inquiry.getTitle() + "에 대한 답변이 등록되었습니다.", answer.getContent(),
+			null);
 
 		inquiry.isAnsweredTrue();
 		answerRepository.save(answer);
