@@ -21,7 +21,9 @@ import com.ssafy.docshund.domain.users.entity.User;
 import com.ssafy.docshund.global.util.user.UserUtil;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -126,13 +128,12 @@ public class ArticleServiceImpl implements ArticleService {
 
 		Article article = articleRepository.findById(articleId).orElseThrow(
 				() -> new NoSuchElementException("NOT EXISTS ARTICLE"));
+		log.info("조회수 증가 전    " + article.getViewCount());
 		article.increaseViewCount();
+		log.info("조회수 증가 후    " + article.getViewCount());
 
 		ArticleInfoDto articleInfo = articleRepository.findArticleById(articleId, userId);
 
-		if (articleInfo == null) {
-			throw new NoSuchElementException("NOT EXISTS ARTICLE");
-		}
 		return articleInfo;
 	}
 

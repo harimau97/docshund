@@ -1,5 +1,8 @@
 package com.ssafy.docshund.global.util.stomp;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.messaging.Message;
@@ -41,7 +44,14 @@ public class StompHandler implements ChannelInterceptor {
             }
 
             Long userId = jwtUtil.getUserlId(token);
-            accessor.getSessionAttributes().put("userId", userId);
+
+            if (accessor.getSessionAttributes() != null) {
+                accessor.getSessionAttributes().put("userId", userId);
+            } else {
+                Map<String, Object> sessionAttributes = new HashMap<>();
+                sessionAttributes.put("userId", userId);
+                accessor.setSessionAttributes(sessionAttributes);
+            }
         }
         return message;
     }
