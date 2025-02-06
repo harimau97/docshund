@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
-import articleListService from "./hooks/articleListService";
+import articleListService from "./services/articleListService";
 import ListRender from "../../components/pagination/listRender.jsx";
 import communityArticleStore from "../../store/communityStore/communityArticleStore.jsx";
 import CommunityHeader from "./components/communityHeader.jsx";

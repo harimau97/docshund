@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
 
 import ListRender from "../../../../components/pagination/listRender";
 import communityArticleStore from "../../../../store/communityStore/communityArticleStore";
@@ -9,6 +10,8 @@ import view from "../../../../assets/icon/viewCnt.png";
 import comment from "../../../../assets/icon/commentCnt.png";
 
 const MyArticlePage = () => {
+  const token = localStorage.getItem("token");
+
   //  store에서 데이터를 가져오기 위해 store의 상태 정의
   const myArticles = communityArticleStore((state) => state.myArticles);
   const totalPages = communityArticleStore((state) => state.totalPages);
@@ -23,7 +26,6 @@ const MyArticlePage = () => {
 
   // TODO: 로그인 상태 확인 로직 필요, 토큰 실어 보내는 로직 추가
   const [itemsPerPage, setItmesPerPage] = useState(15); // 페이지당 보여줄 게시글 수
-  const [userId] = useState(2); // 임시로 유저 아이디 2로 설정 TODO: 로그인 상태 확인 로직 추가 필요
 
   // NOTE: 즉시 store에 접근하여 데이터를 가져오기 위해 useEffect 사용
   useEffect(() => {
@@ -34,20 +36,25 @@ const MyArticlePage = () => {
 
       // 데이터 가져오기
       try {
-        // articleListService.fetchArticles 함수를 호출하여 데이터를 가져옴
-        const data = await MyArticleService.fetchArticles(
-          userId, // 유저 아이디
-          currentPage, // 현재 페이지
-          itemsPerPage // 페이지당 보여줄 게시글 수
-        );
+        if (token) {
+          const decoded = jwtDecode(token);
+          const userId = decoded.userId;
 
-        // 가져온 데이터를 store에 저장
-        // 데이터가 비어있지 않을 때
-        if (!data.empty && data.content.length > 0) {
-          setMyArticles(data.content); // 게시글 목록 설정
-          setTotalPages(data.totalPages); // 전체 페이지 수
-          setCurrentPage(data.pageable.pageNumber); // 현재 페이지
-          setItmesPerPage(data.numberOfElements); // 페이지당 보여줄 게시글 수
+          // articleListService.fetchArticles 함수를 호출하여 데이터를 가져옴
+          const data = await MyArticleService.fetchArticles(
+            userId, // 유저 아이디
+            currentPage, // 현재 페이지
+            itemsPerPage // 페이지당 보여줄 게시글 수
+          );
+
+          // 가져온 데이터를 store에 저장
+          // 데이터가 비어있지 않을 때
+          if (!data.empty && data.content.length > 0) {
+            setMyArticles(data.content); // 게시글 목록 설정
+            setTotalPages(data.totalPages); // 전체 페이지 수
+            setCurrentPage(data.pageable.pageNumber); // 현재 페이지
+            setItmesPerPage(data.size); // 페이지당 보여줄 게시글 수
+          }
         }
       } catch (error) {
         setError(error);
@@ -58,7 +65,7 @@ const MyArticlePage = () => {
 
     // 함수 실행
     fetchArticles();
-  }, [userId, currentPage, itemsPerPage]);
+  }, [token, currentPage, itemsPerPage]);
 
   const renderArticle = (item) => (
     <div className="flex justify-between text-lg px-3">

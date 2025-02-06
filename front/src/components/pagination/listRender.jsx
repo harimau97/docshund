@@ -41,7 +41,7 @@ const ListRender = ({
       {totalPages > 0 && (
         <ListPagination
           totalPages={totalPages}
-          currentPage={currentPage}
+          currentPage={currentPage + 1}
           setCurrentPage={setCurrentPage}
         />
       )}
