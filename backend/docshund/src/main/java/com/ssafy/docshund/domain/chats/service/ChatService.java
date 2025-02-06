@@ -9,7 +9,7 @@ import com.ssafy.docshund.domain.chats.entity.Chat;
 
 public interface ChatService {
 
-    Chat createChat(Integer docsId, ChatDto chatDto);
+    Chat createChat(Integer docsId, Long userId, ChatDto chatDto);
 
     Page<ChatInfoDto> getChatsByDocsId(Integer docsId, Pageable pageable);
 }

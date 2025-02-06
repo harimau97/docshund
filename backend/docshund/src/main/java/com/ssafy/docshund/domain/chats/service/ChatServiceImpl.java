@@ -1,6 +1,6 @@
 package com.ssafy.docshund.domain.chats.service;
 
-import java.util.Objects;
+import java.util.NoSuchElementException;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -15,6 +15,7 @@ import com.ssafy.docshund.domain.chats.repository.ChatRepository;
 import com.ssafy.docshund.domain.docs.entity.Document;
 import com.ssafy.docshund.domain.docs.repository.DocumentRepository;
 import com.ssafy.docshund.domain.users.entity.User;
+import com.ssafy.docshund.domain.users.repository.UserRepository;
 import com.ssafy.docshund.global.util.user.UserUtil;
 
 import lombok.RequiredArgsConstructor;
@@ -26,17 +27,19 @@ public class ChatServiceImpl implements ChatService {
     private final UserUtil userUtil;
     private final DocumentRepository documentRepository;
     private final ChatRepository chatRepository;
+    private final UserRepository userRepository;
 
     @Override
     @Transactional
-    public Chat createChat(Integer docsId, ChatDto chatDto) {
+    public Chat createChat(Integer docsId, Long userId, ChatDto chatDto) {
 
         Document document = documentRepository.findByDocsId(docsId);
         if(document == null || document.getDocsId() != chatDto.getDocsId()) {
             throw new AccessDeniedException("NO EXISTS DOCUMENT & CHAT");
         }
 
-        User user = userUtil.getUser();
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NoSuchElementException("NO EXISTS PERSONAL ID"));
 
         return chatRepository.save(new Chat(document, user, chatDto.getContent()));
     }
