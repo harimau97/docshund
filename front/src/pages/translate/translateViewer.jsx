@@ -12,7 +12,7 @@ import {
 } from "./hooks/translateGetService.jsx";
 import * as motion from "motion/react-client";
 // 컴포넌트 import
-import AlertModal from "../../components/emptyModal/alertModal.jsx";
+import AlertModal from "../../components/alertModal/alertModal.jsx";
 import useAlertStore from "../../store/alertStore.jsx";
 import TranslateEditor from "./activity/translateEditor.jsx";
 import TranslateArchive from "./activity/translateArchive.jsx";

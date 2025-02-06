@@ -1,11 +1,14 @@
 import "./App.css";
 import { useLocation } from "react-router-dom";
+import { useEffect } from "react";
 import AppRouter from "./router.jsx";
 import Footer from "./components/footer/footer.jsx";
 import UpperNav from "./components/Nav/upperNav.jsx";
 import LeftNav from "./components/Nav/leftNav.jsx";
 import Modal from "react-modal";
 import LoginModal from "./components/LoginModal.jsx";
+import { ToastContainer, toast } from "react-toastify";
+import ToastModal from "./components/alertModal/toastModal.jsx";
 //챗봇
 import ChatBot from "./pages/chatBot/chatBot.jsx";
 import chatBotImg from "./assets/icon/chatBot.png";
@@ -16,6 +19,13 @@ Modal.setAppElement("#root");
 function App() {
   // 번역 뷰어 페이지일 때만 좌측 내브바 표시
   const location = useLocation();
+
+  useEffect(() => {
+    if (location.search.includes("token")) {
+      toast.success("로그인에 성공했습니다!");
+    }
+  }, [location]);
+
   const pathname = location.pathname;
   // console.log("Current pathname:", pathname);
 
@@ -25,6 +35,7 @@ function App() {
 
   return (
     <div className="flex flex-col min-h-screen min-w-[768px] overflow-hidden">
+      <ToastModal />
       {isTranslateViewerPage ? <LeftNav /> : <UpperNav />}
       <div className="flex-grow">
         <AppRouter />

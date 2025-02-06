@@ -4,7 +4,7 @@ import * as motion from "motion/react-client";
 import { fetchBestTranslate } from "../hooks/translateGetService";
 import { registTranslate } from "../hooks/translatePostService";
 import { AnimatePresence } from "motion/react";
-import AlertModal from "../../../components/emptyModal/alertModal";
+import { toast } from "react-toastify";
 import TextContent from "../components/textContent";
 import EditorContent from "../components/editorContent";
 import RectBtn from "../../../components/button/rectBtn";
@@ -60,13 +60,6 @@ const TranslateEditor = () => {
             }}
             className="fixed inset-0 flex items-center justify-center min-w-full min-h-full "
           >
-            <AlertModal
-              imgSrc={check}
-              alertTitle={alertTitle}
-              alertText=""
-              isVisible={isVisible}
-            />
-
             <div className="relative m-5 p-4 w-full h-[95%] min-w-[768px] min-h-[80%] max-w-full max-h-[95%] rounded-lg bg-white shadow-sm">
               <div className="flex shrink-0 w-full items-center pb-4 text-xl font-medium text-slate-800 justify-between">
                 <div className="flex items-center gap-2 bg-slate-50 px-4 py-1.5 rounded-full border border-slate-200 transition-all duration-300 hover:bg-slate-100">
@@ -93,7 +86,7 @@ const TranslateEditor = () => {
                   <RectBtn
                     onClick={async () => {
                       useEditorStore.setState({ tempSave: currentUserText });
-                      setAlertTitle("임시 저장 완료");
+                      toast.success("임시 저장 완료");
                       setIsVisible(true);
                       setTimeout(() => setIsVisible(false), 1500);
                     }}
@@ -103,7 +96,7 @@ const TranslateEditor = () => {
                     onClick={async () => {
                       useEditorStore.setState({ submitData: currentUserText });
                       await handleSubmit(docsId, originId, currentUserText);
-                      setAlertTitle("제출 완료");
+                      toast.success("제출 완료");
                       fetchBestTranslate(docsId, "", false);
                       setIsVisible(true);
                       setTimeout(() => setIsVisible(false), 1500);
