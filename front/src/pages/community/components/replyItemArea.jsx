@@ -85,6 +85,7 @@ const ReplyItem = () => {
         totalPages={0}
         currentPage={0}
         setCurrentPage={null}
+        itemCategory="comment"
       ></ListRender>
     </div>
   );

@@ -41,14 +41,18 @@ const UpperNav = () => {
         <div className="flex w-2/4 justify-between">
           <NavLink
             to="/"
-            className={location.pathname === "/" ? activeLink : inactiveLink}
+            className={
+              location.pathname.startsWith === "/" ? activeLink : inactiveLink
+            }
           >
             홈
           </NavLink>
           <NavLink
             to="/translate"
             className={
-              location.pathname === "/translate" ? activeLink : inactiveLink
+              location.pathname.startsWith === "/translate"
+                ? activeLink
+                : inactiveLink
             }
           >
             번역문서
@@ -56,7 +60,9 @@ const UpperNav = () => {
           <NavLink
             to="/community"
             className={
-              location.pathname === "/community" ? activeLink : inactiveLink
+              location.pathname.startsWith("/community")
+                ? activeLink
+                : inactiveLink
             }
           >
             커뮤니티
@@ -64,7 +70,9 @@ const UpperNav = () => {
           <NavLink
             to="/helpDesk"
             className={
-              location.pathname === "/helpDesk" ? activeLink : inactiveLink
+              location.pathname.startsWith === "/helpDesk"
+                ? activeLink
+                : inactiveLink
             }
           >
             헬프데스크
