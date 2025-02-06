@@ -73,7 +73,7 @@ const LikeArticlePage = () => {
         <p>{item.nickname}</p>
         <button onClick={() => handleLikeToggle(item)}>
           <img
-            src={item.liked ? like : likeCancel} // liked 상태에 따라 아이콘 변경
+            src={like} // TODO: 좋아요 취소 시 likeCancel 아이콘으로 변경 가능한 로직 필요
             alt="좋아요 아이콘"
             className="w-6 h-6 cursor-pointer"
           />

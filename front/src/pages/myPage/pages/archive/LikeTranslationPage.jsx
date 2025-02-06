@@ -53,6 +53,7 @@ const LikeTranslationPage = () => {
     <div className="flex justify-between text-lg px-3">
       <div className="flex-1 min-w-0 mr-3 font-semibold line-clamp-1 break-all">
         <Link
+          // TODO: Link 경로 수정 필요
           to={`/translation/${item.docsId}`}
           className="text-[#7d7c77] hover:text-[#bc5b39]"
         >
@@ -65,7 +66,7 @@ const LikeTranslationPage = () => {
         <p className="whitespace-nowrap">{item.createdAt}</p>
         <button>
           <img
-            src={item.liked ? like : likeCancel} // liked 상태에 따라 아이콘 변경
+            src={like} // TODO: 좋아요 취소 시 likeCancel 아이콘으로 변경 가능한 로직 필요
             alt="좋아요 아이콘"
             className="w-6 h-6 cursor-pointer"
           />
@@ -75,7 +76,7 @@ const LikeTranslationPage = () => {
   );
 
   return (
-    <div>
+    <div className="p-10 bg-white rounded-bl-xl rounded-br-xl border-b border-l border-r border-[#E1E1DF] text-[#7D7C77]">
       {/* 공통 ListRender 적용 완료.*/}
       <ListRender
         data={currentData} // 현재 페이지에 보여줄 데이터

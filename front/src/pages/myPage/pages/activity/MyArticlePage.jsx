@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 import ListRender from "../../../../components/pagination/listRender";
 import communityArticleStore from "../../../../store/communityStore/communityArticleStore";
-import ArticleListService from "../../../community/hooks/articleListService";
+import MyArticleService from "../../services/myArticleService";
 import like from "../../../../assets/icon/heartFilled24.png";
 import view from "../../../../assets/icon/viewCnt.png";
 import comment from "../../../../assets/icon/commentCnt.png";
@@ -23,6 +23,7 @@ const MyArticlePage = () => {
 
   // TODO: 로그인 상태 확인 로직 필요, 토큰 실어 보내는 로직 추가
   const [itemsPerPage, setItmesPerPage] = useState(15); // 페이지당 보여줄 게시글 수
+  const [userId] = useState(2); // 임시로 유저 아이디 2로 설정 TODO: 로그인 상태 확인 로직 추가 필요
 
   // NOTE: 즉시 store에 접근하여 데이터를 가져오기 위해 useEffect 사용
   useEffect(() => {
@@ -34,11 +35,8 @@ const MyArticlePage = () => {
       // 데이터 가져오기
       try {
         // articleListService.fetchArticles 함수를 호출하여 데이터를 가져옴
-        const data = await ArticleListService.fetchArticles(
-          "latest", // 정렬 기준
-          "", // 필터(카테고리)
-          "", // 검색어
-          "title", // 검색 타입
+        const data = await MyArticleService.fetchArticles(
+          userId, // 유저 아이디
           currentPage, // 현재 페이지
           itemsPerPage // 페이지당 보여줄 게시글 수
         );
@@ -60,7 +58,7 @@ const MyArticlePage = () => {
 
     // 함수 실행
     fetchArticles();
-  }, [currentPage, itemsPerPage]);
+  }, [userId, currentPage, itemsPerPage]);
 
   const renderArticle = (item) => (
     <div className="flex justify-between text-lg px-3">

@@ -23,10 +23,14 @@ const MyTranslationPage = () => {
 
   // translations 데이터를 가져오는 useEffect
   useEffect(() => {
+    // 로딩 시작
     setLoading(true);
+
+    // translations 데이터를 가져오는 함수
     const fetchTranslations = async () => {
       try {
         const data = await MyTranslationService.fetchTranslations(userId);
+        // data가 존재하면 setTranslations로 데이터를 저장
         if (data.length > 0) {
           setTranslations(data);
         }
@@ -55,6 +59,7 @@ const MyTranslationPage = () => {
     <div className="flex justify-between text-lg px-3">
       <div className="flex-1 min-w-0 mr-3 font-semibold line-clamp-1 break-all">
         <Link
+          // TODO: Link 경로 수정 필요
           to={`/translation/${item.docsId}`}
           className="text-[#7d7c77] hover:text-[#bc5b39]"
         >
@@ -72,7 +77,7 @@ const MyTranslationPage = () => {
   );
 
   return (
-    <div>
+    <div className="p-10 bg-white rounded-bl-xl rounded-br-xl border-b border-l border-r border-[#E1E1DF] text-[#7D7C77]">
       <ListRender
         data={currentData}
         renderItem={renderTranslation}

@@ -6,6 +6,8 @@ const useMemoStore = create((set) => ({
   isLoading: false,
   error: null,
 
+  // TODO: page에서 useEffect()로 service 호출, store는 데이터 저장만
+
   // 메모 목록 가져오기
   fetchMemos: async (userId, page = 1, size = 10) => {
     set({ isLoading: true, error: null });
