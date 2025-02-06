@@ -1,6 +1,9 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import LandingPage from "./pages/landingPage.jsx";
 
+// 비회원 접근 제어 라우터
+import ProtectedRoute from "./utils/protectedRoute.jsx";
+
 // 마이페이지 관련 페이지
 import MyPage from "./pages/myPage/MyPage.jsx";
 import MyProfilePage from "./pages/myPage/pages/MyProfilePage.jsx";
@@ -16,12 +19,17 @@ import MemoPage from "./pages/myPage/pages/MemoPage.jsx";
 import InquiryPage from "./pages/myPage/pages/InquiryPage.jsx";
 
 // 도움말 관련 페이지
-import HelpDesk from "./pages/helpDesk.jsx";
+import HelpDeskPage from "./pages/helpDesk/HelpDeskPage.jsx";
+import NoticePage from "./pages/helpDesk/NoticePage.jsx";
+import NoticeDetail from "./pages/helpDesk/NoticeDetail.jsx";
+import FAQPage from "./pages/helpDesk/FAQPage.jsx";
+import InquiryFormPage from "./pages/helpDesk/InquiryFormPage.jsx";
+import TermsPage from "./pages/helpDesk/TermsPage.jsx";
+import PrivacyPage from "./pages/helpDesk/PrivacyPage.jsx";
 
 // 번역 관련 페이지
 import TranslatePage from "./pages/translate/translate.jsx";
 import TranslateViewer from "./pages/translate/translateViewer.jsx";
-import ProtectedRoute from "./utils/protectedRoute.jsx";
 
 // Community 관련 페이지
 import CommunityPage from "./pages/community/community.jsx";
@@ -47,7 +55,16 @@ function AppRoutes() {
       </Route>
 
       {/* 도움말 관련 주소 */}
-      <Route path="/helpDesk" element={<HelpDesk />} />
+      <Route path="/helpDesk" element={<HelpDeskPage />}>
+        <Route index element={<Navigate to="notices" replace />} />
+        <Route path="notices" element={<NoticePage />} />
+        <Route path="faq" element={<FAQPage />} />
+        <Route path="inquiryForm" element={<InquiryFormPage />} />
+      </Route>
+      <Route path="/helpDesk/notices/:noticeId" element={<NoticeDetail />} />
+      <Route path="/terms" element={<TermsPage />} />
+      <Route path="/privacy" element={<PrivacyPage />} />
+
       {/* 번역뷰어 */}
       <Route
         path="translate/viewer/:docsId"

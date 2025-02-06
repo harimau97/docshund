@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 const Footer = () => {
   let footerChild = "text-[#f8f8f7] text-left text-[14px] font-semibold";
   return (
@@ -6,10 +8,18 @@ const Footer = () => {
         <div className="bg-white border-b border-white opacity-[0.6] self-stretch relative"></div>
         <div className="flex flex-row items-center justify-center self-stretch shrink-0 relative">
           <div className="flex flex-row gap-[36px] items-start justify-start shrink-0 relative">
-            <div className={footerChild}>이용약관</div>
-            <div className={footerChild}>개인정보처리방침</div>
-            <div className={footerChild}>공지사항</div>
-            <div className={footerChild}>FAQ</div>
+            <Link to="/terms" className={footerChild}>
+              이용약관
+            </Link>
+            <Link to="/privacy" className={footerChild}>
+              개인정보처리방침
+            </Link>
+            <Link to="/helpDesk/notices" className={footerChild}>
+              공지사항
+            </Link>
+            <Link to="/helpDesk/faq" className={footerChild}>
+              FAQ
+            </Link>
           </div>
         </div>
       </div>
