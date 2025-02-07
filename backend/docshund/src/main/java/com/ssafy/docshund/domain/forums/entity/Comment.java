@@ -82,4 +82,12 @@ public class Comment extends BaseTimeEntityWithUpdatedAt {
 	public void modifyToInvisible() {
 		this.status = Status.INVISIBLE;
 	}
+
+	public void increaseReportCount() {
+		this.reportCount++;
+	}
+
+	public void decreaseReportCount() {
+		this.reportCount--;
+	}
 }

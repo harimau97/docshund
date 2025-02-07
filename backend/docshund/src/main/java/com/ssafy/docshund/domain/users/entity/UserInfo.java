@@ -59,4 +59,12 @@ public class UserInfo extends BaseTimeEntityWithUpdatedAt {
 		this.hobby = profileRequestDto.getHobbyEnum();
 	}
 
+	public void increaseReportCount() {
+		this.reportCount++;
+	}
+
+	public void decreaseReportCount() {
+		this.reportCount--;
+	}
+
 }
