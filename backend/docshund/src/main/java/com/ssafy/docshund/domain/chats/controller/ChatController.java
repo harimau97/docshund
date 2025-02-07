@@ -20,7 +20,9 @@ import com.ssafy.docshund.domain.chats.dto.ChatInfoDto;
 import com.ssafy.docshund.domain.chats.service.ChatService;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Controller
 @RequiredArgsConstructor
 public class ChatController {
@@ -35,6 +37,10 @@ public class ChatController {
             Principal principal
     ) {
         long userId;
+
+        log.info("principal name : "+principal.getName());
+        log.info("principal toString : "+principal.toString());
+
         try {
             userId = Long.parseLong(principal.getName());
         } catch (Exception e) {
