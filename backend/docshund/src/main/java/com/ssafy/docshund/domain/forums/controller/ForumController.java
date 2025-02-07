@@ -1,6 +1,8 @@
 package com.ssafy.docshund.domain.forums.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -51,12 +53,14 @@ public class ForumController {
 	}
 
 	@PostMapping("/image")
-	public ResponseEntity<String> postImage(
+	public ResponseEntity<Map<String, String>> postImage(
 			@RequestPart(value = "file") MultipartFile file
 	) {
 		String image = s3FileUploadService.uploadFile(file, "article");
+		Map<String, String> response = new HashMap<>();
+		response.put("imageUrl", image);
 
-		return ResponseEntity.ok(image);
+		return ResponseEntity.ok(response);
 	}
 
 	@PatchMapping("/{articleId}")
