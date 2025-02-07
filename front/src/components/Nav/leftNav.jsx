@@ -6,17 +6,16 @@ import RoundCornerBtn from "../button/roundCornerBtn.jsx";
 import { fetchDocsList } from "../../pages/translate/hooks/translateGetService.jsx";
 
 // 상태 import
-import useDocsStore from "../../store/translateStore/docsStore.jsx"
+import useDocsStore from "../../store/translateStore/docsStore.jsx";
 import modalStore from "../../store/modalStore.jsx";
-//
 
 //이미지 주소 import
 import Logo from "../../assets/logo.png";
 import menuDown from "../../assets/icon/menu-down.png";
 import menuUp from "../../assets/icon/menu-up.png";
-import notification from "../../assets/icon/notification.png";
-import ListIcon from "../../assets/icon/docsList.png";
-import memo from "../../assets/icon/memo.png";
+import { Bell } from "lucide-react";
+import { ScrollText } from "lucide-react";
+import { StickyNote } from "lucide-react";
 import navToggle2 from "../../assets/icon/navToggle2.png";
 //
 
@@ -81,11 +80,7 @@ const LeftNav = () => {
 
   return (
     <div className="h-screen">
-      <div
-        className={showNav}
-        // onMouseLeave={() => toggleNav()}
-        // onMouseEnter={() => toggleNav()}
-      >
+      <div className={showNav}>
         <button className={btnToggled}>
           <img
             className="w-[48px] h-[48px] cursor-pointer"
@@ -110,7 +105,7 @@ const LeftNav = () => {
               className="px-5 py-2.5 flex flex-row items-center  cursor-pointer hover:bg-[#F5F4F0] transition-colors duration-200"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
             >
-              <img src={ListIcon} alt="문서목록 아이콘" />
+              <ScrollText className="w-5 h-5" />
               <span className="ml-5 font-medium text-[#4A4A4A]">문서목록</span>
               <div className="flex w-1/5 justify-end items-center">
                 {" "}
@@ -142,46 +137,48 @@ const LeftNav = () => {
             )}
           </div>
           {/* 알림 리스트 */}
-          <div className="mb-5 flex items-center">
-            <img
-              className="w-[24px] h-[24px] ml-5"
-              src={notification}
-              alt="알림 아이콘"
-            />
-            <div className="px-5 py-2.5 flex items-center gap-2.5 hover:bg-[#F5F4F0] transition-colors duration-200">
-              <span className="font-medium text-[#4A4A4A]">알림</span>
-            </div>
-          </div>
-          {/* 메모 리스트 */}
-          <div className="flex-1 overflow-y-auto">
-            <div className="px-5 py-2.5 w-full flex items-center hover:bg-[#F5F4F0] transition-colors duration-200">
-              <img className="w-[24px] h-[24px]" src={memo} alt="메모 아이콘" />
-              <span className="ml-5 font-medium text-[#4A4A4A]">MEMO</span>
-              <div className="flex w-full right-0 justify-end items-center">
-                <FaPlus
-                  onClick={openModal}
-                  className="cursor-pointer hover:text-[#BC5B39]"
-                />
+          {localStorage.getItem("token") && (
+            <div className="mb-5 flex items-center">
+              <Bell className="w-5 h-5 ml-5" />
+              <div className="px-5 py-2.5 flex items-center gap-2.5 hover:bg-[#F5F4F0] transition-colors duration-200">
+                <span className="font-medium text-[#4A4A4A]">알림</span>
               </div>
             </div>
-            <div className="px-5">
-              {memos.map((memo, index) => (
-                <div
-                  key={index}
-                  className="py-2.5 flex justify-between items-center border-b border-[#E0DED9] hover:bg-[#F5F4F0] transition-colors duration-200"
-                >
-                  <span className="text-[#4A4A4A]">{memo}</span>
-                  <button className="text-[#6B6B6B] hover:text-[#4A4A4A] cursor-pointer text-sm transition-colors duration-200">
-                    보기
-                  </button>
+          )}
+          {/* 메모 리스트 */}
+          {localStorage.getItem("token") && (
+            <div className="flex-1 overflow-y-auto">
+              <div className="px-5 py-2.5 w-full flex items-center hover:bg-[#F5F4F0] transition-colors duration-200">
+                <StickyNote className="w-13 h-13" />
+                <span className="ml-5 font-medium text-[#4A4A4A]">MEMO</span>
+                <div className="flex w-full right-0 justify-end items-center">
+                  <FaPlus
+                    onClick={openModal}
+                    className="cursor-pointer hover:text-[#BC5B39]"
+                  />
                 </div>
-              ))}
+              </div>
+              <div className="px-5">
+                {memos.map((memo, index) => (
+                  <div
+                    key={index}
+                    className="py-2.5 flex justify-between items-center border-b border-[#E0DED9] hover:bg-[#F5F4F0] transition-colors duration-200"
+                  >
+                    <span className="text-[#4A4A4A]">{memo}</span>
+                    <button className="text-[#6B6B6B] hover:text-[#4A4A4A] cursor-pointer text-sm transition-colors duration-200">
+                      보기
+                    </button>
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
         </div>
         <div className="items-center justify-center flex mb-10">
           <RoundCornerBtn
-            onClick={() => navigate("/translate")}
+            onClick={() => {
+              window.location.replace("/translate");
+            }}
             text="뷰어 나가기"
           />
         </div>
