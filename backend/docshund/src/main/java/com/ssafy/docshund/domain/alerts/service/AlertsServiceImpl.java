@@ -38,7 +38,7 @@ public class AlertsServiceImpl implements AlertsService {
 	@Override
 	public List<AlertOutputDto> getAllAlerts(Long userId) {
 		User currentUser = userUtil.getUser();
-		if(!currentUser.getUserId().equals(userId) || !userUtil.isAdmin(currentUser)) {
+		if(!currentUser.getUserId().equals(userId) && !userUtil.isAdmin(currentUser)) {
 			throw new SecurityException("관리자 외에는 본인의 알림만 조회할 수 있습니다.");
 		}
 		List<Alert> alerts = alertRepository.findByUserUserId(userId);
@@ -51,7 +51,7 @@ public class AlertsServiceImpl implements AlertsService {
 		Alert alert = alertRepository.findById(alertId)
 			.orElseThrow(() -> new IllegalArgumentException("알림을 찾을 수 없습니다."));
 		User currentUser = userUtil.getUser();
-		if(!currentUser.equals(alert.getUser()) || !userUtil.isAdmin(currentUser)) {
+		if(!currentUser.equals(alert.getUser()) && !userUtil.isAdmin(currentUser)) {
 			throw new SecurityException("관리자 외에는 본인의 알림만 조회할 수 있습니다.");
 		}
 		return convertToOutputDto(alert);

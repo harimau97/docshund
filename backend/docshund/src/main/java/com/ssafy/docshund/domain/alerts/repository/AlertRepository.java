@@ -16,4 +16,6 @@ public interface AlertRepository extends JpaRepository<Alert, Long> {
 	// 유저별 알림 일괄 삭제
 	void deleteAllByUser(User user);
 
+	// 유저 존재 여부
+    boolean existsByUser(User user);
 }
