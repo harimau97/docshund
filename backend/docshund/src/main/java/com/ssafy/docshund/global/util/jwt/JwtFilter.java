@@ -29,7 +29,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
 	private final JwtUtil jwtUtil;
 	private final UserRepository userRepository;
-	private final AntPathMatcher pathMatcher;
+	private final AntPathMatcher pathMatcher = new AntPathMatcher();
 
 	private static final List<String> NO_CHECK_URLS = Arrays.asList(
 			"/ws/**"
