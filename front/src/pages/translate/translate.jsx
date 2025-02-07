@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import useDocsStore from "./store/docsStore";
-import useTestStore from "./store/testStore";
 import { fetchDocsList } from "./hooks/translateGetService";
 import { likeDocs } from "./hooks/translatePostService";
 import { motion } from "framer-motion";
@@ -10,20 +9,20 @@ const TransLatePage = () => {
   const [docsCategories, setDocsCategories] = useState(["Spring", "MyBatis"]);
 
   const { docsList } = useDocsStore();
-  const { isTest } = useTestStore();
+
   const navigate = useNavigate();
 
   const slogan = "번역 문서";
   const [showSlogan, setShowSlogan] = useState(false);
 
   useEffect(() => {
-    fetchDocsList(isTest);
+    fetchDocsList(false);
     setShowSlogan(true);
   }, []);
 
   const handleLike = async (docsId) => {
     await likeDocs(docsId);
-    fetchDocsList(isTest);
+    fetchDocsList(false);
   };
 
   return (

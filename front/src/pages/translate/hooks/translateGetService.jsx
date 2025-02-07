@@ -1,10 +1,6 @@
 import { axiosJsonInstance } from "../../../utils/axiosInstance";
 import PropTypes from "prop-types";
-import TmpTranslateData from "../store/tmpTranslateData";
-import TmpDocsList from "../store/tmpDocsList";
-import useArchiveStore from "../store/archiveStore";
 import useDocsStore from "../store/docsStore";
-
 const baseUrl = "http://i12a703.p.ssafy.io:8081/api/v1/docshund/docs";
 
 // 좋아요한 문서 조회
@@ -25,9 +21,6 @@ export const fetchDocsList = async (test) => {
       const response = await axiosJsonInstance.get(`${baseUrl}`);
       const data = response.data;
       useDocsStore.setState({ docsList: data });
-    } else {
-      const data = TmpDocsList.docsList;
-      useDocsStore.setState({ docsList: data });
     }
   } catch (error) {
     console.log(error);
@@ -44,9 +37,6 @@ export const fetchTranslateData = async (docsId, test) => {
       );
       const data = response.data;
       return data;
-    } else {
-      const tempContent = TmpTranslateData.transData;
-      return tempContent;
     }
   } catch (error) {
     console.log(error);
