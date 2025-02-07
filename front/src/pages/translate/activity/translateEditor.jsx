@@ -29,8 +29,21 @@ const TranslateEditor = () => {
     toggleArchive,
   } = useModalStore();
 
+  const { clearDocsPart, clearBestTrans, clearTempSave, clearSubmitData } =
+    useEditorStore();
+
+  //에디터 내용 변경 상태
+  const { setTempSave, setSubmitData } = useEditorStore();
+
   const handleSubmit = async (docsId, originId, currentUserText) => {
     registTranslate(docsId, originId, currentUserText);
+  };
+
+  const handleClose = () => {
+    clearDocsPart();
+    clearBestTrans();
+    clearTempSave();
+    clearSubmitData();
   };
 
   return (
@@ -83,7 +96,7 @@ const TranslateEditor = () => {
                 <div className="flex space-x-6 ">
                   <RectBtn
                     onClick={async () => {
-                      useEditorStore.setState({ tempSave: currentUserText });
+                      setTempSave(currentUserText);
                       toast.success("임시 저장 완료");
                       setIsVisible(true);
                       setTimeout(() => setIsVisible(false), 1500);
@@ -92,7 +105,7 @@ const TranslateEditor = () => {
                   />
                   <RectBtn
                     onClick={async () => {
-                      useEditorStore.setState({ submitData: currentUserText });
+                      setSubmitData(currentUserText);
                       const status = await handleSubmit(
                         docsId,
                         originId,
@@ -117,6 +130,7 @@ const TranslateEditor = () => {
                   <RectBtn
                     onClick={async () => {
                       await toggleEditor();
+                      handleClose();
                       setTimeout(() => closeEditor(), 300);
                     }}
                     text="나가기"

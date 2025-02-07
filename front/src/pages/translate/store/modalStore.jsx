@@ -11,7 +11,6 @@ const modalStore = create((set) => ({
   },
   closeEditor: () => {
     set({ isEditorOpen: false });
-    useEditorStore.getState().clearEditor();
   },
   toggleEditor: () => {
     set((state) => ({
@@ -23,7 +22,6 @@ const modalStore = create((set) => ({
   },
   closeArchive: () => {
     set({ isArchiveOpen: false });
-    useEditorStore.getState().clearAll();
   },
   toggleArchive: () => {
     set((state) => ({

@@ -2,7 +2,6 @@ import { axiosJsonInstance } from "../../../utils/axiosInstance";
 import PropTypes from "prop-types";
 import TmpTranslateData from "../store/tmpTranslateData";
 import TmpDocsList from "../store/tmpDocsList";
-import useEditorStore from "../store/editorStore";
 import useArchiveStore from "../store/archiveStore";
 import useDocsStore from "../store/docsStore";
 
@@ -56,7 +55,7 @@ export const fetchTranslateData = async (docsId, test) => {
 };
 
 // 베스트 번역본 조회
-export const fetchBestTranslate = async (docsId, isBest, test) => {
+export const fetchBestTranslate = async (docsId, isBest) => {
   const status = isBest ? "best" : "";
   try {
     if (isBest === "best") {
@@ -64,17 +63,14 @@ export const fetchBestTranslate = async (docsId, isBest, test) => {
         `${baseUrl}/${docsId}/trans?status=${status}`
       );
       const data = response.data;
-      console.log("베스트 번역본", data);
-      useArchiveStore.setState({ transList: data });
+      console.log(data);
+      return data;
     } else {
-      // console.log("번역데이터 가져오기 시작");
       const response = await axiosJsonInstance.get(
         `${baseUrl}/${docsId}/trans?status=${status}`
       );
       const data = response.data;
-      console.log(data);
-      useArchiveStore.setState({ transList: data });
-      // console.log(useArchiveStore.getState().transList[0]);
+      return data;
     }
   } catch (error) {
     console.log(error);
