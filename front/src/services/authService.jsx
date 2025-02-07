@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import useAuthStore from "../store/authStore";
 
-const useAuth = () => {
+const AuthService = () => {
   const navigate = useNavigate();
   const { token, loginWithGoogle, loginWithGithub, logout, isAuthenticated } =
     useAuthStore();
@@ -38,4 +38,4 @@ const useAuth = () => {
   };
 };
 
-export default useAuth;
+export default AuthService;
