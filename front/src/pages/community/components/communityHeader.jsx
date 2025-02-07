@@ -1,11 +1,21 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+
 import RectBtn from "../../../components/button/rectBtn";
 
 const CommunityHeader = () => {
+  const token = localStorage.getItem("token");
+
   const navigate = useNavigate();
-  const [isLoggedIn] = useState(true); // 임시로 로그인 상태 true로 설정. TODO: 로그인 상태 확인 로직 추가 필요
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const { articleId } = useParams(); // articleId를 가져옴
+
+  // token이 존재하면 로그인 상태로 변경
+  useEffect(() => {
+    if (token) {
+      setIsLoggedIn(true);
+    }
+  }, [token]);
 
   return (
     <div className="mb-6">

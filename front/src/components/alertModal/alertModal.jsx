@@ -1,27 +1,25 @@
 import PropTypes from "prop-types";
 import * as motion from "motion/react-client";
 import { AnimatePresence } from "motion/react";
-
-const AlertModal = ({ imgSrc, alertTitle, alertText, isButton, isVisible }) => {
+import useAlertStore from "../../store/alertStore";
+const AlertModal = ({ imgSrc, alertTitle, alertText }) => {
+  const { isAlertOpen, toggleAlert } = useAlertStore();
   return (
     <AnimatePresence>
-      {isVisible ? (
+      {isAlertOpen ? (
         <motion.div
           key="alert-modal"
-          initial={{ opacity: 0, scale: 0 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0 }}
+          initial={{ opacity: 0, y: 1000 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 1000 }}
           transition={{
-            scale: {
-              type: "tween",
-              ease: "easeInOut",
-              duration: 0.3,
-            },
+            ease: "easeInOut",
+            duration: 0.5,
           }}
           className="fixed inset-0 flex items-center justify-center z-[2200]"
         >
           {/* <div className="fixed inset-0 z-10 w-screen overflow-hidden"> */}
-          <div className="relative w-fit min-w-[200px] h-fit min-h-[200px] transform overflow-hidden rounded-lg bg-[#E4DCD4] text-left shadow-xl">
+          <div className="relative w-[700px] min-w-[200px] h-fit min-h-[200px] transform overflow-hidden rounded-lg bg-[#E4DCD4] text-left shadow-xl">
             <div className="bg-[#E4DCD4] px-4 pt-5 pb-4">
               <div className="flex justify-center">
                 <div className="mt-3 text-center">
@@ -32,7 +30,7 @@ const AlertModal = ({ imgSrc, alertTitle, alertText, isButton, isVisible }) => {
                     <img
                       className="w-[100px] h-[100px]"
                       src={imgSrc}
-                      alt="체크 이미지"
+                      alt="alert 이미지"
                     />
                     {alertTitle}
                   </h3>
@@ -44,7 +42,21 @@ const AlertModal = ({ imgSrc, alertTitle, alertText, isButton, isVisible }) => {
                 </div>
               </div>
             </div>
-            <div className="bg-[#E4DCD4] px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6"></div>
+            <div className="bg-[#E4DCD4] px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6 justify-center">
+              <button
+                onClick={toggleAlert}
+                style={{
+                  padding: "10px 20px",
+                  backgroundColor: "#007bff",
+                  color: "#fff",
+                  border: "none",
+                  borderRadius: "5px",
+                  cursor: "pointer",
+                }}
+              >
+                확인
+              </button>
+            </div>
           </div>
           {/* </div> */}
         </motion.div>

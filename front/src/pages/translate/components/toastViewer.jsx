@@ -5,7 +5,7 @@ import PropTypes from "prop-types";
 
 const ToastViewer = ({ content }) => {
   if (content === "") {
-    content = "<p>첫 번째 번역의 주인공이 되세요!</p>";
+    content = "<h2>첫 번째 번역의 주인공이 되세요!</h2>";
   }
 
   const viewerRef = useRef(null);
