@@ -39,7 +39,12 @@ public class ChatController {
         long userId;
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || authentication.getPrincipal() == null) {
+        if(authentication == null) {
+            log.error(" WebSocket Error: authentication is NULL in ChatController!");
+            throw new IllegalArgumentException("WEBSOCKET ERROR - authentication is null");
+        }
+
+        if (authentication.getPrincipal() == null) {
             log.error(" WebSocket Error: Principal is NULL in ChatController!");
             throw new IllegalArgumentException("WEBSOCKET ERROR - Principal is null");
         }

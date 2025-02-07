@@ -53,9 +53,10 @@ public class StompHandler implements ChannelInterceptor {
                     userId, null, List.of(new SimpleGrantedAuthority("ROLE_USER"))
             );
             SecurityContextHolder.getContext().setAuthentication(authentication); // SecurityContext에 저장
+            log.info("Principal set in StompHandler -> {}", authentication.getPrincipal());
 
             accessor.setUser(authentication);
-            log.info("Principal set in StompHandler -> {}", authentication.getPrincipal());
+            log.info("accessor -> {}", accessor.getUser().toString());
         }
         return MessageBuilder
                 .withPayload(message.getPayload())
