@@ -130,6 +130,8 @@ class AlertsServiceImplTest {
     @DisplayName("번역 좋아요 알림 전송 테스트")
     void testSendTranslationVoteAlert() {
         alertsService.sendTranslationVoteAlert(translatedDoc1, user2);
+        // DB에 데이터가 없다는 가정 하에, 알림은 하나만 생성되므로 해당 유저에 대한 알림이 존재하는지 조회
+        // 추후 문제시 알림이 유저랑 일치하는지 + 이게 그 알림이 맞는지 확인하는 로직 추가 예정
         assertTrue(alertRepository.existsByUser(user3));
     }
 
@@ -137,6 +139,8 @@ class AlertsServiceImplTest {
     @DisplayName("게시글 댓글 알림 전송 테스트")
     void testSendCommentAlert() {
         alertsService.sendCommentAlert(article1, user2);
+        // DB에 데이터가 없다는 가정 하에, 알림은 하나만 생성되므로 해당 유저에 대한 알림이 존재하는지 조회
+        // 추후 문제시 알림이 유저랑 일치하는지 + 이게 그 알림이 맞는지 확인하는 로직 추가 예정
         assertTrue(alertRepository.existsByUser(user1));
     }
 
@@ -144,6 +148,8 @@ class AlertsServiceImplTest {
     @DisplayName("댓글 대댓글 알림 전송 테스트")
     void testSendCommentReplyAlert() {
         alertsService.sendCommentReplyAlert(comment1, user2);
+        // DB에 데이터가 없다는 가정 하에, 알림은 하나만 생성되므로 해당 유저에 대한 알림이 존재하는지 조회
+        // 추후 문제시 알림이 유저랑 일치하는지 + 이게 그 알림이 맞는지 확인하는 로직 추가 예정
         assertTrue(alertRepository.existsByUser(user1));
     }
 
@@ -151,6 +157,8 @@ class AlertsServiceImplTest {
     @DisplayName("문의 답변 알림 전송 테스트")
     void testSendInquiryAnswerAlert() {
         alertsService.sendInquiryAnswerAlert(inquiry1);
+        // DB에 데이터가 없다는 가정 하에, 알림은 하나만 생성되므로 해당 유저에 대한 알림이 존재하는지 조회
+        // 추후 문제시 알림이 유저랑 일치하는지 + 이게 그 알림이 맞는지 확인하는 로직 추가 예정
         assertTrue(alertRepository.existsByUser(user2));
     }
 }
