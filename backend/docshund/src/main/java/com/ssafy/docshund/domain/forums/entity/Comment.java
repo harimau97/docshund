@@ -48,7 +48,7 @@ public class Comment extends BaseTimeEntityWithUpdatedAt {
 	@JoinColumn(name = "article_id", nullable = false)
 	private Article article;  // 댓글이 달린 게시글 (article 테이블과 연결)
 
-	@Column(name = "content", nullable = false)
+	@Column(name = "content", nullable = false, columnDefinition = "TEXT")
 	private String content;  // 댓글 내용
 
 	@Column(name = "report_cnt", nullable = false)
