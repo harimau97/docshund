@@ -170,7 +170,7 @@ const reportModal = () => {
                   </label>
                   <textarea
                     type="text"
-                    value={originalContent}
+                    value={originContent}
                     readOnly={true}
                     className="mt-1 block w-full py-2 px-3 border rounded-md shadow-sm focus:outline-none focus:ring-[#bc5b39] focus:border-[#bc5b39] sm:text-sm"
                     style={{ height: "150px" }}

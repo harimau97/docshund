@@ -208,9 +208,9 @@ const TranslateArchive = () => {
                               onClick={(e) => {
                                 e.stopPropagation();
                                 useReportStore.setState({
-                                  originalContent: trans.content,
-                                  reportedUserId: trans.userId,
-                                  replyId: null,
+                                  originContent: trans.content,
+                                  reportedUser: trans.userId,
+                                  commentId: null,
                                   articleId: null,
                                   transId: trans.transId,
                                   chatId: null,

@@ -38,6 +38,9 @@ import WriteArticle from "./pages/community/writeArticle.jsx";
 import ModifyArticle from "./pages/community/modifyArticle.jsx";
 import ArticleItem from "./pages/community/articleItem.jsx";
 
+// error 페이지
+import ErrorPage from "./pages/errorPage.jsx";
+
 function AppRoutes() {
   return (
     <Routes>
@@ -66,6 +69,24 @@ function AppRoutes() {
       <Route path="/helpDesk/notices/:noticeId" element={<NoticeDetail />} />
       <Route path="/terms" element={<TermsPage />} />
       <Route path="/privacy" element={<PrivacyPage />} />
+
+      {/* 에러페이지 */}
+      <Route path="/error" element={<ErrorPage />} />
+      <Route
+        path="*"
+        element={
+          <Navigate
+            to="/error?status=404&message=페이지를 찾을 수 없습니다."
+            replace
+          />
+        }
+      />
+
+      {/* 번역뷰어 */}
+      <Route
+        path="translate/viewer/:docsId"
+        element={<TranslateViewer />}
+      ></Route>
 
       {/* 비로그인 접근 불가 */}
       <Route element={<ProtectedRoute />}>

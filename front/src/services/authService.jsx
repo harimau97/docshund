@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import useAuthStore from "../store/authStore";
 import { ToastContainer, toast } from "react-toastify";
 
-const useAuth = () => {
+const AuthService = () => {
   const navigate = useNavigate();
   const { token, loginWithGoogle, loginWithGithub, logout, isAuthenticated } =
     useAuthStore();
@@ -40,4 +40,4 @@ const useAuth = () => {
   };
 };
 
-export default useAuth;
+export default AuthService;

@@ -4,13 +4,13 @@ import { jwtDecode } from "jwt-decode";
 import logo from "../assets/logo.png";
 import google from "../assets/google.png";
 import github from "../assets/github.png";
-import useAuth from "../utils/useAuth";
+import authService from "../services/authService";
 import useAuthStore from "../store/authStore";
 import useModalStore from "../store/modalStore";
 
 const LoginModal = () => {
   const { isModalOpen, closeModal } = useModalStore();
-  const { loginWithGoogle, loginWithGithub } = useAuth();
+  const { loginWithGoogle, loginWithGithub } = authService();
   const { setToken } = useAuthStore();
   const navigate = useNavigate();
 

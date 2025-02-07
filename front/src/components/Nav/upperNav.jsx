@@ -1,7 +1,7 @@
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import RectBtn from "../button/rectBtn";
 import useModalStore from "../../store/modalStore";
-import useAuth from "../../utils/useAuth";
+import authService from "../../services/authService";
 import logo from "../../assets/logo.png";
 import notification from "../../assets/icon/notification32.png";
 import SampleProfileImg from "../../assets/sample_profile_image.png";
@@ -9,7 +9,7 @@ import SampleProfileImg from "../../assets/sample_profile_image.png";
 const UpperNav = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { isAuthenticated, logout } = useAuth();
+  const { isAuthenticated, logout } = authService();
   const { openModal } = useModalStore();
 
   // 로그인 버튼 동작
