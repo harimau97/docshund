@@ -12,8 +12,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.ssafy.docshund.domain.users.dto.auth.CustomOAuth2User;
 import com.ssafy.docshund.domain.users.dto.auth.UserDto;
-import com.ssafy.docshund.domain.users.entity.Status;
-import com.ssafy.docshund.domain.users.entity.User;
 import com.ssafy.docshund.domain.users.repository.UserRepository;
 
 import jakarta.servlet.FilterChain;
@@ -32,7 +30,7 @@ public class JwtFilter extends OncePerRequestFilter {
 	private final AntPathMatcher pathMatcher = new AntPathMatcher();
 
 	private static final List<String> NO_CHECK_URLS = Arrays.asList(
-			"/ws/**"
+		"/ws/**"
 	);
 
 	@Override
@@ -65,15 +63,9 @@ public class JwtFilter extends OncePerRequestFilter {
 
 		String personalId = jwtUtil.getPersonalId(token);
 		String role = jwtUtil.getRole(token);
+		Long userId = jwtUtil.getUserlId(token);
 
-		if (checkUser(personalId)) {
-			filterChain.doFilter(request, response);
-			return;
-		}
-
-		UserDto userDto = new UserDto();
-		userDto.setPersonalId(personalId);
-		userDto.setRole(role);
+		UserDto userDto = new UserDto(userId, personalId, role);
 
 		CustomOAuth2User customOAuth2User = new CustomOAuth2User(userDto);
 
@@ -84,27 +76,5 @@ public class JwtFilter extends OncePerRequestFilter {
 		SecurityContextHolder.getContext().setAuthentication(authToken);
 
 		filterChain.doFilter(request, response);
-	}
-
-	private boolean checkUser(String personalId) {
-		User user = userRepository.findByPersonalId(personalId)
-			.orElse(null);
-
-		if (user == null) {
-			log.info("User is not found. UserId = {}", user.getPersonalId());
-			return true;
-		}
-
-		if (user.getStatus() == Status.BANNED) {
-			log.info("User is banned. UserId = {}", user.getPersonalId());
-			return true;
-		}
-
-		if (user.getStatus() == Status.WITHDRAWN) {
-			log.info("User is withdrawn. UserId = {}", user.getPersonalId());
-			return true;
-		}
-
-		return false;
 	}
 }
