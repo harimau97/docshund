@@ -86,4 +86,12 @@ public class Article extends BaseTimeEntityWithUpdatedAt {
 	public void increaseViewCount() {
 		this.viewCount++;
 	}
+
+	public void increaseReportCount() {
+		this.reportCount++;
+	}
+
+	public void decreaseReportCount() {
+		this.reportCount--;
+	}
 }
