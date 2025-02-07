@@ -1,7 +1,7 @@
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import RectBtn from "../button/rectBtn";
 import useModalStore from "../../store/modalStore";
-import useAuth from "../../utils/useAuth";
+import authService from "../../services/authService";
 import logo from "../../assets/logo.png";
 import notification from "../../assets/icon/notification32.png";
 import SampleProfileImg from "../../assets/sample_profile_image.png";
@@ -12,7 +12,7 @@ import { set } from "date-fns";
 const UpperNav = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { isAuthenticated, logout } = useAuth();
+  const { isAuthenticated, logout } = authService();
   const { openModal } = useModalStore();
 
   // 게시글 작성 페이지로 이동 시 페이지 초기화
