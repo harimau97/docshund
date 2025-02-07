@@ -1,18 +1,15 @@
 package com.ssafy.docshund.domain.chats.controller;
 
 import java.security.Principal;
-import java.util.NoSuchElementException;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.Message;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
-import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,9 +18,7 @@ import com.ssafy.docshund.domain.chats.entity.Chat;
 import com.ssafy.docshund.domain.chats.dto.ChatDto;
 import com.ssafy.docshund.domain.chats.dto.ChatInfoDto;
 import com.ssafy.docshund.domain.chats.service.ChatService;
-import com.ssafy.docshund.domain.users.entity.User;
-import com.ssafy.docshund.domain.users.repository.UserRepository;
-import com.ssafy.docshund.domain.users.service.UserService;
+
 
 import lombok.RequiredArgsConstructor;
 
@@ -40,9 +35,12 @@ public class ChatController {
             @Payload ChatDto chatDto,
             Principal principal
     ) {
-
-        SimpMessageHeaderAccessor accessor = SimpMessageHeaderAccessor.wrap((Message<?>) principal);
-        Long userId = (Long) accessor.getSessionAttributes().get("userId");
+        long userId;
+        try {
+            userId = Long.parseLong(principal.getName());
+        } catch (Exception e) {
+            throw new IllegalArgumentException("WEBSOCKET ERROR - INVALID PRINCIPAL");
+        }
 
         Chat savedChat = chatService.createChat(docsId, userId, chatDto);
         return ChatInfoDto.from(savedChat);
