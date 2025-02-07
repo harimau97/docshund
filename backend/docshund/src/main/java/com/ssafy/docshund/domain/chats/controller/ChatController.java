@@ -19,7 +19,6 @@ import com.ssafy.docshund.domain.chats.dto.ChatDto;
 import com.ssafy.docshund.domain.chats.dto.ChatInfoDto;
 import com.ssafy.docshund.domain.chats.service.ChatService;
 
-
 import lombok.RequiredArgsConstructor;
 
 @Controller
