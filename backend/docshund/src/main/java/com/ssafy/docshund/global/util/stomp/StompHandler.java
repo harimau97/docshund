@@ -28,6 +28,7 @@ public class StompHandler implements ChannelInterceptor {
         if (StompCommand.CONNECT == accessor.getCommand()) {
 
             String authHeader = accessor.getFirstNativeHeader("Authorization");
+            log.info("authHeader: {}", authHeader);
 
             if(jwtUtil.isValidAuthorization(authHeader)) {
                 log.error("WEBSOCKET CONNECTION ERROR - JWT TOKEN IS INVALID");
@@ -43,6 +44,7 @@ public class StompHandler implements ChannelInterceptor {
             Long userId = jwtUtil.getUserlId(token);
 
             accessor.setUser(new StompPrincipal(userId.toString()));
+            log.info("accessor.getUser : {}", accessor.getUser());
         }
         return message;
     }
