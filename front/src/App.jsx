@@ -1,5 +1,5 @@
 import "./App.css";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import AppRouter from "./router.jsx";
 import Footer from "./components/footer/footer.jsx";
@@ -9,9 +9,9 @@ import Modal from "react-modal";
 import LoginModal from "./components/LoginModal.jsx";
 import { ToastContainer, toast } from "react-toastify";
 import ToastModal from "./components/alertModal/toastModal.jsx";
+import ReportModal from "./pages/report.jsx";
 //챗봇
 import ChatBot from "./pages/chatBot/chatBot.jsx";
-import chatBotImg from "./assets/icon/chatBot.png";
 import ChatBotStore from "./store/chatBotStore.jsx";
 import { Bot } from "lucide-react";
 
@@ -19,13 +19,13 @@ import { Bot } from "lucide-react";
 import Chat from "./pages/chat/chat.jsx";
 import ChatStore from "./store/chatStore.jsx";
 import chatImg from "./assets/icon/chat.png";
-import chatBot from "./assets/icon/chatBot.png";
 
 Modal.setAppElement("#root");
 
 function App() {
   // 번역 뷰어 페이지일 때만 좌측 내브바 표시
   const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (location.search.includes("token")) {
@@ -44,6 +44,7 @@ function App() {
   return (
     <div className="flex flex-col min-h-screen min-w-[768px] overflow-hidden">
       <ToastModal />
+
       {isTranslateViewerPage ? <LeftNav /> : <UpperNav />}
       <div className="flex flex-grow">
         <AppRouter />
@@ -76,6 +77,7 @@ function App() {
           )}
         </div>
       ) : null}
+
       {isChatVisible && <Chat />}
       {isChatBotVisible && <ChatBot />}
       {isTranslateViewerPage ? null : <Footer />}

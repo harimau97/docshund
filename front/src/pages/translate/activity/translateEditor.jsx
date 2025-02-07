@@ -93,15 +93,24 @@ const TranslateEditor = () => {
                   <RectBtn
                     onClick={async () => {
                       useEditorStore.setState({ submitData: currentUserText });
-                      await handleSubmit(docsId, originId, currentUserText);
-                      toast.success("제출 완료");
-                      fetchBestTranslate(docsId, "", false);
-                      setIsVisible(true);
-                      setTimeout(() => setIsVisible(false), 1500);
-                      setTimeout(() => toggleEditor(), 1500);
-                      setTimeout(() => closeEditor(), 2000);
-                      setTimeout(() => openArchive(), 2000);
-                      setTimeout(() => toggleArchive(), 2200);
+                      const status = await handleSubmit(
+                        docsId,
+                        originId,
+                        currentUserText
+                      );
+                      const isRegist = status;
+                      if (isRegist === null) {
+                        toast.error("제출 실패");
+                      } else {
+                        toast.success("제출 완료");
+                        fetchBestTranslate(docsId, "", false);
+                        setIsVisible(true);
+                        setTimeout(() => setIsVisible(false), 1500);
+                        setTimeout(() => toggleEditor(), 1500);
+                        setTimeout(() => closeEditor(), 2000);
+                        setTimeout(() => openArchive(), 2000);
+                        setTimeout(() => toggleArchive(), 2200);
+                      }
                     }}
                     text="제출하기"
                   />

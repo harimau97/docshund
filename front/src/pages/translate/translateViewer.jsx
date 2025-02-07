@@ -29,7 +29,7 @@ import useArchiveStore from "./store/archiveStore.jsx";
 //이미지 import
 import loadingGif from "../../assets/loading.gif";
 import warning from "../../assets/icon/warning.png";
-import best from "../../assets/icon/best.png";
+import { Trophy } from "lucide-react";
 
 const TranslateViewer = () => {
   const { docsId } = useParams();
@@ -168,7 +168,7 @@ const TranslateViewer = () => {
         if (!loadedData || loadedData.length === 0) {
           console.log("Fetching data from server for docsId:", docsId); // 디버깅용
           try {
-            const data = await fetchTranslateData(docsId, isTest);
+            const data = await fetchTranslateData(docsId, false);
             if (!isMounted) return;
             if (data && Array.isArray(data)) {
               docData.current = data;
@@ -241,13 +241,12 @@ const TranslateViewer = () => {
         }
         isVisible={isAlertOpen}
       />
-
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-2">
         {docParts.map((part, index) => (
-          <div key={index} className="flex flex-row gap-4 relative">
+          <div key={index} className="paragraph flex flex-row gap-4 relative">
             <div
               onClick={async (e) => {
-                e.stopPropagation();
+                // e.stopPropagation();
                 if (localStorage.getItem("token")) {
                   toggleButton(part.id, e);
                 }
@@ -268,7 +267,7 @@ const TranslateViewer = () => {
                 }
                 toggleDocpart(part.id);
               }}
-              className="cursor-pointer p-5 rounded-xl text-[#424242] bg-[#E4DCD4] hover:bg-[#cfccc9] hover:shadow-lg flex flex-col w-full shadow-md"
+              className="cursor-pointer p-4 rounded-xl text-[#424242] bg-gray-200 hover:bg-[#cfccc9] hover:shadow-lg flex flex-col w-full transition-all duration-200 shadow-md"
             >
               <div
                 ref={(element) => {
@@ -294,11 +293,7 @@ const TranslateViewer = () => {
                       content={useEditorStore.getState().bestTrans}
                     />
                     {bestTrans !== "" && (
-                      <img
-                        className="w-10 h-10"
-                        src={best}
-                        alt="베스트 번역 아이콘"
-                      />
+                      <Trophy className="w-6 h-6 shrink-0 m-2 text-yellow-500" />
                     )}
                   </div>
                 )}

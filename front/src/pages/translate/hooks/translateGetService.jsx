@@ -8,6 +8,7 @@ import useDocsStore from "../store/docsStore";
 
 const baseUrl = "http://i12a703.p.ssafy.io:8081/api/v1/docshund/docs";
 
+// 좋아요한 문서 조회
 export const fetchLikedList = async (docsId) => {
   try {
     const response = await axiosJsonInstance.get(`${baseUrl}/${docsId}/likes`);
@@ -18,6 +19,7 @@ export const fetchLikedList = async (docsId) => {
   }
 };
 
+// 문서 리스트 조회
 export const fetchDocsList = async (test) => {
   try {
     if (!test) {
@@ -33,8 +35,10 @@ export const fetchDocsList = async (test) => {
   }
 };
 
+// 영어 원문 조회
 export const fetchTranslateData = async (docsId, test) => {
   try {
+    console.log(docsId, test);
     if (!test) {
       const response = await axiosJsonInstance.get(
         `${baseUrl}/${docsId}/origin`
@@ -51,6 +55,7 @@ export const fetchTranslateData = async (docsId, test) => {
   }
 };
 
+// 베스트 번역본 조회
 export const fetchBestTranslate = async (docsId, isBest, test) => {
   const status = isBest ? "best" : "";
   try {
@@ -77,6 +82,7 @@ export const fetchBestTranslate = async (docsId, isBest, test) => {
   }
 };
 
+// 좋아요한 번역본 조회
 export const fetchLikedTranslateList = async (userId) => {
   try {
     const response = await axiosJsonInstance.get(`${baseUrl}/trans/votes`, {

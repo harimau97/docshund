@@ -7,10 +7,12 @@ import { likeTranslate } from "../hooks/translatePostService.jsx";
 import * as motion from "motion/react-client";
 import { AnimatePresence } from "motion/react";
 import Modal from "react-modal";
+import ReportModal from "../../report.jsx";
 import useModalStore from "../store/modalStore";
 import GoBack from "../../../assets/icon/goBack.png";
 import useEditorStore from "../store/editorStore";
 import useArchiveStore from "../store/archiveStore";
+import useReportStore from "../../../store/reportStore.jsx";
 import useTestStore from "../store/testStore.jsx";
 import ToastViewer from "../components/toastViewer.jsx";
 
@@ -30,6 +32,7 @@ const TranslateArchive = () => {
     setTransList,
     clearTransList,
   } = useArchiveStore();
+  const { openReport, toggleReport } = useReportStore();
   const { isTest } = useTestStore();
 
   //모달 관련 상태
@@ -76,6 +79,7 @@ const TranslateArchive = () => {
       setTransList(data);
     };
     fetchData();
+    changeOrderBy("like");
     console.log("번역 전체", transList);
   }, []);
 
@@ -111,6 +115,14 @@ const TranslateArchive = () => {
             }}
             className="fixed inset-0 flex items-center justify-center min-w-full min-h-full "
           >
+            <ReportModal
+              originalContent={originId}
+              reportedUserId={null}
+              replyId={null}
+              articleId={null}
+              transId={null}
+              chatId={null}
+            />
             <div className="relative m-5 p-6 w-1/2 h-[95%] min-w-[768px] min-h-[80%] max-w-full max-h-full rounded-2xl bg-white shadow-lg overflow-y-scroll transition-all duration-300 ease-in-out">
               <div className="flex shrink-0 pb-6 text-2xl font-semibold text-slate-800 justify-between items-center">
                 <img
@@ -192,9 +204,24 @@ const TranslateArchive = () => {
                             </div>
                           </div>
                           <div className="flex items-center gap-4">
-                            <span className="text-gray-500 underline">
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                useReportStore.setState({
+                                  originalContent: trans.content,
+                                  reportedUserId: trans.userId,
+                                  replyId: null,
+                                  articleId: null,
+                                  transId: trans.transId,
+                                  chatId: null,
+                                });
+                                openReport();
+                                toggleReport();
+                              }}
+                              className="text-gray-500 cursor-pointer underline"
+                            >
                               신고
-                            </span>
+                            </button>
 
                             <div
                               onClick={(e) => {
