@@ -186,45 +186,52 @@ const TranslateArchive = () => {
                               {trans.userId}님의 번역본
                             </div>
                             <div className="text-sm text-gray-500">
-                              {trans.updatedAt}
+                              {new Date(
+                                new Date(trans.updatedAt).toISOString()
+                              ).toLocaleString()}
                             </div>
                           </div>
-
-                          <div
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleLike(docsId, trans.transId);
-                            }}
-                            className={`flex w-1/5 items-center gap-2 px-4 py-2 rounded-lg transition-all duration-300 cursor-pointer right-5 top-1/2  ${
-                              trans.likeUserIds.includes(
-                                Number(localStorage.getItem("userId"))
-                              )
-                                ? "bg-red-600 text-white"
-                                : "bg-gray-300"
-                            }`}
-                          >
-                            <span
-                              className={
-                                trans.likeUserIds.includes(
-                                  Number(localStorage.getItem("userId"))
-                                )
-                                  ? "text-white"
-                                  : "text-slate-700"
-                              }
-                            >
-                              좋아요
+                          <div className="flex items-center gap-4">
+                            <span className="text-gray-500 underline">
+                              신고
                             </span>
-                            <span
-                              className={`font-semibold ${
+
+                            <div
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleLike(docsId, trans.transId);
+                              }}
+                              className={`flex w-fititems-center gap-2 px-4 py-2 rounded-lg transition-all duration-300 cursor-pointer right-5 top-1/2  ${
                                 trans.likeUserIds.includes(
                                   Number(localStorage.getItem("userId"))
                                 )
-                                  ? "text-white"
-                                  : "text-slate-900"
+                                  ? "bg-red-600 text-white"
+                                  : "bg-gray-300"
                               }`}
                             >
-                              {trans.likeCount}
-                            </span>
+                              <span
+                                className={
+                                  trans.likeUserIds.includes(
+                                    Number(localStorage.getItem("userId"))
+                                  )
+                                    ? "text-white"
+                                    : "text-slate-700"
+                                }
+                              >
+                                좋아요
+                              </span>
+                              <span
+                                className={`font-semibold ${
+                                  trans.likeUserIds.includes(
+                                    Number(localStorage.getItem("userId"))
+                                  )
+                                    ? "text-white"
+                                    : "text-slate-900"
+                                }`}
+                              >
+                                {trans.likeCount}
+                              </span>
+                            </div>
                           </div>
                         </div>
 

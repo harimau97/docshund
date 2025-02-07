@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import * as motion from "motion/react-client";
 import { AnimatePresence } from "motion/react";
-import chatBotImg from "../../assets/icon/chatBot.png";
+import { Bot, Send } from "lucide-react";
 
 //상태 관련
 import useChatBotStore from "../../store/chatBotStore.jsx";
@@ -34,34 +34,40 @@ const ChatBot = () => {
     setInputMessage("");
     await testGeminiAPI(
       inputMessage.concat(
-        "페르소나: 당신은 영어에 능통한 30년차 풀스택 개발자 멘토로서, 개발 관련 영어 질문에 대해 간결하고 명확한 한국어 답변을 해요체로 3 문장 이내로 제공합니다."
+        "페르소나: 당신은 영어에 능통한 30년차 풀스택 개발자 멘토로서, 개발 관련 영어 질문에 대해 간결하고 명확한 한국어 답변을 해요체로 256자 이내로 제공합니다. 답변은 반드시 한국어로 해야 합니다."
       )
     );
   };
 
   const testGeminiAPI = async (chatContent) => {
     setLoading(true);
-    console.log(chatContent);
+    // console.log(chatContent);
     try {
       const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${
-          import.meta.env.VITE_GEMINI_API_KEY
-        }`,
+        `https://asia-northeast3-aiplatform.googleapis.com/v1/projects/skilful-earth-450223-v9/locations/asia-northeast3/publishers/google/models/gemini-1.5-flash:generateContent`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${import.meta.env.VITE_VERTEX_API_KEY}`,
           },
           body: JSON.stringify({
-            contents: [
+            contents: {
+              role: "user",
+              parts: [{ text: chatContent }],
+            },
+            safetySettings: [
               {
-                parts: [
-                  {
-                    text: chatContent,
-                  },
-                ],
+                category: "HARM_CATEGORY_HARASSMENT",
+                threshold: "BLOCK_NONE",
               },
             ],
+            generationConfig: {
+              temperature: 0.2,
+              maxOutputTokens: 256,
+              topP: 0.8,
+              topK: 40,
+            },
           }),
         }
       );
@@ -100,15 +106,11 @@ const ChatBot = () => {
             ease: "easeInOut",
             duration: 0.3,
           }}
-          className="fixed bottom-22 left-1 w-[350px] h-[500px] bg-white rounded-xl shadow-lg border border-gray-200 z-[2600] flex flex-col"
+          className="fixed bottom-22 left-1 w-[400px] h-[600px] bg-white rounded-xl shadow-lg border border-gray-200 z-[1900] flex flex-col"
         >
           {/* 챗봇 헤더 */}
-          <div className="flex items-center p-4 border-b border-gray-200 bg-blue-600 rounded-t-xl">
-            <img
-              src={chatBotImg}
-              alt="ChatBot"
-              className="w-8 h-8 rounded-full"
-            />
+          <div className="flex items-center p-4 border-b border-gray-200 bg-[#C96442] rounded-t-xl">
+            <Bot className="h-8 w-8" />
             <div className="ml-3 text-white">
               <h3 className="font-semibold">DocshunD 번역봇</h3>
               {/* <p className="text-xs text-blue-100"></p> */}
@@ -171,10 +173,10 @@ const ChatBot = () => {
               />
               <button
                 type="submit"
-                className="px-4 py-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-colors"
+                className="px-2 py-2 bg-[#C96442] text-white rounded-full hover: cursor-pointer transition-colors"
                 disabled={loading}
               >
-                전송
+                <Send />
               </button>
             </div>
           </form>

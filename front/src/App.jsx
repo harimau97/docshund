@@ -13,6 +13,7 @@ import ToastModal from "./components/alertModal/toastModal.jsx";
 import ChatBot from "./pages/chatBot/chatBot.jsx";
 import chatBotImg from "./assets/icon/chatBot.png";
 import ChatBotStore from "./store/chatBotStore.jsx";
+import { Bot } from "lucide-react";
 
 //문서채팅
 import Chat from "./pages/chat/chat.jsx";
@@ -44,7 +45,7 @@ function App() {
     <div className="flex flex-col min-h-screen min-w-[768px] overflow-hidden">
       <ToastModal />
       {isTranslateViewerPage ? <LeftNav /> : <UpperNav />}
-      <div className="flex-grow">
+      <div className="flex flex-grow">
         <AppRouter />
       </div>
       {isTranslateViewerPage ? (
@@ -70,11 +71,7 @@ function App() {
               onClick={toggleChatBot}
               className="rounded-full w-16 h-16 bg-gradient-to-r from-[#BC5B39] to-[#E4DCD4] flex justify-center items-center cursor-pointer shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 border-2 border-white"
             >
-              <img
-                className="group-hover:rotate-12 transition-transform duration-300"
-                src={chatBot}
-                alt="챗봇 아이콘"
-              />
+              <Bot className="h-8 w-8 text-white group-hover:rotate-12 transition-transform duration-300" />
             </div>
           )}
         </div>
