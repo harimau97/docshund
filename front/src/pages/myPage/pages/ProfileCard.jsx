@@ -59,14 +59,16 @@ const ProfileCard = ({
       <div className="flex mb-4">
         <h3 className="w-30">관심분야</h3>
         {isEditing ? (
-          <input
-            type="text"
+          <select
             name="hobby"
             value={editedProfile.hobby || ""}
             onChange={handleChange}
-            placeholder="관심분야를 입력해주세요."
             className="border p-2 rounded focus:outline-none focus:ring-1"
-          />
+          >
+            <option value="">관심분야를 선택해주세요</option>
+            <option value="Frontend">Frontend</option>
+            <option value="Backend">Backend</option>
+          </select>
         ) : (
           <p>{editedProfile.hobby}</p>
         )}

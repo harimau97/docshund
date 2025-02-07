@@ -22,10 +22,21 @@ const userProfileService = {
         `/users/profile/${userId}`,
         formData
       );
-      return response.status;
+      return response.data;
     } catch (error) {
       console.error("프로필 데이터를 업데이트하는 중 오류 발생:", error);
       return null;
+    }
+  },
+
+  // 계정 탈퇴
+  async deleteAccount() {
+    try {
+      const response = await axiosJsonInstance.get(`/users/leaving`);
+      return response.status === 200;
+    } catch (error) {
+      console.error("계정 탈퇴 중 오류 발생:", error);
+      return false;
     }
   },
 };

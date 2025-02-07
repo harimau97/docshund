@@ -1,12 +1,21 @@
 import { useState, useEffect } from "react";
 import { jwtDecode } from "jwt-decode";
+import { toast } from "react-toastify";
+import { ChevronRight } from "lucide-react";
+import authService from "../../../services/authService";
 import useUserProfileStore from "../store/userProfileStore";
 import ProfileCard from "./ProfileCard";
 import SettingsCard from "./SettingsCard";
 
 const MyProfilePage = () => {
-  const { profile, isLoading, error, fetchProfile, updateProfile } =
-    useUserProfileStore();
+  const {
+    profile,
+    isLoading,
+    error,
+    fetchProfile,
+    updateProfile,
+    deleteAccount,
+  } = useUserProfileStore();
   const [isEditing, setIsEditing] = useState(false);
   const [editedProfile, setEditedProfile] = useState({
     nickname: "",
@@ -19,6 +28,7 @@ const MyProfilePage = () => {
   });
   const [userId, setUserId] = useState(null);
   const [profileImageFile, setProfileImageFile] = useState(null);
+  const { logout } = authService();
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -39,8 +49,17 @@ const MyProfilePage = () => {
     }
   }, [profile]);
 
-  if (isLoading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error}</div>;
+  useEffect(() => {
+    if (isLoading) {
+      toast.info("Loading...");
+    }
+  }, [isLoading]);
+
+  useEffect(() => {
+    if (error) {
+      toast.error(`Error: ${error}`);
+    }
+  }, [error]);
 
   //편집버튼 눌렀을때
   const handleEditClick = () => setIsEditing(true);
@@ -61,7 +80,7 @@ const MyProfilePage = () => {
       !editedProfile.introduce ||
       !editedProfile.email
     ) {
-      alert("모든 필드를 입력해주세요.");
+      toast.warn("모든 필드를 입력해주세요.");
       return;
     }
 
@@ -87,11 +106,30 @@ const MyProfilePage = () => {
 
     try {
       await updateProfile(userId, formData);
-      alert("프로필이 성공적으로 업데이트되었습니다.");
-      setIsEditing(false);
+      toast.success("프로필이 성공적으로 업데이트되었습니다.");
+      window.location.reload();
     } catch (error) {
-      alert("프로필 업데이트 중 오류가 발생했습니다.");
+      toast.error("프로필 업데이트 중 오류가 발생했습니다.");
       console.error("프로필 업데이트 실패", error);
+    }
+  };
+
+  // 계정 탈퇴 버튼 눌렀을때
+  const handleDeleteAccount = async () => {
+    const confirmDelete = window.confirm("정말로 계정을 탈퇴하시겠습니까?");
+    if (confirmDelete) {
+      try {
+        const success = await deleteAccount(userId);
+        if (success) {
+          toast.success("계정이 성공적으로 탈퇴되었습니다.");
+          logout();
+        } else {
+          toast.error("계정 탈퇴 중 오류가 발생했습니다.");
+        }
+      } catch (error) {
+        toast.error("계정 탈퇴 중 오류가 발생했습니다.");
+        console.error("계정 탈퇴 실패", error);
+      }
     }
   };
 
@@ -108,7 +146,7 @@ const MyProfilePage = () => {
     if (!file) return;
 
     if (file.size > MAX_FILE_SIZE) {
-      alert("이미지 파일 크기는 1MB 이하만 가능합니다.");
+      toast.warn("이미지 파일 크기는 1MB 이하만 가능합니다.");
       e.target.value = "";
       return;
     }
@@ -177,6 +215,16 @@ const MyProfilePage = () => {
         editedProfile={editedProfile}
         handleThemeChange={handleThemeChange}
       />
+
+      <div className="mt-5 mr-2 flex justify-end">
+        <button
+          className="flex items-center text-gray-500 hover:text-red-600 hover:underline"
+          onClick={handleDeleteAccount}
+        >
+          <p className="text-bold">계정탈퇴</p>
+          <ChevronRight />
+        </button>
+      </div>
     </div>
   );
 };

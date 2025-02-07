@@ -20,13 +20,24 @@ const useUserProfileStore = create((set) => ({
   // 프로필 업데이트
   updateProfile: async (userId, formData) => {
     set({ isLoading: true, error: null });
-    const status = await userProfileService.updateProfile(userId, formData);
-    if (status) {
-      const updatedProfile = JSON.parse(formData.get("profile"));
-      set({ profile: updatedProfile, isLoading: false });
+    const response = await userProfileService.updateProfile(userId, formData);
+    if (response && response.status === 200) {
+      set({ isLoading: false });
     } else {
       set({ error: "프로필 업데이트에 실패했습니다.", isLoading: false });
     }
+  },
+
+  // 계정 탈퇴
+  deleteAccount: async (userId) => {
+    set({ isLoading: true, error: null });
+    const success = await userProfileService.deleteAccount(userId);
+    if (success) {
+      set({ profile: null, isLoading: false });
+    } else {
+      set({ error: "계정 탈퇴에 실패했습니다.", isLoading: false });
+    }
+    return success;
   },
 }));
 
