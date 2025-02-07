@@ -336,8 +336,8 @@ public class DocsServiceImpl implements DocsService {
 	@Transactional(readOnly = true)
 	public List<TranslatedDocumentDto> getAllTranslatedDocuments(Integer docsId) {
 
-		List<TranslatedDocument> translatedDocuments = translatedDocumentRepository.findByOriginDocument_Document_DocsId(
-			docsId);
+		List<TranslatedDocument> translatedDocuments = translatedDocumentRepository.findByOriginDocument_Document_DocsIdAndStatus(
+			docsId, String.valueOf(Status.VISIBLE));
 
 		// 번역 문서 ID 목록 추출
 		List<Long> transIds = translatedDocuments.stream().map(TranslatedDocument::getTransId).toList();
@@ -439,7 +439,7 @@ public class DocsServiceImpl implements DocsService {
 	@Transactional(readOnly = true)
 	@Override
 	public List<UserTransDocumentDto> getUserTransDocument(Long userId) {
-		List<TranslatedDocument> userTransDocuments = translatedDocumentRepository.findByUser_UserId(userId);
+		List<TranslatedDocument> userTransDocuments = translatedDocumentRepository.findByUser_UserIdAndStatus(userId, String.valueOf(Status.VISIBLE));
 
 		// 번역 문서 ID 목록 추출
 		List<Long> transIds = userTransDocuments.stream().map(TranslatedDocument::getTransId).toList();
