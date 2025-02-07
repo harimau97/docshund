@@ -72,7 +72,7 @@ const MyArticlePage = () => {
       <div className="flex-1 min-w-0 mr-3 flex flex-col justify-between">
         {/* // Link 컴포넌트를 사용하여 글 제목을 클릭하면 해당 글로 이동하도록 설정 */}
         <Link
-          to={`community/article/${item.articleId}`}
+          to={`/community/article/${item.articleId}`}
           className="font-semibold line-clamp-1 break-all text-[#7d7c77] hover:text-[#bc5b39]"
         >
           {item.title}
