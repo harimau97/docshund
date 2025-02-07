@@ -8,14 +8,14 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum ReportCategory {
-	ABUSIVE_LANGUAGE_OR_VIOLENCE("욕설 및 폭력성"),
-	EXPLICIT_OR_ILLEGAL_CONTENT("음란물 및 불법 콘텐츠 게시"),
-	PROMOTING_GAMBLING("사행성 조장"),
-	SPAM_OR_ADVERTISING("스팸 및 광고"),
-	FLOODING("도배"),
-	PERSONAL_INFORMATION_EXPOSURE("개인정보 노출"),
-	COPYRIGHT_INFRINGEMENT("저작권 침해"),
-	OTHER("기타");
+	욕설_및_폭력성("ABUSIVE_LANGUAGE_OR_VIOLENCE"),
+	음란물_및_불법_콘텐츠_게시("EXPLICIT_OR_ILLEGAL_CONTENT"),
+	사행성_조장("PROMOTING_GAMBLING"),
+	스팸_및_광고("SPAM_OR_ADVERTISING"),
+	도배("FLOODING"),
+	개인정보_노출("PERSONAL_INFORMATION_EXPOSURE"),
+	저작권_침해("COPYRIGHT_INFRINGEMENT"),
+	기타("OTHER");
 
 	private final String description;
 
