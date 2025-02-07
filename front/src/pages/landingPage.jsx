@@ -50,6 +50,7 @@ const LandingPage = () => {
     const interval = setInterval(() => {
       setCurrentSlogan((prev) => (prev + 1) % slogans.length);
     }, 5000);
+
     return () => clearInterval(interval);
   }, []);
 

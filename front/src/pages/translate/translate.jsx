@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
-import { useNavigate, NavLink } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import useDocsStore from "./store/docsStore";
 import useTestStore from "./store/testStore";
 import { fetchDocsList } from "./hooks/translateGetService";
+import { likeDocs } from "./hooks/translatePostService";
 import { motion } from "framer-motion";
 
 const TransLatePage = () => {
@@ -19,6 +20,11 @@ const TransLatePage = () => {
     fetchDocsList(isTest);
     setShowSlogan(true);
   }, []);
+
+  const handleLike = async (docsId) => {
+    await likeDocs(docsId);
+    fetchDocsList(isTest);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 py-8 px-4 max-w-screen-xl mx-auto">
@@ -56,6 +62,36 @@ const TransLatePage = () => {
               key={index}
               className="group relative bg-white rounded-xl overflow-hidden hover:shadow-xl transition-all duration-300 border border-gray-100"
             >
+              <button
+                onClick={() => handleLike(docs.docsId)}
+                className={`absolute right-2 top-2 p-2 rounded-full transition-all duration-300 cursor-pointer ${
+                  docs.likeUserIds.includes(
+                    Number(localStorage.getItem("userId"))
+                  )
+                    ? "bg-red-600 text-white"
+                    : "bg-gray-300"
+                }`}
+              >
+                <svg
+                  className="h-6 w-6"
+                  fill={
+                    docs.likeUserIds.includes(
+                      Number(localStorage.getItem("userId"))
+                    )
+                      ? "white"
+                      : "currentColor"
+                  }
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+                  />
+                </svg>
+              </button>
               <div className="p-6 flex flex-col items-center">
                 <div className="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center mb-4">
                   <img

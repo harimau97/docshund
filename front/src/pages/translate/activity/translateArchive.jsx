@@ -1,16 +1,25 @@
-import { useState, useEffect } from "react";
-import { fetchBestTranslate } from "../hooks/translateGetService.jsx";
+import { useState, useEffect, useRef } from "react";
+import {
+  fetchBestTranslate,
+  fetchLikedTranslateList,
+} from "../hooks/translateGetService.jsx";
+import { likeTranslate } from "../hooks/translatePostService.jsx";
 import * as motion from "motion/react-client";
 import { AnimatePresence } from "motion/react";
 import Modal from "react-modal";
+import ReportModal from "../../report.jsx";
 import useModalStore from "../store/modalStore";
 import GoBack from "../../../assets/icon/goBack.png";
 import useEditorStore from "../store/editorStore";
 import useArchiveStore from "../store/archiveStore";
+import useReportStore from "../../../store/reportStore.jsx";
 import useTestStore from "../store/testStore.jsx";
+import ToastViewer from "../components/toastViewer.jsx";
 
 const TranslateArchive = () => {
+  const translateLikes = useRef([]);
   const [transStates, setTransStates] = useState({});
+  const [likedStates, setLikedStates] = useState({});
   const { docsPart, bestTrans, docsId, originId, currentUserText } =
     useEditorStore();
   const {
@@ -23,6 +32,7 @@ const TranslateArchive = () => {
     setTransList,
     clearTransList,
   } = useArchiveStore();
+  const { openReport, toggleReport } = useReportStore();
   const { isTest } = useTestStore();
 
   //모달 관련 상태
@@ -41,20 +51,36 @@ const TranslateArchive = () => {
     }));
   };
 
+  const handleLike = async (docsId, transId) => {
+    setLikedStates((prev) => {
+      const newState = { ...prev };
+      newState[transId] = !prev[transId];
+      return newState;
+    });
+    await likeTranslate(docsId, transId);
+    fetchBestTranslate(docsId, "", isTest);
+  };
+
+  const changeOrderBy = (category) => {
+    if (category === "like") {
+      transList.sort((a, b) => b.likeCount - a.likeCount);
+    } else if (category === "newest") {
+      transList.sort((a, b) => {
+        const dateA = new Date(a.updatedAt);
+        const dateB = new Date(b.updatedAt);
+        return dateB - dateA;
+      });
+    }
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       const data = await fetchBestTranslate(docsId, "", isTest);
       setTransList(data);
     };
-    // console.log(
-    //   "검색 기준이 변경되었습니다. 다시 검색합니다. 현재 검색 기준: ",
-    //   orderBy,
-    //   "docsID",
-    //   docsId,
-    //   "originID",
-    //   originId
-    // );
     fetchData();
+    changeOrderBy("like");
+    console.log("번역 전체", transList);
   }, []);
 
   return (
@@ -67,13 +93,13 @@ const TranslateArchive = () => {
           zIndex: 2000,
         },
       }}
-      onKeyDown={(e) => {
-        {
-          if (e.key === "Escape") {
-            toggleArchive();
-          }
-        }
-      }}
+      // onKeyDown={(e) => {
+      //   {
+      //     if (e.key === "Escape") {
+      //       toggleArchive();
+      //     }
+      //   }
+      // }}
       className="border-box w-full h-full flex items-center justify-center"
     >
       <AnimatePresence>
@@ -89,6 +115,14 @@ const TranslateArchive = () => {
             }}
             className="fixed inset-0 flex items-center justify-center min-w-full min-h-full "
           >
+            <ReportModal
+              originalContent={originId}
+              reportedUserId={null}
+              replyId={null}
+              articleId={null}
+              transId={null}
+              chatId={null}
+            />
             <div className="relative m-5 p-6 w-1/2 h-[95%] min-w-[768px] min-h-[80%] max-w-full max-h-full rounded-2xl bg-white shadow-lg overflow-y-scroll transition-all duration-300 ease-in-out">
               <div className="flex shrink-0 pb-6 text-2xl font-semibold text-slate-800 justify-between items-center">
                 <img
@@ -114,6 +148,7 @@ const TranslateArchive = () => {
                         orderByUpdatedAt: true,
                         orderBy: "newest",
                       });
+                      changeOrderBy("newest");
                     }}
                     className={`${
                       orderByUpdatedAt ? toggledStyle : defaultStyle
@@ -128,6 +163,7 @@ const TranslateArchive = () => {
                         orderByUpdatedAt: false,
                         orderBy: "like",
                       });
+                      changeOrderBy("like");
                     }}
                     className={`${
                       orderByLike ? toggledStyle : defaultStyle
@@ -145,49 +181,102 @@ const TranslateArchive = () => {
                   )}
                 </div>
                 {transList.map((trans) => {
-                  return (
-                    <div key={trans.transId}>
-                      {trans.originId === originId && (
+                  if (trans.originId === originId) {
+                    return (
+                      <div
+                        key={trans.transId}
+                        className="w-full flex flex-col bg-white border border-[#87867F] py-4 px-5 rounded-xl hover:shadow-lg transition-all duration-300 ease-in-out"
+                      >
                         <div
-                          key={trans.transId}
-                          className="w-full flex flex-col bg-white border border-[#87867F] py-4 px-5 rounded-xl hover:shadow-lg transition-all duration-300 ease-in-out"
+                          onClick={() => {
+                            toggleTransContent(trans.transId);
+                          }}
+                          className="flex flex-row justify-between cursor-pointer items-center"
                         >
-                          <div
-                            onClick={() => {
-                              toggleTransContent(trans.transId);
-                            }}
-                            className="flex flex-row justify-between cursor-pointer items-center"
-                          >
-                            <div className="flex flex-col gap-1">
-                              <div className="text-lg font-medium">
-                                {trans.userId}님의 번역본
-                              </div>
-                              <div className="text-sm text-gray-500">
-                                {trans.updatedAt}
-                              </div>
+                          <div className="flex flex-col gap-1">
+                            <div className="text-lg font-medium">
+                              {trans.userId}님의 번역본
                             </div>
-                            <div className="flex items-center gap-2 bg-slate-50 px-4 py-2 rounded-lg">
-                              <span className="text-slate-700">좋아요</span>
-                              <span className="font-semibold text-slate-900">
+                            <div className="text-sm text-gray-500">
+                              {new Date(
+                                new Date(trans.updatedAt).toISOString()
+                              ).toLocaleString()}
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-4">
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                useReportStore.setState({
+                                  originContent: trans.content,
+                                  reportedUser: trans.userId,
+                                  commentId: null,
+                                  articleId: null,
+                                  transId: trans.transId,
+                                  chatId: null,
+                                });
+                                openReport();
+                                toggleReport();
+                              }}
+                              className="text-gray-500 cursor-pointer underline"
+                            >
+                              신고
+                            </button>
+
+                            <div
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleLike(docsId, trans.transId);
+                              }}
+                              className={`flex w-fititems-center gap-2 px-4 py-2 rounded-lg transition-all duration-300 cursor-pointer right-5 top-1/2  ${
+                                trans.likeUserIds.includes(
+                                  Number(localStorage.getItem("userId"))
+                                )
+                                  ? "bg-red-600 text-white"
+                                  : "bg-gray-300"
+                              }`}
+                            >
+                              <span
+                                className={
+                                  trans.likeUserIds.includes(
+                                    Number(localStorage.getItem("userId"))
+                                  )
+                                    ? "text-white"
+                                    : "text-slate-700"
+                                }
+                              >
+                                좋아요
+                              </span>
+                              <span
+                                className={`font-semibold ${
+                                  trans.likeUserIds.includes(
+                                    Number(localStorage.getItem("userId"))
+                                  )
+                                    ? "text-white"
+                                    : "text-slate-900"
+                                }`}
+                              >
                                 {trans.likeCount}
                               </span>
                             </div>
                           </div>
-                          <div
-                            className={`overflow-hidden transition-all duration-300 ease-in-out ${
-                              transStates[trans.transId]
-                                ? "max-h-[500px] opacity-100"
-                                : "max-h-0 opacity-0"
-                            }`}
-                          >
-                            <div className="border-t border-slate-200 mt-4 pt-4 px-2 text-slate-700 leading-relaxed">
-                              {trans.content}
-                            </div>
+                        </div>
+
+                        <div
+                          className={`overflow-hidden transition-all duration-300 ease-in-out ${
+                            transStates[trans.transId]
+                              ? "max-h-[500px] opacity-100"
+                              : "max-h-0 opacity-0"
+                          }`}
+                        >
+                          <div className="border-t border-slate-200 mt-4 pt-4 px-2 text-slate-700 leading-relaxed">
+                            <ToastViewer content={trans.content} />
                           </div>
                         </div>
-                      )}
-                    </div>
-                  );
+                      </div>
+                    );
+                  }
+                  return null;
                 })}
               </div>
             </div>

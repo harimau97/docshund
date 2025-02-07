@@ -1,12 +1,13 @@
 import Modal from "react-modal";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import * as motion from "motion/react-client";
+import { fetchBestTranslate } from "../hooks/translateGetService";
+import { registTranslate } from "../hooks/translatePostService";
 import { AnimatePresence } from "motion/react";
-import AlertModal from "../../../components/emptyModal/alertModal";
+import { toast } from "react-toastify";
 import TextContent from "../components/textContent";
 import EditorContent from "../components/editorContent";
 import RectBtn from "../../../components/button/rectBtn";
-import check from "../../../assets/icon/check.svg";
 
 //상태 관련
 import useModalStore from "../store/modalStore";
@@ -27,7 +28,10 @@ const TranslateEditor = () => {
     toggleEditor,
     toggleArchive,
   } = useModalStore();
-  const [alertTitle, setAlertTitle] = useState("");
+
+  const handleSubmit = async (docsId, originId, currentUserText) => {
+    registTranslate(docsId, originId, currentUserText);
+  };
 
   return (
     <Modal
@@ -54,13 +58,6 @@ const TranslateEditor = () => {
             }}
             className="fixed inset-0 flex items-center justify-center min-w-full min-h-full "
           >
-            <AlertModal
-              imgSrc={check}
-              alertTitle={alertTitle}
-              alertText=""
-              isVisible={isVisible}
-            />
-
             <div className="relative m-5 p-4 w-full h-[95%] min-w-[768px] min-h-[80%] max-w-full max-h-[95%] rounded-lg bg-white shadow-sm">
               <div className="flex shrink-0 w-full items-center pb-4 text-xl font-medium text-slate-800 justify-between">
                 <div className="flex items-center gap-2 bg-slate-50 px-4 py-1.5 rounded-full border border-slate-200 transition-all duration-300 hover:bg-slate-100">
@@ -87,7 +84,7 @@ const TranslateEditor = () => {
                   <RectBtn
                     onClick={async () => {
                       useEditorStore.setState({ tempSave: currentUserText });
-                      setAlertTitle("임시 저장 완료");
+                      toast.success("임시 저장 완료");
                       setIsVisible(true);
                       setTimeout(() => setIsVisible(false), 1500);
                     }}
@@ -95,13 +92,25 @@ const TranslateEditor = () => {
                   />
                   <RectBtn
                     onClick={async () => {
-                      setAlertTitle("제출 완료");
-                      setIsVisible(true);
-                      setTimeout(() => setIsVisible(false), 1500);
-                      setTimeout(() => toggleEditor(), 1500);
-                      setTimeout(() => closeEditor(), 2000);
-                      setTimeout(() => openArchive(), 2000);
-                      setTimeout(() => toggleArchive(), 2200);
+                      useEditorStore.setState({ submitData: currentUserText });
+                      const status = await handleSubmit(
+                        docsId,
+                        originId,
+                        currentUserText
+                      );
+                      const isRegist = status;
+                      if (isRegist === null) {
+                        toast.error("제출 실패");
+                      } else {
+                        toast.success("제출 완료");
+                        fetchBestTranslate(docsId, "", false);
+                        setIsVisible(true);
+                        setTimeout(() => setIsVisible(false), 1500);
+                        setTimeout(() => toggleEditor(), 1500);
+                        setTimeout(() => closeEditor(), 2000);
+                        setTimeout(() => openArchive(), 2000);
+                        setTimeout(() => toggleArchive(), 2200);
+                      }
                     }}
                     text="제출하기"
                   />

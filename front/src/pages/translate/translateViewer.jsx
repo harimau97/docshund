@@ -12,7 +12,7 @@ import {
 } from "./hooks/translateGetService.jsx";
 import * as motion from "motion/react-client";
 // 컴포넌트 import
-import AlertModal from "../../components/emptyModal/alertModal.jsx";
+import AlertModal from "../../components/alertModal/alertModal.jsx";
 import useAlertStore from "../../store/alertStore.jsx";
 import TranslateEditor from "./activity/translateEditor.jsx";
 import TranslateArchive from "./activity/translateArchive.jsx";
@@ -29,6 +29,7 @@ import useArchiveStore from "./store/archiveStore.jsx";
 //이미지 import
 import loadingGif from "../../assets/loading.gif";
 import warning from "../../assets/icon/warning.png";
+import { Trophy } from "lucide-react";
 
 const TranslateViewer = () => {
   const { docsId } = useParams();
@@ -46,6 +47,8 @@ const TranslateViewer = () => {
   const docData = useRef([]);
   const loadingRef = useRef(null);
   const chunk_size = 20;
+
+  const initialHeights = useRef({}); // 초기 높이를 저장할 ref
 
   const { isTest } = useTestStore();
 
@@ -94,17 +97,7 @@ const TranslateViewer = () => {
     }));
   };
 
-  const toggleDocpart = (partId, height) => {
-    setHeightStates((prev) => ({
-      ...Object.keys(prev).reduce((acc, key) => {
-        if (key !== partId) {
-          acc[key] = height;
-        }
-        return acc;
-      }, {}),
-      [partId]: height,
-    }));
-
+  const toggleDocpart = (partId) => {
     setDocpartStates((prev) => ({
       ...Object.keys(prev).reduce((acc, key) => {
         if (key !== partId) {
@@ -175,7 +168,7 @@ const TranslateViewer = () => {
         if (!loadedData || loadedData.length === 0) {
           console.log("Fetching data from server for docsId:", docsId); // 디버깅용
           try {
-            const data = await fetchTranslateData(docsId, isTest);
+            const data = await fetchTranslateData(docsId, false);
             if (!isMounted) return;
             if (data && Array.isArray(data)) {
               docData.current = data;
@@ -244,45 +237,67 @@ const TranslateViewer = () => {
           "[서비스 이용 안내]\n\n" +
           "1. 이 번역본은 공식 번역이 아니며, 원본의 정확성과 완전성을 보장하지 않습니다.\n" +
           "2. 참고용으로만 사용하시고, 공식 정보를 확인하시려면 원본 문서를 직접 참조하시기 바랍니다.\n\n" +
-          "3. 본 서비스는 공익적인 목적을 위해 제공되며, 상업적 이용 시 발생하는 모든 법적 책임은ただ의 사용자에게 있으며, 서비스 제공자는 이에 대한 책임을 지지 않습니다."
+          "3. 본 서비스는 공익적인 목적을 위해 제공되며, 상업적 이용 시 발생하는 모든 법적 책임은의 사용자에게 있으며, 서비스 제공자는 이에 대한 책임을 지지 않습니다."
         }
         isVisible={isAlertOpen}
       />
-
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-2">
         {docParts.map((part, index) => (
-          <div key={index} className="flex flex-row gap-4 relative">
+          <div key={index} className="paragraph flex flex-row gap-4 relative">
             <div
-              ref={(element) => {
-                if (element) {
-                  const height = element.offsetHeight;
-                  const tailwindHeight = height + "px";
-                  heightStates[part.id] = tailwindHeight;
-                }
-              }}
               onClick={async (e) => {
-                e.stopPropagation();
-                toggleButton(part.id, e);
-                fetchBestTranslate(part.docsId, "", isTest);
-                if (
-                  transList !== undefined &&
-                  transList[0].originId === part.originId
-                ) {
-                  useEditorStore.setState({ bestTrans: transList[0].content });
+                // e.stopPropagation();
+                if (localStorage.getItem("token")) {
+                  toggleButton(part.id, e);
+                }
+                fetchBestTranslate(part.docsId, "best", isTest);
+                if (transList !== undefined) {
+                  const filteredTranslations = transList.filter(
+                    (item) => item.originId === part.originId
+                  );
+                  if (filteredTranslations.length > 0) {
+                    useEditorStore.setState({
+                      bestTrans: filteredTranslations[0].content,
+                    });
+                  } else {
+                    useEditorStore.setState({ bestTrans: "" });
+                  }
                 } else {
                   useEditorStore.setState({ bestTrans: "" });
                 }
-
-                toggleDocpart(part.id, heightStates[part.id]);
-                console.log(heightStates[part.id]);
+                toggleDocpart(part.id);
               }}
-              className="cursor-pointer p-5 rounded-xl text-[#424242] bg-[#E4DCD4] hover:bg-[#cfccc9] hover:shadow-lg flex flex-col w-full shadow-md"
+              className="cursor-pointer p-4 rounded-xl text-[#424242] bg-gray-200 hover:bg-[#cfccc9] hover:shadow-lg flex flex-col w-full transition-all duration-200 shadow-md"
             >
-              {!docpartStates[part.id] ? (
-                <ToastViewer content={part.content} />
-              ) : (
-                <ToastViewer content={useEditorStore.getState().bestTrans} />
-              )}
+              <div
+                ref={(element) => {
+                  if (element && !initialHeights.current[part.id]) {
+                    // ToastViewer가 렌더링된 후 약간의 지연을 주고 높이를 측정
+                    setTimeout(() => {
+                      const height = element.offsetHeight;
+                      initialHeights.current[part.id] = height + "px";
+                      setHeightStates((prev) => ({
+                        ...prev,
+                        [part.id]: initialHeights.current[part.id],
+                      }));
+                    }, 100);
+                  }
+                }}
+                style={{ height: heightStates[part.id] }}
+              >
+                {!docpartStates[part.id] ? (
+                  <ToastViewer content={part.content} />
+                ) : (
+                  <div className="flex justify-between">
+                    <ToastViewer
+                      content={useEditorStore.getState().bestTrans}
+                    />
+                    {bestTrans !== "" && (
+                      <Trophy className="w-6 h-6 shrink-0 m-2 text-yellow-500" />
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
             {buttonStates[part.id] && (
               <motion.div
@@ -327,6 +342,7 @@ const TranslateViewer = () => {
                         docsId: part.docsId,
                         originId: part.originId,
                       });
+                      await fetchBestTranslate(part.docsId, "", isTest);
                       await openArchive();
                       toggleArchive();
                     }}

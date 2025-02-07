@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import useAuthStore from "../store/authStore";
+import { ToastContainer, toast } from "react-toastify";
 
 const AuthService = () => {
   const navigate = useNavigate();
@@ -26,6 +27,7 @@ const AuthService = () => {
 
   const logoutAndRedirect = () => {
     logout();
+    toast.success("로그아웃 되었습니다.");
     navigate("/");
   };
 
