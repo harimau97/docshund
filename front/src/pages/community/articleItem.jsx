@@ -31,6 +31,8 @@ const ArticleItem = () => {
 
   // NOTE: 즉시 store에 접근하여 데이터를 가져오기 위해 useEffect 사용
   useEffect(() => {
+    let isMounted = true;
+
     const fetchArticleItems = async (articleId) => {
       // 데이터를 가져오기 전에 로딩 상태를 true로 변경
       setLoading(true);
@@ -40,7 +42,7 @@ const ArticleItem = () => {
         // detailedArticleService.fetchDetailedArticle 함수를 호출하여 데이터를 가져옴
         const data = await ArticleItemService.fetchArticleItem(articleId);
 
-        if (data) {
+        if (isMounted && data) {
           setArticleId(articleId);
           setArticleItems(data);
           setIsLiked(data.liked);
@@ -49,13 +51,17 @@ const ArticleItem = () => {
       } catch (error) {
         setError(error);
       } finally {
-        setLoading(false);
+        if (isMounted) setLoading(false);
       }
     };
 
     // 게시글 아이템을 가져오는 fetchArticleItems 함수 호출
-    fetchArticleItems(articleId);
-  }, [storeArticleId]);
+    if (articleId) fetchArticleItems(articleId);
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   return (
     <div className="flex justify-center w-full">
@@ -105,9 +111,6 @@ const ArticleItem = () => {
                   />
                   <span className="font-medium">{articleData.nickname}</span>
                   <span>
-                    {/* {isSameDay(new Date(articleData.createdAt), new Date()) */}
-                    {/* ? format(new Date(articleData.createdAt), "HH:mm") */}
-                    {/* : format(new Date(articleData.createdAt), "yyyy-MM-dd")} */}
                     {articleData?.createdAt
                       ? isSameDay(new Date(articleData.createdAt), new Date())
                         ? format(new Date(articleData.createdAt), "HH:mm")
@@ -148,6 +151,8 @@ const ArticleItem = () => {
                     if (status == 204) {
                       setIsLiked(!isLiked); // 좋아요 상태 변경
                       setLikeCount(isLiked ? likeCount - 1 : likeCount + 1); // 좋아요 상태에 따라 수 변경
+                    } else {
+                      window.alert("좋아요에 실패했습니다.");
                     }
                   }}
                   text={`${likeCount}`} // 출력할 좋아요 수

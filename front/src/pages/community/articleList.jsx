@@ -15,18 +15,19 @@ const ArticleList = () => {
   const articles = communityArticleStore((state) => state.articles);
   const totalPages = communityArticleStore((state) => state.totalPages);
   const currentPage = communityArticleStore((state) => state.currentPage);
+  const category = communityArticleStore((state) => state.category);
 
   // set(메소드) 정의
   const setArticles = communityArticleStore((state) => state.setArticles);
   const setTotalPages = communityArticleStore((state) => state.setTotalPages);
   const setCurrentPage = communityArticleStore((state) => state.setCurrentPage);
+  const setCategory = communityArticleStore((state) => state.setCategory);
   const setLoading = communityArticleStore((state) => state.setLoading);
   const setError = communityArticleStore((state) => state.setError);
 
   // const [isLoggedIn] = useState(true); // 임시로 로그인 상태 true로 설정. TODO: 로그인 상태 확인 로직 추가 필요
   const [itemsPerPage, setItmesPerPage] = useState(15); // 페이지당 보여줄 게시글 수
 
-  // store에 저장할 필요가 없다고 판단한 변수들 <- 다른 컴포넌트에서 사용 필요시 store로 이전 필요
   const [sortType, setSortBy] = useState("latest"); // 정렬 기준
   const [keyword, setKeyword] = useState(""); // 검색어
   const [tmpKeyword, setTmpKeyword] = useState(""); // 임시 검색어
@@ -55,7 +56,7 @@ const ArticleList = () => {
         // articleListService.fetchArticles 함수를 호출하여 데이터를 가져옴
         const data = await articleListService.fetchArticles(
           sortType, // 정렬 기준
-          "", // 필터(카테고리) TODO: 카테고리 기능 추가
+          category, // 필터(카테고리) TODO: 카테고리 기능 추가
           keyword, // 검색어
           "title", // 검색 타입
           currentPage, // 현재 페이지
@@ -79,7 +80,7 @@ const ArticleList = () => {
 
     // fetchArticles 함수를 실행
     fetchArticles();
-  }, [sortType, keyword, currentPage, itemsPerPage]); // 의존성 배열에 sortType, keyword, currentPage, itemsPerPage 추가
+  }, [sortType, keyword, currentPage, category, itemsPerPage]); // 의존성 배열에 sortType, keyword, currentPage, itemsPerPage 추가
 
   // 리스트 아이템 렌더링
   const renderItem = (item) => (

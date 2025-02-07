@@ -6,11 +6,20 @@ import logo from "../../assets/logo.png";
 import notification from "../../assets/icon/notification32.png";
 import SampleProfileImg from "../../assets/sample_profile_image.png";
 
+import communityArticleStore from "../../store/communityStore/communityArticleStore";
+import { set } from "date-fns";
+
 const UpperNav = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { isAuthenticated, logout } = useAuth();
   const { openModal } = useModalStore();
+
+  // 게시글 작성 페이지로 이동 시 페이지 초기화
+  const setCurrentPage = communityArticleStore((state) => state.setCurrentPage);
+  const setSortType = communityArticleStore((state) => state.setSortType);
+  const setKeyword = communityArticleStore((state) => state.setKeyword);
+  const setCategory = communityArticleStore((state) => state.setCategory);
 
   // 로그인 버튼 동작
   const handleLoginClick = () => {
@@ -39,42 +48,50 @@ const UpperNav = () => {
         </NavLink>
         {/* 내비게이션 메뉴 */}
         <div className="flex w-2/4 justify-between">
-          <NavLink
-            to="/"
-            className={location.pathname === "/" ? activeLink : inactiveLink}
+          <div
+            onClick={() => navigate("/")}
+            className={`cursor-pointer ${
+              location.pathname === "/" ? activeLink : inactiveLink
+            }`}
           >
             홈
-          </NavLink>
-          <NavLink
-            to="/translate"
-            className={
+          </div>
+          <div
+            onClick={() => navigate("/translate")}
+            className={`cursor-pointer ${
               location.pathname.startsWith("/translate")
                 ? activeLink
                 : inactiveLink
-            }
+            }`}
           >
             번역문서
-          </NavLink>
-          <NavLink
-            to="/community"
-            className={
+          </div>
+          <div
+            onClick={() => {
+              setCurrentPage(0); // 페이지 초기화
+              setSortType("latest"); // 최신순 정렬
+              setKeyword(""); // 검색어 초기화
+              setCategory(""); // 카테고리 초기화
+              navigate("/community");
+            }}
+            className={`cursor-pointer ${
               location.pathname.startsWith("/community")
                 ? activeLink
                 : inactiveLink
-            }
+            }`}
           >
             커뮤니티
-          </NavLink>
-          <NavLink
-            to="/helpDesk"
-            className={
+          </div>
+          <div
+            onClick={() => navigate("/helpDesk")}
+            className={`cursor-pointer ${
               location.pathname.startsWith("/helpDesk")
                 ? activeLink
                 : inactiveLink
-            }
+            }`}
           >
             헬프데스크
-          </NavLink>
+          </div>
         </div>
         {/* 로그인 여부에 따라 표시되는 요소 */}
         <div className="flex items-center gap-4">
