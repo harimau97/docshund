@@ -10,6 +10,8 @@ import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,7 +22,9 @@ import com.ssafy.docshund.domain.chats.dto.ChatInfoDto;
 import com.ssafy.docshund.domain.chats.service.ChatService;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Controller
 @RequiredArgsConstructor
 public class ChatController {
@@ -34,10 +38,19 @@ public class ChatController {
             @Payload ChatDto chatDto,
             Principal principal
     ) {
+
+        if (principal == null) {
+            log.error("WebSocket Error: Principal is NULL in ChatController!");
+            throw new IllegalArgumentException("WEBSOCKET ERROR - Principal is null");
+        }
+
+        log.info("Principal received in ChatController -> {}", principal.getName());
+
         long userId;
         try {
-            userId = Long.parseLong(principal.getName());
+            userId = Long.parseLong(principal.getName()); // STOMP에서 자동으로 설정한 Principal 사용
         } catch (Exception e) {
+            log.error("WebSocket Error: Invalid Principal - {}", principal, e);
             throw new IllegalArgumentException("WEBSOCKET ERROR - INVALID PRINCIPAL");
         }
 

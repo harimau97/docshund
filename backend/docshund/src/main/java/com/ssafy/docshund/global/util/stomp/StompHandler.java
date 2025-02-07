@@ -7,6 +7,7 @@ import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
+import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Component;
 
 import com.ssafy.docshund.global.util.jwt.JwtUtil;
@@ -28,6 +29,7 @@ public class StompHandler implements ChannelInterceptor {
         if (StompCommand.CONNECT == accessor.getCommand()) {
 
             String authHeader = accessor.getFirstNativeHeader("Authorization");
+            log.info("authHeader: {}", authHeader);
 
             if(jwtUtil.isValidAuthorization(authHeader)) {
                 log.error("WEBSOCKET CONNECTION ERROR - JWT TOKEN IS INVALID");
@@ -43,7 +45,11 @@ public class StompHandler implements ChannelInterceptor {
             Long userId = jwtUtil.getUserlId(token);
 
             accessor.setUser(new StompPrincipal(userId.toString()));
+            log.info("Principal set in StompHandler -> {}", accessor.getUser().getName());
         }
-        return message;
+        return MessageBuilder
+                .withPayload(message.getPayload())
+                .copyHeaders(accessor.getMessageHeaders())
+                .build();
     }
 }
