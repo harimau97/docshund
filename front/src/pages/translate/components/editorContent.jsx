@@ -1,5 +1,4 @@
 import { useEffect, useRef } from "react";
-import { useRef, useEffect } from "react";
 import { Editor } from "@toast-ui/react-editor";
 import useEditorStore from "../../../store/translateStore/editorStore";
 import propTypes from "prop-types";
