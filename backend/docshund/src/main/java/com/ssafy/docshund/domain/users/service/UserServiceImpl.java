@@ -27,6 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -90,6 +91,7 @@ public class UserServiceImpl implements UserService {
 	
 	// 메모 생성
 	@Override
+	@Transactional
 	public void createMemo(Long userId, MemoRequestDto memoRequestDto) {
 		User user = checkUser(userId);
 
@@ -98,7 +100,7 @@ public class UserServiceImpl implements UserService {
 			throw new IllegalArgumentException("TITLE OR CONTENT IS EMPTY");
 		}
 
-		Memo memo = memoRepository.save(
+		memoRepository.save(
 				new Memo(user, memoRequestDto.getTitle(), memoRequestDto.getContent()));
 	}
 
@@ -119,42 +121,38 @@ public class UserServiceImpl implements UserService {
 	public MemoResponseDto getMemo(Long userId, Integer memoId) {
 		User user = checkUser(userId);
 
-		Memo memo = memoRepository.findByMemoIdAndUserUserId(memoId, userId);
-		if (memo == null) {
-			throw new NoSuchElementException("해당 메모를 찾을 수 없습니다.");
-		}
+		Memo memo = memoRepository.findByMemoIdAndUserUserId(memoId, userId)
+				.orElseThrow(() -> new NoSuchElementException("해당 메모를 찾을 수 없습니다."));
 
 		return MemoResponseDto.fromEntity(memo);
 	}
 
+	// 메모 수정
 	@Override
+	@Transactional
 	public void modifyMemo(Long userId, Integer memoId, MemoRequestDto memoRequestDto) {
 		User user = checkUser(userId);
 
-		Memo memo = memoRepository.findByMemoIdAndUserUserId(memoId, userId);
-		if (memo == null) {
-			throw new NoSuchElementException("해당 메모를 찾을 수 없습니다.");
-		}
+		Memo memo = memoRepository.findByMemoIdAndUserUserId(memoId, userId)
+				.orElseThrow(() -> new NoSuchElementException("해당 메모를 찾을 수 없습니다."));
 
 		// 제목과 내용이 비어있는 경우 예외 발생
 		if (memoRequestDto.getTitle().isEmpty() || memoRequestDto.getContent().isEmpty()) {
 			throw new IllegalArgumentException("TITLE OR CONTENT IS EMPTY");
 		}
 
-		// 메모 수정
 		memo.modifyMemo(memoRequestDto.getTitle(), memoRequestDto.getContent());
 		memoRepository.save(memo);
 	}
 
 	// 메모 삭제
 	@Override
+	@Transactional
 	public void deleteMemo(Long userId, Integer memoId) {
 		User user = checkUser(userId);
 
-		Memo memo = memoRepository.findByMemoIdAndUserUserId(memoId, userId);
-		if (memo == null) {
-			throw new NoSuchElementException("해당 메모를 찾을 수 없습니다.");
-		}
+		Memo memo = memoRepository.findByMemoIdAndUserUserId(memoId, userId)
+				.orElseThrow(() -> new NoSuchElementException("해당 메모를 찾을 수 없습니다."));
 
 		memoRepository.delete(memo);
 	}
