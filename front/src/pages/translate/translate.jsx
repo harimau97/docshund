@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import useDocsStore from "./store/docsStore";
-import useTestStore from "./store/testStore";
+
+import { useNavigate, NavLink } from "react-router-dom";
+import useDocsStore from "../../store/translateStore/docsStore";
+import useTestStore from "../../store/translateStore/testStore";
+
 import { fetchDocsList } from "./hooks/translateGetService";
 import { likeDocs } from "./hooks/translatePostService";
 import { motion } from "framer-motion";

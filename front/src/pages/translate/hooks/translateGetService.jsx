@@ -1,10 +1,12 @@
 import { axiosJsonInstance } from "../../../utils/axiosInstance";
 import PropTypes from "prop-types";
-import TmpTranslateData from "../store/tmpTranslateData";
-import TmpDocsList from "../store/tmpDocsList";
+
+import TmpBestData from "../../../store/translateStore/tmpBestData";
+import TmpTranslateData from "../../../store/translateStore/tmpTranslateData";
+import TmpDocsList from "../../../store/translateStore/tmpDocsList";
+import useArchiveStore from "../../../store/translateStore/archiveStore";
+import useDocsStore from "../../../store/translateStore/docsStore";
 import useEditorStore from "../store/editorStore";
-import useArchiveStore from "../store/archiveStore";
-import useDocsStore from "../store/docsStore";
 
 const baseUrl = "http://i12a703.p.ssafy.io:8081/api/v1/docshund/docs";
 

@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import memoService from "../services/memoService";
+import memoService from "../../pages/myPage/services/memoService";
 
 const useMemoStore = create((set) => ({
   memos: [],

@@ -10,8 +10,8 @@ import EditorContent from "../components/editorContent";
 import RectBtn from "../../../components/button/rectBtn";
 
 //상태 관련
-import useModalStore from "../store/modalStore";
-import useEditorStore from "../store/editorStore";
+import useModalStore from "../../../store/modalStore";
+import useEditorStore from "../../../store/translateStore/editorStore";
 //
 
 const TranslateEditor = () => {

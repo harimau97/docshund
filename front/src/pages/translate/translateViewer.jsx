@@ -21,10 +21,10 @@ import ToastViewer from "./components/toastViewer.jsx";
 import RectBtn from "../../components/button/rectBtn.jsx";
 
 //상태 import
-import useTestStore from "./store/testStore.jsx";
-import useModalStore from "./store/modalStore.jsx";
-import useEditorStore from "./store/editorStore.jsx";
-import useArchiveStore from "./store/archiveStore.jsx";
+import useTestStore from "../../store/translateStore/testStore.jsx";
+import useModalStore from "../../store/modalStore.jsx";
+import useEditorStore from "../../store/translateStore/editorStore.jsx";
+import useArchiveStore from "../../store/translateStore/archiveStore.jsx";
 
 //이미지 import
 import loadingGif from "../../assets/loading.gif";
