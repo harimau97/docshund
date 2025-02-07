@@ -1,10 +1,13 @@
 package com.ssafy.docshund.global.util.jwt;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.ssafy.docshund.domain.users.dto.auth.CustomOAuth2User;
@@ -26,10 +29,22 @@ public class JwtFilter extends OncePerRequestFilter {
 
 	private final JwtUtil jwtUtil;
 	private final UserRepository userRepository;
+	private final AntPathMatcher pathMatcher;
+
+	private static final List<String> NO_CHECK_URLS = Arrays.asList(
+			"/ws/**"
+	);
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
 		FilterChain filterChain) throws ServletException, IOException {
+
+		String path = request.getRequestURI();
+		// 체크 할필요 없는 url들을 다음 필터로 이동
+		if (NO_CHECK_URLS.stream().anyMatch(pattern -> pathMatcher.match(pattern, path))) {
+			filterChain.doFilter(request, response);
+			return;
+		}
 
 		String authorizationHeader = request.getHeader("Authorization");
 
