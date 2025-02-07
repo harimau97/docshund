@@ -10,6 +10,7 @@ import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -36,14 +37,25 @@ public class ChatController {
             @Payload ChatDto chatDto,
             Principal principal
     ) {
+
         long userId;
 
-        log.info("principal name : "+principal.getName());
-        log.info("principal toString : "+principal.toString());
+        if (principal == null) {
+            log.error("WebSocket Error: Principal is NULL in ChatController!");
+            throw new IllegalArgumentException("WEBSOCKET ERROR - Principal is null");
+        }
+
+        log.info("✅ Principal received in ChatController -> {}", principal.toString());
 
         try {
-            userId = Long.parseLong(principal.getName());
+            if (principal instanceof UsernamePasswordAuthenticationToken authentication) {
+                userId = (Long) authentication.getPrincipal(); // SecurityContext에서 가져온 userId 사용
+            } else {
+                log.error("WebSocket Error: Principal is not an instance of UsernamePasswordAuthenticationToken -> {}", principal);
+                throw new IllegalArgumentException("WEBSOCKET ERROR - INVALID PRINCIPAL");
+            }
         } catch (Exception e) {
+            log.error("WebSocket Error: Invalid Principal - {}", principal, e);
             throw new IllegalArgumentException("WEBSOCKET ERROR - INVALID PRINCIPAL");
         }
 
