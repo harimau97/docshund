@@ -1,7 +1,5 @@
 package com.ssafy.docshund.global.util.stomp;
 
-import java.util.List;
-
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.messaging.Message;
@@ -10,9 +8,6 @@ import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.messaging.support.MessageBuilder;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import com.ssafy.docshund.global.util.jwt.JwtUtil;
@@ -49,14 +44,8 @@ public class StompHandler implements ChannelInterceptor {
 
             Long userId = jwtUtil.getUserlId(token);
 
-            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                    userId, null, List.of(new SimpleGrantedAuthority("ROLE_USER"))
-            );
-            SecurityContextHolder.getContext().setAuthentication(authentication); // SecurityContext에 저장
-            log.info("Principal set in StompHandler -> {}", authentication.getPrincipal());
-
-            accessor.setUser(authentication);
-            log.info("accessor -> {}", accessor.getUser().toString());
+            accessor.setUser(new StompPrincipal(userId.toString()));
+            log.info("Principal set in StompHandler -> {}", accessor.getUser().getName());
         }
         return MessageBuilder
                 .withPayload(message.getPayload())

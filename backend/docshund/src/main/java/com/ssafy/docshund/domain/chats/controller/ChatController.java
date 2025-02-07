@@ -1,5 +1,7 @@
 package com.ssafy.docshund.domain.chats.controller;
 
+import java.security.Principal;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -33,28 +35,22 @@ public class ChatController {
     @SendTo("/sub/chats/{docsId}")
     public ChatInfoDto sendChat(
             @DestinationVariable Integer docsId,
-            @Payload ChatDto chatDto
+            @Payload ChatDto chatDto,
+            Principal principal
     ) {
 
-        long userId;
-
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if(authentication == null) {
-            log.error(" WebSocket Error: authentication is NULL in ChatController!");
-            throw new IllegalArgumentException("WEBSOCKET ERROR - authentication is null");
-        }
-
-        if (authentication.getPrincipal() == null) {
-            log.error(" WebSocket Error: Principal is NULL in ChatController!");
+        if (principal == null) {
+            log.error("WebSocket Error: Principal is NULL in ChatController!");
             throw new IllegalArgumentException("WEBSOCKET ERROR - Principal is null");
         }
 
-        log.info(" Principal received in ChatController -> {}", authentication.getPrincipal());
+        log.info("Principal received in ChatController -> {}", principal.getName());
 
+        long userId;
         try {
-            userId = (Long) authentication.getPrincipal();
+            userId = Long.parseLong(principal.getName()); // STOMP에서 자동으로 설정한 Principal 사용
         } catch (Exception e) {
-            log.error(" WebSocket Error: Invalid Principal - {}", authentication, e);
+            log.error("WebSocket Error: Invalid Principal - {}", principal, e);
             throw new IllegalArgumentException("WEBSOCKET ERROR - INVALID PRINCIPAL");
         }
 
