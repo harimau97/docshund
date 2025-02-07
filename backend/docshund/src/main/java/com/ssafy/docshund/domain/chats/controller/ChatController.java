@@ -1,7 +1,5 @@
 package com.ssafy.docshund.domain.chats.controller;
 
-import java.security.Principal;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -10,7 +8,8 @@ import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -34,28 +33,23 @@ public class ChatController {
     @SendTo("/sub/chats/{docsId}")
     public ChatInfoDto sendChat(
             @DestinationVariable Integer docsId,
-            @Payload ChatDto chatDto,
-            Principal principal
+            @Payload ChatDto chatDto
     ) {
 
         long userId;
 
-        if (principal == null) {
-            log.error("WebSocket Error: Principal is NULL in ChatController!");
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || authentication.getPrincipal() == null) {
+            log.error(" WebSocket Error: Principal is NULL in ChatController!");
             throw new IllegalArgumentException("WEBSOCKET ERROR - Principal is null");
         }
 
-        log.info("✅ Principal received in ChatController -> {}", principal.toString());
+        log.info(" Principal received in ChatController -> {}", authentication.getPrincipal());
 
         try {
-            if (principal instanceof UsernamePasswordAuthenticationToken authentication) {
-                userId = (Long) authentication.getPrincipal(); // SecurityContext에서 가져온 userId 사용
-            } else {
-                log.error("WebSocket Error: Principal is not an instance of UsernamePasswordAuthenticationToken -> {}", principal);
-                throw new IllegalArgumentException("WEBSOCKET ERROR - INVALID PRINCIPAL");
-            }
+            userId = (Long) authentication.getPrincipal();
         } catch (Exception e) {
-            log.error("WebSocket Error: Invalid Principal - {}", principal, e);
+            log.error(" WebSocket Error: Invalid Principal - {}", authentication, e);
             throw new IllegalArgumentException("WEBSOCKET ERROR - INVALID PRINCIPAL");
         }
 

@@ -49,14 +49,13 @@ public class StompHandler implements ChannelInterceptor {
 
             Long userId = jwtUtil.getUserlId(token);
 
-            accessor.setUser(new StompPrincipal(userId.toString()));
             UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                     userId, null, List.of(new SimpleGrantedAuthority("ROLE_USER"))
             );
             SecurityContextHolder.getContext().setAuthentication(authentication); // SecurityContext에 저장
 
             accessor.setUser(authentication);
-            log.info("✅ Principal set for userId: {}", userId);
+            log.info("Principal set in StompHandler -> {}", authentication.getPrincipal());
         }
         return MessageBuilder
                 .withPayload(message.getPayload())
