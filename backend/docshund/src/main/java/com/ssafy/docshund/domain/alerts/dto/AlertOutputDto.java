@@ -19,4 +19,8 @@ public record AlertOutputDto(
 		return new AlertOutputDto(alertId, userId, category, categoryId, title, content,
 			originArticleId, createdAt, checkedAt);
 	}
+
+    public String getTitle() {
+		return title;
+    }
 }
