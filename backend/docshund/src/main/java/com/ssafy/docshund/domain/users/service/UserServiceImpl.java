@@ -1,9 +1,8 @@
 package com.ssafy.docshund.domain.users.service;
 
-import com.ssafy.docshund.domain.users.dto.memo.MemoRequestDto;
-import com.ssafy.docshund.domain.users.dto.memo.MemoResponseDto;
-import com.ssafy.docshund.domain.users.entity.Memo;
-import com.ssafy.docshund.domain.users.repository.MemoRepository;
+import java.util.List;
+import java.util.NoSuchElementException;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
@@ -11,12 +10,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.ssafy.docshund.domain.users.dto.memo.MemoRequestDto;
+import com.ssafy.docshund.domain.users.dto.memo.MemoResponseDto;
 import com.ssafy.docshund.domain.users.dto.page.UserAndInfoDto;
 import com.ssafy.docshund.domain.users.dto.page.UserProfileDto;
 import com.ssafy.docshund.domain.users.dto.page.UserSearchCondition;
 import com.ssafy.docshund.domain.users.dto.profile.ProfileRequestDto;
+import com.ssafy.docshund.domain.users.entity.Memo;
 import com.ssafy.docshund.domain.users.entity.User;
 import com.ssafy.docshund.domain.users.entity.UserInfo;
+import com.ssafy.docshund.domain.users.repository.MemoRepository;
 import com.ssafy.docshund.domain.users.repository.UserInfoRepository;
 import com.ssafy.docshund.domain.users.repository.UserRepository;
 import com.ssafy.docshund.global.aws.s3.S3FileUploadService;
@@ -24,11 +27,6 @@ import com.ssafy.docshund.global.util.user.UserUtil;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -77,10 +75,15 @@ public class UserServiceImpl implements UserService {
 		userInfo.modifyInfo(profileRequestDto);
 	}
 
+	@Transactional(readOnly = true)
+	public String duplicateNickname(String nickname) {
+		return userRepository.existsByNickname(nickname) ? "사용할 수 없는 닉네임입니다." : "사용 가능한 닉네임입니다.";
+	}
+
 	// 유저가 null 이거나 요청한 유저가 본인이 아닐 때의 예외 처리 + 유저 반환
 	private User checkUser(Long userId) {
 		User user = userUtil.getUser();
-		if(user == null) {
+		if (user == null) {
 			throw new AccessDeniedException("NO PERMISSION TO UNLOGINED USER");
 		}
 		if (!user.getUserId().equals(userId)) {
@@ -88,7 +91,7 @@ public class UserServiceImpl implements UserService {
 		}
 		return user;
 	}
-	
+
 	// 메모 생성
 	@Override
 	@Transactional
@@ -101,7 +104,7 @@ public class UserServiceImpl implements UserService {
 		}
 
 		memoRepository.save(
-				new Memo(user, memoRequestDto.getTitle(), memoRequestDto.getContent()));
+			new Memo(user, memoRequestDto.getTitle(), memoRequestDto.getContent()));
 	}
 
 	// 메모 조회 (일괄)
@@ -111,9 +114,9 @@ public class UserServiceImpl implements UserService {
 
 		List<Memo> memos = memoRepository.findByUserUserId(userId);
 
-        return memos.stream()
-                .map(MemoResponseDto::fromEntity)
-                .toList();
+		return memos.stream()
+			.map(MemoResponseDto::fromEntity)
+			.toList();
 	}
 
 	// 메모 조회 (단일)
@@ -122,7 +125,7 @@ public class UserServiceImpl implements UserService {
 		User user = checkUser(userId);
 
 		Memo memo = memoRepository.findByMemoIdAndUserUserId(memoId, userId)
-				.orElseThrow(() -> new NoSuchElementException("해당 메모를 찾을 수 없습니다."));
+			.orElseThrow(() -> new NoSuchElementException("해당 메모를 찾을 수 없습니다."));
 
 		return MemoResponseDto.fromEntity(memo);
 	}
@@ -134,7 +137,7 @@ public class UserServiceImpl implements UserService {
 		User user = checkUser(userId);
 
 		Memo memo = memoRepository.findByMemoIdAndUserUserId(memoId, userId)
-				.orElseThrow(() -> new NoSuchElementException("해당 메모를 찾을 수 없습니다."));
+			.orElseThrow(() -> new NoSuchElementException("해당 메모를 찾을 수 없습니다."));
 
 		// 제목과 내용이 비어있는 경우 예외 발생
 		if (memoRequestDto.getTitle().isEmpty() || memoRequestDto.getContent().isEmpty()) {
@@ -152,7 +155,7 @@ public class UserServiceImpl implements UserService {
 		User user = checkUser(userId);
 
 		Memo memo = memoRepository.findByMemoIdAndUserUserId(memoId, userId)
-				.orElseThrow(() -> new NoSuchElementException("해당 메모를 찾을 수 없습니다."));
+			.orElseThrow(() -> new NoSuchElementException("해당 메모를 찾을 수 없습니다."));
 
 		memoRepository.delete(memo);
 	}
