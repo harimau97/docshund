@@ -145,7 +145,7 @@ const TranslateEditor = () => {
                 </div>
 
                 <div className="h-full w-1/2 right-1/2">
-                  <EditorContent />
+                  <EditorContent initialTextContent={docsPart} />
                 </div>
               </div>
             </div>

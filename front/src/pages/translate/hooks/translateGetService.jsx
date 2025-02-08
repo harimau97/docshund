@@ -1,6 +1,6 @@
 import { axiosJsonInstance } from "../../../utils/axiosInstance";
 import PropTypes from "prop-types";
-import DocsStore from "../../../store/translateStore/docsStore";
+// import DocsStore from "../../../store/translateStore/docsStore";
 const baseUrl = "http://i12a703.p.ssafy.io:8081/api/v1/docshund/docs";
 
 // 좋아요한 문서 조회
