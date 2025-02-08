@@ -1,5 +1,6 @@
 package com.ssafy.docshund.domain.supports.entity;
 
+import com.ssafy.docshund.domain.supports.dto.report.ReportRequestDto;
 import com.ssafy.docshund.domain.users.entity.User;
 import com.ssafy.docshund.global.audit.BaseTimeEntity;
 
@@ -39,9 +40,48 @@ public class Report extends BaseTimeEntity {
 	private String originContent;  // 신고된 내용 (번역, 게시글, 댓글 등)
 
 	@Column(name = "reported_user", nullable = false)
-	private Integer reportedUser;  // 신고된 유저 (외래 키 아님)
+	private Long reportedUser;  // 신고된 유저 (외래 키 아님)
 
 	@Column(name = "report_file")
 	private String reportFile;  // 신고 관련 파일
 
+	@Column(name = "comment_id")
+	private Integer commentId;
+
+	@Column(name = "article_id")
+	private Integer articleId;
+
+	@Column(name = "trans_id")
+	private Integer transId;
+
+	@Column(name = "chat_id")
+	private Long chatId;
+
+	public static Report createReport(ReportRequestDto reportRequestDto, User user, String reportFile) {
+		Report report = new Report();
+		report.user = user;
+		report.category = ReportCategory.fromDescription(reportRequestDto.getCategory());
+		report.content = reportRequestDto.getContent();
+		report.originContent = reportRequestDto.getOriginContent();
+		report.reportedUser = reportRequestDto.getReportedUser();
+		report.reportFile = reportFile;
+
+		return report;
+	}
+
+	public void addCommentId(Integer commentId) {
+		this.commentId = commentId;
+	}
+
+	public void addArticleId(Integer articleId) {
+		this.articleId = articleId;
+	}
+
+	public void addTrnasId(Integer transId) {
+		this.transId = transId;
+	}
+
+	public void addChatId(Long chatId) {
+		this.chatId = chatId;
+	}
 }
