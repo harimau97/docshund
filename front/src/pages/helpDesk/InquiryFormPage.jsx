@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { jwtDecode } from "jwt-decode";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 import InquiryService from "../../services/helpDeskServices/inquiryService";
 
@@ -10,17 +11,9 @@ const InquiryFormPage = () => {
   const [email, setEmail] = useState("");
   const [content, setContent] = useState("");
   const [file, setFile] = useState(null);
+  const navigate = useNavigate();
 
-  //바이트수 계산
-  const getByteLength = (str) => {
-    let bytes = 0;
-    for (let i = 0; i < str.length; i++) {
-      const charCode = str.charCodeAt(i);
-      // ASCII는 1바이트, 그 외는 2바이트로 계산
-      bytes += charCode <= 127 ? 1 : 2;
-    }
-    return bytes;
-  };
+  const getByteLength = (str) => new Blob([str]).size;
   const MAX_TITLE_BYTES = 150;
   const MAX_CONTENT_BYTES = 5000;
 
@@ -68,6 +61,7 @@ const InquiryFormPage = () => {
       setEmail("");
       setContent("");
       setFile(null);
+      navigate("/");
     } catch (error) {
       toast.error("문의 제출 중 오류가 발생했습니다.");
       console.log("문의 등록 실패", error);
@@ -154,7 +148,7 @@ const InquiryFormPage = () => {
             maxLength={5000}
             className="mt-1 block w-full py-2 px-3 border rounded-md shadow-sm focus:outline-none focus:ring-[#bc5b39] focus:border-[#bc5b39] sm:text-sm"
             placeholder="내용을 입력하세요"
-            style={{ height: "200px", resize: "none" }} // 높이 고정 및 리사이즈 불가
+            style={{ height: "200px", resize: "none" }}
           ></textarea>
           <p className="text-xs text-gray-500 mt-1 mr-2 text-right">
             {getByteLength(content)} / {MAX_CONTENT_BYTES} byte

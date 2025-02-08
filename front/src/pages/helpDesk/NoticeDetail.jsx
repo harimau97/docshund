@@ -27,7 +27,7 @@ const NoticeDetail = () => {
 
   return (
     <div className="flex justify-center w-full">
-      <main className="flex-1 p-8 max-w-[1280px]">
+      <main className="flex-1 px-12 py-8 max-w-[1280px]">
         <div className="flex justify-between mt-1 mb-5">
           <h1 className="pl-4 font-bold text-2xl">공지사항</h1>
           <Link

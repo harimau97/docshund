@@ -27,22 +27,22 @@ const requestInterceptor = (config) => {
   return config;
 };
 
-// 응답 인터셉터 (에러 처리)
-const responseInterceptor = (error) => {
-  if (error.response) {
-    const status = error.response.status;
-    const message =
-      error.response.data?.message || "알 수 없는 오류가 발생했습니다.";
+// // 응답 인터셉터 (에러 처리)
+// const responseInterceptor = (error) => {
+//   if (error.response) {
+//     const status = error.response.status;
+//     const message =
+//       error.response.data?.message || "알 수 없는 오류가 발생했습니다.";
 
-    // 현재 경로가 /error가 아닐 때만 이동
-    if (window.location.pathname !== "/error") {
-      window.location.href = `/error?status=${status}&message=${encodeURIComponent(
-        message
-      )}`;
-    }
-  }
-  return Promise.reject(error);
-};
+//     // 현재 경로가 /error가 아닐 때만 이동
+//     if (window.location.pathname !== "/error") {
+//       window.location.href = `/error?status=${status}&message=${encodeURIComponent(
+//         message
+//       )}`;
+//     }
+//   }
+//   return Promise.reject(error);
+// };
 
 // 인터셉터 적용
 axiosJsonInstance.interceptors.request.use(requestInterceptor, (error) =>
@@ -52,13 +52,13 @@ axiosMultipartInstance.interceptors.request.use(requestInterceptor, (error) =>
   Promise.reject(error)
 );
 
-axiosJsonInstance.interceptors.response.use(
-  (response) => response,
-  responseInterceptor
-);
-axiosMultipartInstance.interceptors.response.use(
-  (response) => response,
-  responseInterceptor
-);
+// axiosJsonInstance.interceptors.response.use(
+//   (response) => response,
+//   responseInterceptor
+// );
+// axiosMultipartInstance.interceptors.response.use(
+//   (response) => response,
+//   responseInterceptor
+// );
 
 export { axiosJsonInstance, axiosMultipartInstance };

@@ -1,4 +1,5 @@
 import PropTypes from "prop-types";
+import { toast } from "react-toastify";
 
 const ProfileCard = ({
   isEditing,
@@ -6,6 +7,38 @@ const ProfileCard = ({
   handleChange,
   handleImageChange,
 }) => {
+  const getByteLength = (str) => new Blob([str]).size;
+  const MAX_NICKNAME_BYTES = 20;
+  const MAX_CONTENT_BYTES = 225;
+
+  const handleNicknameInputChange = (e) => {
+    const { value } = e.target;
+    if (getByteLength(value) <= MAX_NICKNAME_BYTES) {
+      handleChange(e);
+    }
+  };
+
+  const handleIntroduceInputChange = (e) => {
+    const { value } = e.target;
+    if (getByteLength(value) <= MAX_CONTENT_BYTES) {
+      handleChange(e);
+    }
+  };
+
+  // 닉네임 중복 확인
+  const handleNicknameCheck = async () => {
+    if (!editedProfile.nickname) {
+      toast.warn("닉네임을 입력해주세요.");
+      return;
+    }
+    // 실제 API 호출로 중복 여부 확인 가능
+    if (editedProfile.nickname === "taken") {
+      toast.error("이미 사용중인 닉네임입니다.");
+    } else {
+      toast.success("사용 가능한 닉네임입니다.");
+    }
+  };
+
   return (
     <div className="w-auto bg-white p-10 rounded-xl border-1 border-[#E1E1DF] text-[#424242] mb-5">
       <div className="flex mb-4">
@@ -44,14 +77,28 @@ const ProfileCard = ({
       <div className="flex mb-4">
         <h3 className="w-30">닉네임</h3>
         {isEditing ? (
-          <input
-            type="text"
-            name="nickname"
-            value={editedProfile.nickname || ""}
-            onChange={handleChange}
-            placeholder="닉네임을 입력해주세요."
-            className="border p-2 rounded focus:outline-none focus:ring-1"
-          />
+          <div className="flex flex-col justify-start">
+            <div className="flex items-center">
+              <input
+                type="text"
+                name="nickname"
+                value={editedProfile.nickname || ""}
+                onChange={handleNicknameInputChange}
+                placeholder="닉네임을 입력해주세요."
+                className="border p-2 rounded mr-3 focus:outline-none focus:ring-[#bc5b39] focus:border-[#bc5b39]"
+              />
+              <button
+                type="button"
+                onClick={handleNicknameCheck}
+                className="cursor-pointer bg-gray-200 p-2 rounded-lg text-xs hover:bg-gray-300 w-fit"
+              >
+                중복확인
+              </button>
+            </div>
+            <p className="text-xs text-gray-500 mt-1">
+              • 한글 6자, 영어 20자 이내 (최대 20byte)
+            </p>
+          </div>
         ) : (
           <p className="font-semibold ">{editedProfile.nickname}</p>
         )}
@@ -63,7 +110,7 @@ const ProfileCard = ({
             name="hobby"
             value={editedProfile.hobby || ""}
             onChange={handleChange}
-            className="border p-2 rounded focus:outline-none focus:ring-1"
+            className="border p-2 rounded focus:outline-none focus:ring-[#bc5b39] focus:border-[#bc5b39]"
           >
             <option value="">관심분야를 선택해주세요</option>
             <option value="Frontend">Frontend</option>
@@ -75,15 +122,22 @@ const ProfileCard = ({
       </div>
       <h3 className="w-30 mb-4">자기소개</h3>
       {isEditing ? (
-        <textarea
-          name="introduce"
-          value={editedProfile.introduce || ""}
-          onChange={handleChange}
-          placeholder="자기소개를 입력해주세요."
-          className="border p-2 rounded w-full focus:outline-none focus:ring-1"
-        />
+        <>
+          <textarea
+            name="introduce"
+            value={editedProfile.introduce || ""}
+            onChange={handleIntroduceInputChange}
+            placeholder="자기소개를 입력해주세요."
+            className="border p-2 rounded w-full focus:outline-none focus:ring-[#bc5b39] focus:border-[#bc5b39]"
+            style={{ height: "100px", resize: "none" }}
+          />
+          <p className="text-xs text-gray-500 mt-1 mr-2 text-right">
+            {getByteLength(editedProfile.introduce || "")} / {MAX_CONTENT_BYTES}{" "}
+            byte
+          </p>
+        </>
       ) : (
-        <p>{editedProfile.introduce}</p>
+        <p className="break-all">{editedProfile.introduce}</p>
       )}
     </div>
   );
@@ -99,6 +153,7 @@ ProfileCard.propTypes = {
   }).isRequired,
   handleChange: PropTypes.func.isRequired,
   handleImageChange: PropTypes.func.isRequired,
+  handleNicknameCheck: PropTypes.func.isRequired,
 };
 
 export default ProfileCard;

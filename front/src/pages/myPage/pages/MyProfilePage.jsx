@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { jwtDecode } from "jwt-decode";
-
 import { toast } from "react-toastify";
 import { ChevronRight } from "lucide-react";
 import authService from "../../../services/authService";
@@ -9,14 +8,8 @@ import ProfileCard from "./ProfileCard";
 import SettingsCard from "./SettingsCard";
 
 const MyProfilePage = () => {
-  const {
-    profile,
-    isLoading,
-    error,
-    fetchProfile,
-    updateProfile,
-    deleteAccount,
-  } = useUserProfileStore();
+  const { profile, error, fetchProfile, updateProfile, deleteAccount } =
+    useUserProfileStore();
   const [isEditing, setIsEditing] = useState(false);
   const [editedProfile, setEditedProfile] = useState({
     nickname: "",
@@ -33,13 +26,11 @@ const MyProfilePage = () => {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-
-    // 토큰이 존재하면 userId 추출
     if (token) {
       const decodedToken = jwtDecode(token);
       const userId = decodedToken.userId;
       setUserId(userId);
-      fetchProfile(userId); // userId로 프로필 정보 가져오기
+      fetchProfile(userId);
     }
   }, [fetchProfile]);
 
@@ -51,28 +42,22 @@ const MyProfilePage = () => {
   }, [profile]);
 
   useEffect(() => {
-    if (isLoading) {
-      toast.info("Loading...");
-    }
-  }, [isLoading]);
-
-  useEffect(() => {
     if (error) {
       toast.error(`Error: ${error}`);
     }
   }, [error]);
 
-  //편집버튼 눌렀을때
+  // 편집 모드 시작
   const handleEditClick = () => setIsEditing(true);
 
-  //편집모드에서 취소버튼 눌렀을때
+  // 편집 모드 취소
   const handleCancelClick = () => {
     setIsEditing(false);
     setEditedProfile(profile);
     setProfileImageFile(null);
   };
 
-  //편집모드에서 저장버튼 눌렀을때
+  // 편집 모드 저장 (저장 후 페이지 리로딩 제거)
   const handleSaveClick = async (e) => {
     e.preventDefault();
     if (
@@ -94,7 +79,7 @@ const MyProfilePage = () => {
       formData.append("file", profileImageFile);
     }
 
-    // Log FormData contents
+    // FormData 내용 확인 (디버깅용)
     for (let [key, value] of formData.entries()) {
       if (key === "profile") {
         value.text().then((text) => {
@@ -108,17 +93,75 @@ const MyProfilePage = () => {
     try {
       await updateProfile(userId, formData);
       toast.success("프로필이 성공적으로 업데이트되었습니다.");
-      window.location.reload();
+      setIsEditing(false);
+      // 필요시 업데이트 후 fetchProfile(userId) 호출하여 최신 정보 반영 가능
     } catch (error) {
       toast.error("프로필 업데이트 중 오류가 발생했습니다.");
       console.error("프로필 업데이트 실패", error);
     }
   };
 
-  // 계정 탈퇴 버튼 눌렀을때
+  // 이미지 변경 처리
+  const MAX_FILE_SIZE = 1 * 1024 * 1024;
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (file.size > MAX_FILE_SIZE) {
+      toast.warn("이미지 파일 크기는 1MB 이하만 가능합니다.");
+      e.target.value = "";
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setEditedProfile((prev) => ({
+        ...prev,
+        profileImage: reader.result,
+      }));
+      setProfileImageFile(file);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  // toastify를 이용한 계정 탈퇴 확인창
+  const confirmDeleteAccount = () => {
+    return new Promise((resolve) => {
+      toast(
+        ({ closeToast }) => (
+          <div>
+            <p>정말로 계정을 탈퇴하시겠습니까?</p>
+            <div className="flex justify-end space-x-2 mt-2">
+              <button
+                onClick={() => {
+                  resolve(true);
+                  closeToast();
+                }}
+                className="bg-red-500 text-white px-3 py-1 rounded text-xs"
+              >
+                예
+              </button>
+              <button
+                onClick={() => {
+                  resolve(false);
+                  closeToast();
+                }}
+                className="bg-gray-300 text-black px-3 py-1 rounded text-xs"
+              >
+                아니요
+              </button>
+            </div>
+          </div>
+        ),
+        { autoClose: false }
+      );
+    });
+  };
+
+  // 계정 탈퇴 처리
   const handleDeleteAccount = async () => {
-    const confirmDelete = window.confirm("정말로 계정을 탈퇴하시겠습니까?");
-    if (confirmDelete) {
+    const confirmed = await confirmDeleteAccount();
+    if (confirmed) {
       try {
         const success = await deleteAccount(userId);
         if (success) {
@@ -134,38 +177,13 @@ const MyProfilePage = () => {
     }
   };
 
-  //Input값 보여주기
+  // 입력 값 처리
   const handleChange = (e) => {
     const { name, value } = e.target;
     setEditedProfile((prev) => ({ ...prev, [name]: value }));
   };
 
-  //이미지 변경 버튼 눌렀을때
-  const MAX_FILE_SIZE = 1 * 1024 * 1024;
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    if (file.size > MAX_FILE_SIZE) {
-      toast.warn("이미지 파일 크기는 1MB 이하만 가능합니다.");
-      e.target.value = "";
-      return;
-    }
-
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setEditedProfile((prev) => ({
-          ...prev,
-          profileImage: reader.result,
-        }));
-        setProfileImageFile(file);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  // Handle theme change
+  // 환경설정 (테마) 변경 처리
   const handleThemeChange = (e) => {
     const { value } = e.target;
     setEditedProfile((prev) => ({
