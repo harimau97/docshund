@@ -9,7 +9,7 @@ import Modal from "react-modal";
 import LoginModal from "./components/LoginModal.jsx";
 import { ToastContainer, toast } from "react-toastify";
 import ToastModal from "./components/alertModal/toastModal.jsx";
-import ReportModal from "./pages/report.jsx";
+
 //챗봇
 import ChatBot from "./pages/chatBot/chatBot.jsx";
 import ChatBotStore from "./store/chatBotStore.jsx";
@@ -46,7 +46,7 @@ function App() {
       <ToastModal />
 
       {isTranslateViewerPage ? <LeftNav /> : <UpperNav />}
-      <div className="flex flex-grow">
+      <div className="flex-grow">
         <AppRouter />
       </div>
       {isTranslateViewerPage ? (

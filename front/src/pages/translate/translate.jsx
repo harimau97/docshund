@@ -1,31 +1,33 @@
 import { useState, useEffect } from "react";
-
-import { useNavigate, NavLink } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import useDocsStore from "../../store/translateStore/docsStore";
-import useTestStore from "../../store/translateStore/testStore";
-
 import { fetchDocsList } from "./hooks/translateGetService";
 import { likeDocs } from "./hooks/translatePostService";
 import { motion } from "framer-motion";
 
 const TransLatePage = () => {
-  const [docsCategories, setDocsCategories] = useState(["Spring", "MyBatis"]);
+  const [docsCategories, setDocsCategories] = useState(["1", "2"]);
 
-  const { docsList } = useDocsStore();
-  const { isTest } = useTestStore();
+  const { docsList, setDocsList } = useDocsStore();
+
   const navigate = useNavigate();
 
   const slogan = "번역 문서";
   const [showSlogan, setShowSlogan] = useState(false);
 
   useEffect(() => {
-    fetchDocsList(isTest);
+    const fetchData = async () => {
+      const tmpDocsList = await fetchDocsList();
+      setDocsList(tmpDocsList);
+    };
+    fetchData();
     setShowSlogan(true);
   }, []);
 
   const handleLike = async (docsId) => {
     await likeDocs(docsId);
-    fetchDocsList(isTest);
+    const tmpDocsList = await fetchDocsList();
+    setDocsList(tmpDocsList);
   };
 
   return (

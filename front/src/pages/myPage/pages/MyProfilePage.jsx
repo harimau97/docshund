@@ -4,7 +4,7 @@ import { jwtDecode } from "jwt-decode";
 import { toast } from "react-toastify";
 import { ChevronRight } from "lucide-react";
 import authService from "../../../services/authService";
-import useUserProfileStore from "../store/userProfileStore";
+import useUserProfileStore from "../../../store/myPageStore/userProfileStore";
 import ProfileCard from "./ProfileCard";
 import SettingsCard from "./SettingsCard";
 

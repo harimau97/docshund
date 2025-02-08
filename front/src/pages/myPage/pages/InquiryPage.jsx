@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 
-import modalStore from "../../../store/modalStore";
+import modalStore from "../../../store/myPageStore/myPageModalStore";
 import inquiryStore from "../../../store/myPageStore/inquiryStore";
 import InquiryModal from "../components/InquiryModal";
 import ListRender from "../../../components/pagination/listRender";

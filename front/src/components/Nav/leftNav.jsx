@@ -7,7 +7,8 @@ import { fetchDocsList } from "../../pages/translate/hooks/translateGetService.j
 
 // 상태 import
 import useDocsStore from "../../store/translateStore/docsStore.jsx";
-import modalStore from "../../store/modalStore.jsx";
+import modalStore from "../../store/myPageStore/myPageModalStore.jsx";
+//
 
 //이미지 주소 import
 import Logo from "../../assets/logo.png";
@@ -36,7 +37,6 @@ const LeftNav = () => {
     title: "",
     content: "",
   });
-  const navigate = useNavigate();
 
   const handleInputChange = (e) => {
     setMemoData({
