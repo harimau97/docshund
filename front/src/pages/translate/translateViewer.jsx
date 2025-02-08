@@ -14,15 +14,14 @@ import * as motion from "motion/react-client";
 // 컴포넌트 import
 import AlertModal from "../../components/alertModal/alertModal.jsx";
 import useAlertStore from "../../store/alertStore.jsx";
-import TranslateEditor from "./activity/translateEditor.jsx";
-import TranslateArchive from "./activity/translateArchive.jsx";
+import TranslateEditor from "./translateEditor.jsx";
+import TranslateArchive from "./translateArchive.jsx";
 import ToastViewer from "./components/toastViewer.jsx";
 
 import RectBtn from "../../components/button/rectBtn.jsx";
 
 //상태 import
-import useTestStore from "../../store/translateStore/testStore.jsx";
-import useModalStore from "../../store/modalStore.jsx";
+import useModalStore from "../../store/translateStore/translateModalStore.jsx";
 import useEditorStore from "../../store/translateStore/editorStore.jsx";
 import useArchiveStore from "../../store/translateStore/archiveStore.jsx";
 
@@ -47,18 +46,17 @@ const TranslateViewer = () => {
   const docData = useRef([]);
   const loadingRef = useRef(null);
   const chunk_size = 20;
-
+  //문단 높이 조절
   const initialHeights = useRef({}); // 초기 높이를 저장할 ref
-
-  const { isTest } = useTestStore();
 
   //indexedDB 관련 변수
   const dbName = "docs";
   const objectStoreName = docsId;
   const [isDbInitialized, setIsDbInitialized] = useState(false);
   //번역 관련 상태
-  const { transList } = useArchiveStore();
-  const { bestTrans } = useEditorStore();
+  const { transList, setTransList } = useArchiveStore();
+  const { bestTrans, setBestTrans, setDocsId, setOriginId, setDocsPart } =
+    useEditorStore();
   //모달 관련 상태
   const { isAlertOpen, toggleAlert } = useAlertStore();
   const { openEditor, openArchive, toggleArchive, toggleEditor } =
@@ -246,24 +244,26 @@ const TranslateViewer = () => {
           <div key={index} className="paragraph flex flex-row gap-4 relative">
             <div
               onClick={async (e) => {
-                // e.stopPropagation();
+                e.stopPropagation();
                 if (localStorage.getItem("token")) {
                   toggleButton(part.id, e);
                 }
-                fetchBestTranslate(part.docsId, "best", isTest);
-                if (transList !== undefined) {
-                  const filteredTranslations = transList.filter(
+                const tmpTransList = await fetchBestTranslate(
+                  part.docsId,
+                  "best"
+                );
+                setTransList(tmpTransList);
+                if (tmpTransList !== undefined) {
+                  const filteredTranslations = tmpTransList.filter(
                     (item) => item.originId === part.originId
                   );
                   if (filteredTranslations.length > 0) {
-                    useEditorStore.setState({
-                      bestTrans: filteredTranslations[0].content,
-                    });
+                    setBestTrans(filteredTranslations[0].content);
                   } else {
-                    useEditorStore.setState({ bestTrans: "" });
+                    setBestTrans("");
                   }
                 } else {
-                  useEditorStore.setState({ bestTrans: "" });
+                  setBestTrans("");
                 }
                 toggleDocpart(part.id);
               }}
@@ -280,7 +280,7 @@ const TranslateViewer = () => {
                         ...prev,
                         [part.id]: initialHeights.current[part.id],
                       }));
-                    }, 100);
+                    }, 50);
                   }
                 }}
                 style={{ height: heightStates[part.id] }}
@@ -289,9 +289,7 @@ const TranslateViewer = () => {
                   <ToastViewer content={part.content} />
                 ) : (
                   <div className="flex justify-between">
-                    <ToastViewer
-                      content={useEditorStore.getState().bestTrans}
-                    />
+                    <ToastViewer content={bestTrans} />
                     {bestTrans !== "" && (
                       <Trophy className="w-6 h-6 shrink-0 m-2 text-yellow-500" />
                     )}
@@ -336,13 +334,11 @@ const TranslateViewer = () => {
                   />
                   <RectBtn
                     onClick={async () => {
-                      useEditorStore.setState({
-                        docsPart: part.content,
-                        porder: part.porder,
-                        docsId: part.docsId,
-                        originId: part.originId,
-                      });
-                      await fetchBestTranslate(part.docsId, "", isTest);
+                      setDocsPart(part.content);
+                      setDocsId(part.docsId);
+                      console.log("현재docsId", part.docsId);
+                      setOriginId(part.originId);
+                      await fetchBestTranslate(part.docsId, "");
                       await openArchive();
                       toggleArchive();
                     }}

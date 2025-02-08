@@ -8,6 +8,28 @@ const editorStore = create((set) => ({
   currentUserText: "",
   tempSave: "",
   submitData: "",
+  setDocsPart: (text) => {
+    set({ docsPart: text });
+  },
+
+  setBestTrans: (text) => {
+    set({ bestTrans: text });
+  },
+  setDocsId: (id) => {
+    set({ docsId: id });
+  },
+  setOriginId: (id) => {
+    set({ originId: id });
+  },
+  setCurrentUserText: (text) => {
+    set({ currentUserText: text });
+  },
+  setTempSave: (text) => {
+    set({ tempSave: text });
+  },
+  setSubmitData: (data) => {
+    set({ submitData: data });
+  },
   clearDocsPart: () => {
     set({ docsPart: "" });
   },
@@ -23,9 +45,7 @@ const editorStore = create((set) => ({
   clearOriginId: () => {
     set({ originId: 0 });
   },
-  setCurrentUserText: (text) => {
-    set({ currentUserText: text });
-  },
+
   clearCurrentUserText: () => {
     set({ currentUserText: "" });
   },
@@ -41,7 +61,6 @@ const editorStore = create((set) => ({
     set({
       docsPart: "",
       bestTrans: "",
-      porder: 0,
       tempSave: "",
       submitData: "",
     });
@@ -50,7 +69,6 @@ const editorStore = create((set) => ({
     set({
       docsPart: "",
       bestTrans: "",
-      porder: 0,
       docsId: 0,
       originId: 0,
       currentUserText: "",

@@ -1,40 +1,45 @@
-import { useState, useEffect, useRef } from "react";
-import {
-  fetchBestTranslate,
-  fetchLikedTranslateList,
-} from "../hooks/translateGetService.jsx";
-import { likeTranslate } from "../hooks/translatePostService.jsx";
+import { useState, useEffect } from "react";
+import { fetchBestTranslate } from "./hooks/translateGetService.jsx";
+import { likeTranslate } from "./hooks/translatePostService.jsx";
 import * as motion from "motion/react-client";
 import { AnimatePresence } from "motion/react";
 import Modal from "react-modal";
-
-import useModalStore from "../../../store/modalStore";
-import GoBack from "../../../assets/icon/goBack.png";
-import useEditorStore from "../../../store/translateStore/editorStore.jsx";
-import useArchiveStore from "../../../store/translateStore/archiveStore.jsx";
-import useTestStore from "../../../store/translateStore/testStore.jsx";
-import ReportModal from "../../report.jsx";
-import useReportStore from "../../../store/reportStore.jsx";
-import ToastViewer from "../components/toastViewer.jsx";
+import ReportModal from "../report.jsx";
+import useModalStore from "../../store/translateStore/translateModalStore.jsx";
+import GoBack from "../../assets/icon/goBack.png";
+import useEditorStore from "../../store/translateStore/editorStore.jsx";
+import useArchiveStore from "../../store/translateStore/archiveStore.jsx";
+import useReportStore from "../../store/reportStore.jsx";
+import ToastViewer from "./components/toastViewer.jsx";
 
 const TranslateArchive = () => {
-  const translateLikes = useRef([]);
   const [transStates, setTransStates] = useState({});
-  const [likedStates, setLikedStates] = useState({});
-  const { docsPart, bestTrans, docsId, originId, currentUserText } =
-    useEditorStore();
+  const [status, setStatus] = useState(0);
+
+  const {
+    docsId,
+    originId,
+    clearDocsPart,
+    clearBestTrans,
+    clearTempSave,
+    clearSubmitData,
+    clearDocsId,
+    clearOriginId,
+    clearCurrentUserText,
+  } = useEditorStore();
   const {
     transList,
-    orderByLike,
     orderBy,
+    orderByLike,
     defaultStyle,
     toggledStyle,
     orderByUpdatedAt,
     setTransList,
-    clearTransList,
+    setOrderBy,
+    setOrderByLike,
+    setOrderByUpdatedAt,
   } = useArchiveStore();
   const { openReport, toggleReport } = useReportStore();
-  const { isTest } = useTestStore();
 
   //모달 관련 상태
   const { isArchiveOpen, closeArchive, isArchiveVisible, toggleArchive } =
@@ -53,20 +58,28 @@ const TranslateArchive = () => {
   };
 
   const handleLike = async (docsId, transId) => {
-    setLikedStates((prev) => {
-      const newState = { ...prev };
-      newState[transId] = !prev[transId];
-      return newState;
-    });
-    await likeTranslate(docsId, transId);
-    fetchBestTranslate(docsId, "", isTest);
+    const status = await likeTranslate(docsId, transId);
+    if (status === 200) {
+      await fetchBestTranslate(docsId, "");
+      setStatus(200);
+    }
   };
 
-  const changeOrderBy = (category) => {
+  const handleClose = () => {
+    clearDocsPart();
+    clearBestTrans();
+    clearTempSave();
+    clearSubmitData();
+    clearDocsId();
+    clearOriginId();
+    clearCurrentUserText();
+  };
+
+  const changeOrderBy = (category, list) => {
     if (category === "like") {
-      transList.sort((a, b) => b.likeCount - a.likeCount);
+      list.sort((a, b) => b.likeCount - a.likeCount);
     } else if (category === "newest") {
-      transList.sort((a, b) => {
+      list.sort((a, b) => {
         const dateA = new Date(a.updatedAt);
         const dateB = new Date(b.updatedAt);
         return dateB - dateA;
@@ -76,13 +89,15 @@ const TranslateArchive = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const data = await fetchBestTranslate(docsId, "", isTest);
-      setTransList(data);
+      const tmpTransList = await fetchBestTranslate(docsId, "");
+      console.log(docsId, "번역 전체", tmpTransList);
+      setTransList(tmpTransList);
+      changeOrderBy(orderBy, tmpTransList);
     };
+
+    setStatus(0);
     fetchData();
-    changeOrderBy("like");
-    console.log("번역 전체", transList);
-  }, []);
+  }, [isArchiveOpen, status, orderBy]);
 
   return (
     <Modal
@@ -94,13 +109,6 @@ const TranslateArchive = () => {
           zIndex: 2000,
         },
       }}
-      // onKeyDown={(e) => {
-      //   {
-      //     if (e.key === "Escape") {
-      //       toggleArchive();
-      //     }
-      //   }
-      // }}
       className="border-box w-full h-full flex items-center justify-center"
     >
       <AnimatePresence>
@@ -132,6 +140,7 @@ const TranslateArchive = () => {
                   alt="나가기"
                   onClick={async () => {
                     await toggleArchive();
+                    handleClose();
                     setTimeout(() => closeArchive(), 300);
                   }}
                 />
@@ -144,12 +153,8 @@ const TranslateArchive = () => {
                 <div className="flex justify-end gap-4 mb-2">
                   <div
                     onClick={() => {
-                      useArchiveStore.setState({
-                        orderByLike: false,
-                        orderByUpdatedAt: true,
-                        orderBy: "newest",
-                      });
-                      changeOrderBy("newest");
+                      setOrderByUpdatedAt();
+                      setOrderBy("newest");
                     }}
                     className={`${
                       orderByUpdatedAt ? toggledStyle : defaultStyle
@@ -159,12 +164,8 @@ const TranslateArchive = () => {
                   </div>
                   <div
                     onClick={() => {
-                      useArchiveStore.setState({
-                        orderByLike: true,
-                        orderByUpdatedAt: false,
-                        orderBy: "like",
-                      });
-                      changeOrderBy("like");
+                      setOrderByLike();
+                      setOrderBy("like");
                     }}
                     className={`${
                       orderByLike ? toggledStyle : defaultStyle

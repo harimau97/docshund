@@ -17,6 +17,7 @@ export const likeTranslate = async (docsId, transId) => {
       `${baseUrl}/${docsId}/trans/paragraph/${transId}/votes`
     );
     console.log(response);
+    return response.status;
   } catch (error) {
     console.log("번역 좋아요 실패", error);
   }
