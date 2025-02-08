@@ -37,8 +37,8 @@ public class Chat extends BaseTimeEntity {
 	@JoinColumn(name = "user_id", nullable = false)
 	private User user;
 
-	@Column(name = "content", nullable = false)
-	private String content;
+    @Column(name = "content", nullable = false, columnDefinition = "TEXT")
+    private String content;
 
 	@Column(name = "report_cnt", nullable = false)
 	private Integer reportCount;
