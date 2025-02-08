@@ -1,5 +1,4 @@
 import { create } from "zustand";
-import useEditorStore from "./editorStore";
 
 const modalStore = create((set) => ({
   isEditorOpen: false, // 번역 에디터 모달 표시

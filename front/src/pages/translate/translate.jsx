@@ -1,14 +1,14 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import useDocsStore from "./store/docsStore";
+import useDocsStore from "../../store/translateStore/docsStore";
 import { fetchDocsList } from "./hooks/translateGetService";
 import { likeDocs } from "./hooks/translatePostService";
 import { motion } from "framer-motion";
 
 const TransLatePage = () => {
-  const [docsCategories, setDocsCategories] = useState(["Spring", "MyBatis"]);
+  const [docsCategories, setDocsCategories] = useState(["1", "2"]);
 
-  const { docsList } = useDocsStore();
+  const { docsList, setDocsList } = useDocsStore();
 
   const navigate = useNavigate();
 
@@ -16,13 +16,18 @@ const TransLatePage = () => {
   const [showSlogan, setShowSlogan] = useState(false);
 
   useEffect(() => {
-    fetchDocsList(false);
+    const fetchData = async () => {
+      const tmpDocsList = await fetchDocsList();
+      setDocsList(tmpDocsList);
+    };
+    fetchData();
     setShowSlogan(true);
   }, []);
 
   const handleLike = async (docsId) => {
     await likeDocs(docsId);
-    fetchDocsList(false);
+    const tmpDocsList = await fetchDocsList();
+    setDocsList(tmpDocsList);
   };
 
   return (

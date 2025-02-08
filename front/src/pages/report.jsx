@@ -5,7 +5,7 @@ import { AnimatePresence } from "motion/react";
 import * as motion from "motion/react-client";
 import { toast } from "react-toastify";
 import Modal from "react-modal";
-import useReportStore from "../store/reportStore";
+import ReportStore from "../store/reportStore";
 import ReportService from "../services/reportService";
 
 import { X } from "lucide-react";
@@ -24,7 +24,7 @@ const reportModal = () => {
     isReportVisible,
     closeReport,
     toggleReport,
-  } = useReportStore();
+  } = ReportStore();
 
   const [category, setCategory] = useState("");
   const [title, setTitle] = useState("");

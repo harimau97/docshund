@@ -6,9 +6,8 @@ import RoundCornerBtn from "../button/roundCornerBtn.jsx";
 import { fetchDocsList } from "../../pages/translate/hooks/translateGetService.jsx";
 
 // 상태 import
-import useDocsStore from "../../pages/translate/store/docsStore.jsx";
-import modalStore from "../../pages/myPage/store/modalStore.jsx";
-import useEditorStore from "../../pages/translate/store/editorStore.jsx";
+import useDocsStore from "../../store/translateStore/docsStore.jsx";
+import modalStore from "../../store/myPageStore/myPageModalStore.jsx";
 //
 
 //이미지 주소 import
@@ -38,7 +37,6 @@ const LeftNav = () => {
     title: "",
     content: "",
   });
-  const navigate = useNavigate();
 
   const handleInputChange = (e) => {
     setMemoData({

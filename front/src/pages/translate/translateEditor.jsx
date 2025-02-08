@@ -1,17 +1,17 @@
 import Modal from "react-modal";
 import { useState } from "react";
 import * as motion from "motion/react-client";
-import { fetchBestTranslate } from "../hooks/translateGetService";
-import { registTranslate } from "../hooks/translatePostService";
+import { fetchBestTranslate } from "./hooks/translateGetService";
+import { registTranslate } from "./hooks/translatePostService";
 import { AnimatePresence } from "motion/react";
 import { toast } from "react-toastify";
-import TextContent from "../components/textContent";
-import EditorContent from "../components/editorContent";
-import RectBtn from "../../../components/button/rectBtn";
+import TextContent from "./components/textContent";
+import EditorContent from "./components/editorContent";
+import RectBtn from "../../components/button/rectBtn";
 
 //상태 관련
-import useModalStore from "../store/modalStore";
-import useEditorStore from "../store/editorStore";
+import useModalStore from "../../store/translateStore/translateModalStore";
+import useEditorStore from "../../store/translateStore/editorStore";
 //
 
 const TranslateEditor = () => {

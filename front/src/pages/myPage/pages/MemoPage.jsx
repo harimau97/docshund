@@ -3,8 +3,8 @@ import { jwtDecode } from "jwt-decode";
 
 import MemoList from "../components/MemoList";
 import EditorModal from "../components/EditorModal";
-import modalStore from "../store/modalStore";
-import useMemoStore from "../store/memoStore";
+import modalStore from "../../../store/myPageStore/myPageModalStore";
+import useMemoStore from "../../../store/myPageStore/memoStore";
 
 const MemoPage = () => {
   const token = localStorage.getItem("token");

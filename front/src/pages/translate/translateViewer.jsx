@@ -14,16 +14,16 @@ import * as motion from "motion/react-client";
 // 컴포넌트 import
 import AlertModal from "../../components/alertModal/alertModal.jsx";
 import useAlertStore from "../../store/alertStore.jsx";
-import TranslateEditor from "./activity/translateEditor.jsx";
-import TranslateArchive from "./activity/translateArchive.jsx";
+import TranslateEditor from "./translateEditor.jsx";
+import TranslateArchive from "./translateArchive.jsx";
 import ToastViewer from "./components/toastViewer.jsx";
 
 import RectBtn from "../../components/button/rectBtn.jsx";
 
 //상태 import
-import useModalStore from "./store/modalStore.jsx";
-import useEditorStore from "./store/editorStore.jsx";
-import useArchiveStore from "./store/archiveStore.jsx";
+import useModalStore from "../../store/translateStore/translateModalStore.jsx";
+import useEditorStore from "../../store/translateStore/editorStore.jsx";
+import useArchiveStore from "../../store/translateStore/archiveStore.jsx";
 
 //이미지 import
 import loadingGif from "../../assets/loading.gif";

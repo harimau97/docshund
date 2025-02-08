@@ -1,6 +1,6 @@
 import { axiosJsonInstance } from "../../../utils/axiosInstance";
 import PropTypes from "prop-types";
-import useDocsStore from "../store/docsStore";
+import DocsStore from "../../../store/translateStore/docsStore";
 const baseUrl = "http://i12a703.p.ssafy.io:8081/api/v1/docshund/docs";
 
 // 좋아요한 문서 조회
@@ -15,13 +15,11 @@ export const fetchLikedList = async (docsId) => {
 };
 
 // 문서 리스트 조회
-export const fetchDocsList = async (test) => {
+export const fetchDocsList = async () => {
   try {
-    if (!test) {
-      const response = await axiosJsonInstance.get(`${baseUrl}`);
-      const data = response.data;
-      useDocsStore.setState({ docsList: data });
-    }
+    const response = await axiosJsonInstance.get(`${baseUrl}`);
+    const data = response.data;
+    return data;
   } catch (error) {
     console.log(error);
   }
