@@ -6,7 +6,7 @@ import TmpTranslateData from "../../../store/translateStore/tmpTranslateData";
 import TmpDocsList from "../../../store/translateStore/tmpDocsList";
 import useArchiveStore from "../../../store/translateStore/archiveStore";
 import useDocsStore from "../../../store/translateStore/docsStore";
-import useEditorStore from "../store/editorStore";
+import useEditorStore from "../../../store/translateStore/editorStore";
 
 const baseUrl = "http://i12a703.p.ssafy.io:8081/api/v1/docshund/docs";
 

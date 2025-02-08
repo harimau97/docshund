@@ -109,7 +109,6 @@ const Chat = () => {
 
   // 페이지 URL 변경 시 채팅창 숨기기
   useEffect(() => {
-    // 페이지 이동 시 채팅창을 숨김
     toggleChat();
   }, [location.pathname]); // pathname이 변경될 때마다 실행
 
