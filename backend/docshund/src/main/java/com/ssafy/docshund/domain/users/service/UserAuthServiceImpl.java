@@ -51,6 +51,8 @@ public class UserAuthServiceImpl extends DefaultOAuth2UserService {
 				return saveUser;
 			});
 
+		findUser.updateLastLogin();
+
 		userDto.setRole(findUser.getRole().toString());
 		userDto.setUserId(findUser.getUserId());
 
