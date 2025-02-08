@@ -1,6 +1,6 @@
 import "./App.css";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import AppRouter from "./router.jsx";
 import Footer from "./components/footer/footer.jsx";
 import UpperNav from "./components/Nav/upperNav.jsx";
@@ -11,9 +11,9 @@ import { ToastContainer, toast } from "react-toastify";
 import ToastModal from "./components/alertModal/toastModal.jsx";
 
 //챗봇
+import ChatBotBtn from "./pages/chatBot/chatBotBtn.jsx";
 import ChatBot from "./pages/chatBot/chatBot.jsx";
 import ChatBotStore from "./store/chatBotStore.jsx";
-import { Bot } from "lucide-react";
 
 //문서채팅
 import Chat from "./pages/chat/chat.jsx";
@@ -26,6 +26,7 @@ function App() {
   // 번역 뷰어 페이지일 때만 좌측 내브바 표시
   const location = useLocation();
   const navigate = useNavigate();
+  const [isDragging, setIsDragging] = useState(false);
 
   useEffect(() => {
     if (location.search.includes("token")) {
@@ -65,19 +66,7 @@ function App() {
           )}
         </div>
       ) : null}
-      {isTranslateViewerPage ? (
-        <div className="fixed bottom-4 left-4 z-[1900] group">
-          {localStorage.getItem("token") && (
-            <div
-              onClick={toggleChatBot}
-              className="rounded-full w-16 h-16 bg-gradient-to-r from-[#BC5B39] to-[#E4DCD4] flex justify-center items-center cursor-pointer shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 border-2 border-white"
-            >
-              <Bot className="h-8 w-8 text-white group-hover:rotate-12 transition-transform duration-300" />
-            </div>
-          )}
-        </div>
-      ) : null}
-
+      <ChatBotBtn />
       {isChatVisible && <Chat />}
       {isChatBotVisible && <ChatBot />}
       {isTranslateViewerPage ? null : <Footer />}
