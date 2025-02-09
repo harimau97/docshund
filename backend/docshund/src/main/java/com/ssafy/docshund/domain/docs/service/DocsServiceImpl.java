@@ -440,7 +440,7 @@ public class DocsServiceImpl implements DocsService {
 	@Override
 	public List<UserTransDocumentDto> getUserTransDocument(Long userId) {
 		List<TranslatedDocument> userTransDocuments = translatedDocumentRepository.findByUser_UserIdAndStatus(userId,
-			String.valueOf(Status.VISIBLE));
+			Status.VISIBLE);
 
 		// 번역 문서 ID 목록 추출
 		List<Long> transIds = userTransDocuments.stream().map(TranslatedDocument::getTransId).toList();
