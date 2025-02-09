@@ -16,6 +16,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "translated_document")
@@ -42,6 +43,7 @@ public class TranslatedDocument extends BaseTimeEntityWithUpdatedAt {
 	@Column(name = "report_count", nullable = false, columnDefinition = "INT DEFAULT 0")
 	private Integer reportCount;
 
+	@Setter
 	@Enumerated(EnumType.STRING)
 	@Column(name = "status", nullable = false, columnDefinition =
 		"ENUM('VISIBLE', 'INVISIBLE', 'DELETED') DEFAULT 'VISIBLE'")
