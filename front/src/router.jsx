@@ -38,6 +38,10 @@ import WriteArticle from "./pages/community/writeArticle.jsx";
 import ModifyArticle from "./pages/community/modifyArticle.jsx";
 import ArticleItem from "./pages/community/articleItem.jsx";
 
+//admin 관련 페이지
+import Admin from "./pages/admin/admin.jsx";
+import ManageUser from "./pages/admin/manageUser.jsx";
+
 // error 페이지
 import ErrorPage from "./pages/errorPage.jsx";
 
@@ -69,6 +73,11 @@ function AppRoutes() {
       <Route path="/helpDesk/notices/:noticeId" element={<NoticeDetail />} />
       <Route path="/terms" element={<TermsPage />} />
       <Route path="/privacy" element={<PrivacyPage />} />
+
+      {/* 관리자 관련 주소 */}
+      <Route path="/admin" element={<Admin />}>
+        <Route path="manageUser" element={<ManageUser />} />
+      </Route>
 
       {/* 에러페이지 */}
       <Route path="/error" element={<ErrorPage />} />

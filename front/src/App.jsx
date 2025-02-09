@@ -12,7 +12,7 @@ import ToastModal from "./components/alertModal/toastModal.jsx";
 
 //챗봇
 import ChatBotBtn from "./pages/chatBot/chatBotBtn.jsx";
-import ChatBot from "./pages/chatBot/chatBot.jsx";
+
 import ChatBotStore from "./store/chatBotStore.jsx";
 
 //문서채팅
@@ -68,7 +68,7 @@ function App() {
       ) : null}
       <ChatBotBtn />
       {isChatVisible && <Chat />}
-      {isChatBotVisible && <ChatBot />}
+
       {isTranslateViewerPage ? null : <Footer />}
       <LoginModal />
     </div>
