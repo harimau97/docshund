@@ -41,9 +41,30 @@ const ChatBotBtn = () => {
   };
 
   const handleStop = (e, data) => {
-    setTimeout(() => setIsDragging(false), 5); // 드래그 종료 후 상태 초기화
-    setChatBotBtnPosition([data.x, data.y]);
-    setChatBotPosition([data.x, data.y]);
+    setTimeout(() => setIsDragging(false), 5);
+
+    // 화면 경계 체크
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+    const chatBotWidth = 400; // 채팅창 너비
+    const buttonWidth = 48; // 버튼 너비 (w-12 = 48px)
+
+    // 버튼이 화면을 벗어나지 않도록 x, y 좌표 조정
+    let adjustedX = Math.min(Math.max(data.x, 0), viewportWidth - buttonWidth);
+    let adjustedY = Math.min(Math.max(data.y, -viewportHeight + 100), 0);
+
+    // 채팅창이 열렸을 때 화면 왼쪽을 벗어나는 경우 처리
+    if (adjustedX < chatBotWidth / 2) {
+      adjustedX = chatBotWidth / 2;
+    }
+
+    // 채팅창이 열렸을 때 화면 오른쪽을 벗어나는 경우 처리
+    if (adjustedX > viewportWidth - chatBotWidth / 2) {
+      adjustedX = viewportWidth - chatBotWidth / 2;
+    }
+
+    setChatBotBtnPosition([adjustedX, adjustedY]);
+    setChatBotPosition([adjustedX, adjustedY]);
   };
 
   const handleClick = () => {
@@ -120,7 +141,6 @@ const ChatBotBtn = () => {
       //   }
       // );
       console.log(response);
-      const data = await response.data;
       const botResponse = {
         text: response.data.response || "응답을 받아오는데 실패했습니다.",
         isUser: false,
@@ -191,7 +211,7 @@ const ChatBotBtn = () => {
                         className="cursor-pointer"
                         onClick={() => handleClose()}
                       >
-                        <X className="h-8 w-8 flex left-0" />
+                        <X className="h-8 w-8 flex left-0 text-white" />
                       </button>
                     </div>
                   </div>

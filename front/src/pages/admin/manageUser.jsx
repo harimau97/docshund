@@ -1,133 +1,126 @@
-import React, { useState, useEffect } from "react";
-import { Table, Button, Input, Space, message } from "antd";
-import { SearchOutlined } from "@ant-design/icons";
-
-import styled from "styled-components";
-
-const StyledWrapper = styled.div`
-  padding: 24px;
-
-  .header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 16px;
-  }
-
-  .search-bar {
-    width: 300px;
-  }
-`;
+import { useEffect, useState } from "react";
+import { fetchUserList } from "../admin/Hooks/adminGetService";
 
 const ManageUser = () => {
-  const [users, setUsers] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [searchText, setSearchText] = useState("");
+  const [userList, setUserList] = useState([]);
 
-  const fetchUsers = async () => {
-    try {
-      //   setLoading(true);
-      //   const response = await axiosInstance.get("/api/admin/users");
-      //   setUsers(response.data);
-    } catch (error) {
-      message.error("사용자 목록을 불러오는데 실패했습니다.");
-      console.error(error);
-    } finally {
-      setLoading(false);
+  const handleSearch = async (e) => {
+    const searchKeyword = e.target.value;
+    if (!searchKeyword) {
+      const data = await fetchUserList();
+      data.sort((a, b) => b.userInfo.reportCount - a.userInfo.reportCount);
+      setUserList(data);
+      return;
+    } else {
+      const filteredList = userList.filter(
+        (item) =>
+          item.user.email.includes(searchKeyword.toLowerCase()) ||
+          item.user.nickname.includes(searchKeyword.toLowerCase())
+      );
+      setUserList(filteredList);
     }
   };
 
   useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const data = await fetchUserList();
+        data.sort((a, b) => b.userInfo.reportCount - a.userInfo.reportCount);
+        setUserList(data);
+      } catch (error) {
+        console.error("Error fetching users:", error);
+      }
+    };
     fetchUsers();
   }, []);
 
-  const handleStatusChange = async (userId, newStatus) => {
-    try {
-      //   await axiosInstance.patch(`/api/admin/users/${userId}/status`, {
-      //     status: newStatus,
-      //   });
-      message.success("사용자 상태가 변경되었습니다.");
-      fetchUsers();
-    } catch (error) {
-      message.error("사용자 상태 변경에 실패했습니다.");
-      console.error(error);
-    }
-  };
-
-  const columns = [
-    {
-      title: "이메일",
-      dataIndex: "email",
-      key: "email",
-      filteredValue: [searchText],
-      onFilter: (value, record) =>
-        record.email.toLowerCase().includes(value.toLowerCase()),
-    },
-    {
-      title: "닉네임",
-      dataIndex: "nickname",
-      key: "nickname",
-    },
-    {
-      title: "가입일",
-      dataIndex: "createdAt",
-      key: "createdAt",
-      render: (date) => new Date(date).toLocaleDateString(),
-    },
-    {
-      title: "유저상태",
-      dataIndex: "status",
-      key: "status",
-      render: (status) => (
-        <span style={{ color: status === "active" ? "green" : "red" }}>
-          {status === "active" ? "활성" : "비활성"}
-        </span>
-      ),
-    },
-    {
-      title: "관리",
-      key: "action",
-      render: (_, record) => (
-        <Space>
-          <Button
-            type={record.status === "active" ? "danger" : "primary"}
-            onClick={() =>
-              handleStatusChange(
-                record.id,
-                record.status === "active" ? "inactive" : "active"
-              )
-            }
-          >
-            {record.status === "active" ? "비활성화" : "활성화"}
-          </Button>
-        </Space>
-      ),
-    },
-  ];
-
   return (
-    <StyledWrapper>
-      <div className="header">
-        <h2>회원관리</h2>
-        <Input
-          placeholder="이메일로 검색"
-          prefix={<SearchOutlined />}
-          className="search-bar"
-          value={searchText}
-          onChange={(e) => setSearchText(e.target.value)}
-        />
+    <div className="p-6 max-w-[1200px] mx-auto">
+      {/* Header */}
+      <div className="flex justify-between items-center mb-8">
+        <h1 className="text-2xl font-bold text-gray-800">회원 관리</h1>
+        <div className="relative w-70">
+          <input
+            onChange={handleSearch}
+            type="text"
+            placeholder="이메일, 닉네임, 관심분야 검색"
+            className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:border-[#bc5b39] focus:ring-1 focus:ring-[#bc5b39] transition-colors duration-200"
+          />
+          <svg
+            className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+            />
+          </svg>
+        </div>
       </div>
-      <Table
-        columns={columns}
-        dataSource={users}
-        loading={loading}
-        rowKey="id"
-        pagination={{
-          pageSize: 10,
-          showTotal: (total) => `총 ${total}개의 항목`,
-        }}
-      />
-    </StyledWrapper>
+
+      {/* Table */}
+      <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100">
+        <div className="overflow-x-auto">
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead>
+              <tr className="bg-gray-50">
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                  이메일
+                </th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                  닉네임
+                </th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                  가입일
+                </th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                  상태
+                </th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                  신고 횟수
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-200">
+              {userList.map((user, index) => (
+                <tr
+                  key={index}
+                  className="hover:bg-gray-50 transition-colors duration-150"
+                >
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    {user.user.email}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    {user.user.nickname}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {user.user.createdAt}
+                  </td>
+                  <td className="px-3 py-4 whitespace-nowrap">
+                    <span
+                      className={`px-3 py-1 text-xs font-medium rounded-full ${
+                        user.user.status === "ACTIVE"
+                          ? "bg-green-100 text-green-800"
+                          : "bg-red-100 text-red-800"
+                      }`}
+                    >
+                      {user.user.status === "ACTIVE" ? "활성" : "비활성"}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
+                    {user.userInfo.reportCount}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
   );
 };
 

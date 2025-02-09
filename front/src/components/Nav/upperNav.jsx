@@ -1,4 +1,6 @@
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
+import { useState, useEffect } from "react";
 import RectBtn from "../button/rectBtn";
 import useModalStore from "../../store/modalStore";
 import authService from "../../services/authService";
@@ -13,6 +15,7 @@ const UpperNav = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { isAuthenticated, logout } = authService();
+  const [isAdmin, setIsAdmin] = useState(false);
   const { openModal } = useModalStore();
 
   // 게시글 작성 페이지로 이동 시 페이지 초기화
@@ -29,6 +32,24 @@ const UpperNav = () => {
       openModal(); //로그인 모달 열기
     }
   };
+
+  const handleImageClick = () => {
+    if (isAuthenticated() && isAdmin) {
+      navigate("/admin/manageUser");
+    } else if (isAuthenticated() && !isAdmin) {
+      navigate("/myPage/profile");
+    }
+  };
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      const decodedToken = jwtDecode(token);
+      const role = decodedToken.role;
+      console.log(role);
+      if (role === "ROLE_ADMIN") setIsAdmin(true); // 로그인 상태와 관리자 여부를 판단
+    }
+  }, [localStorage.getItem("token")]);
 
   // 링크 스타일
   const activeLink = "font-bold text-[clamp(16px,1.5vw,20px)] text-[#bc5b39]";
@@ -110,7 +131,7 @@ const UpperNav = () => {
 
           {isAuthenticated() && (
             <img
-              onClick={() => navigate("/myPage/profile")}
+              onClick={() => handleImageClick()}
               className="w-[clamp(40px,4vw,64px)] h-auto cursor-pointer"
               src={SampleProfileImg}
               alt="프로필 이미지"

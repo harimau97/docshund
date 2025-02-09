@@ -13,8 +13,6 @@ import ToastModal from "./components/alertModal/toastModal.jsx";
 //챗봇
 import ChatBotBtn from "./pages/chatBot/chatBotBtn.jsx";
 
-import ChatBotStore from "./store/chatBotStore.jsx";
-
 //문서채팅
 import Chat from "./pages/chat/chat.jsx";
 import ChatStore from "./store/chatStore.jsx";
@@ -26,7 +24,6 @@ function App() {
   // 번역 뷰어 페이지일 때만 좌측 내브바 표시
   const location = useLocation();
   const navigate = useNavigate();
-  const [isDragging, setIsDragging] = useState(false);
 
   useEffect(() => {
     if (location.search.includes("token")) {
@@ -37,12 +34,14 @@ function App() {
   const pathname = location.pathname;
   // console.log("Current pathname:", pathname);
   const isTranslateViewerPage = pathname.includes("/translate/main/viewer");
+  const isAdminPage = pathname.includes("/admin");
   const { isChatVisible, toggleChat } = ChatStore();
 
   return (
     <div className="flex flex-col min-h-screen min-w-[768px] overflow-hidden">
       <ToastModal />
-      {isTranslateViewerPage ? <LeftNav /> : <UpperNav />}
+      {isTranslateViewerPage ? <LeftNav /> : null}
+      {isAdminPage ? null : <UpperNav />}
       <div className="flex-grow">
         <AppRouter />
       </div>
@@ -64,7 +63,7 @@ function App() {
       ) : null}
       <ChatBotBtn />
       {isChatVisible && <Chat />}
-      {isTranslateViewerPage ? null : <Footer />}
+      {isTranslateViewerPage || isAdminPage ? null : <Footer />}
       <LoginModal />
     </div>
   );

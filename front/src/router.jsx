@@ -43,6 +43,10 @@ import ArticleItem from "./pages/community/articleItem.jsx";
 //admin 관련 페이지
 import Admin from "./pages/admin/admin.jsx";
 import ManageUser from "./pages/admin/manageUser.jsx";
+import ManageInquiry from "./pages/admin/manageInquiry.jsx";
+import ManageDocs from "./pages/admin/manageDocs.jsx";
+import ManageReport from "./pages/admin/manageReport.jsx";
+import ManageNotification from "./pages/admin/manageNotification.jsx";
 
 // error 페이지
 import ErrorPage from "./pages/errorPage.jsx";
@@ -82,6 +86,10 @@ function AppRoutes() {
       {/* 관리자 관련 주소 */}
       <Route path="/admin" element={<Admin />}>
         <Route path="manageUser" element={<ManageUser />} />
+        <Route path="manageInquiry" element={<ManageInquiry />} />
+        <Route path="manageDocs" element={<ManageDocs />} />
+        <Route path="manageReport" element={<ManageReport />} />
+        <Route path="manageNotification" element={<ManageNotification />} />
       </Route>
 
       {/* 에러페이지 */}
