@@ -10,24 +10,17 @@ import {
   fetchTranslateData,
   fetchBestTranslate,
 } from "./hooks/translateGetService.jsx";
-import * as motion from "motion/react-client";
 // 컴포넌트 import
-import AlertModal from "../../components/alertModal/alertModal.jsx";
-import useAlertStore from "../../store/alertStore.jsx";
 import TranslateEditor from "./translateEditor.jsx";
 import TranslateArchive from "./translateArchive.jsx";
 import ToastViewer from "./components/toastViewer.jsx";
 
-import RectBtn from "../../components/button/rectBtn.jsx";
-
 //상태 import
-import useModalStore from "../../store/translateStore/translateModalStore.jsx";
 import useEditorStore from "../../store/translateStore/editorStore.jsx";
 import useArchiveStore from "../../store/translateStore/archiveStore.jsx";
 
 //이미지 import
 import loadingGif from "../../assets/loading.gif";
-import warning from "../../assets/icon/warning.png";
 import { Trophy } from "lucide-react";
 
 const BestTransViewer = () => {
@@ -37,17 +30,13 @@ const BestTransViewer = () => {
   const [hasMore, setHasMore] = useState(true);
   const [processedCount, setProcessedCount] = useState(0);
   //각 문단 별 상태 저장 및 추적
-  const [buttonStates, setButtonStates] = useState({});
-  const [docpartStates, setDocpartStates] = useState({});
-  const [heightStates, setHeightStates] = useState({});
+  const tmpTransList = useRef([]);
+  const tmpBestTransList = useRef([]);
   //
-  const [mousePositions, setMousePositions] = useState({}); // 마우스 위치를 저장할 state 추가
   const [checkComplete, setCheckComplete] = useState(false);
   const docData = useRef([]);
   const loadingRef = useRef(null);
   const chunk_size = 20;
-  //문단 높이 조절
-  const initialHeights = useRef({}); // 초기 높이를 저장할 ref
 
   //indexedDB 관련 변수
   const dbName = "docs";
@@ -57,55 +46,8 @@ const BestTransViewer = () => {
   const { transList, setTransList } = useArchiveStore();
   const { bestTrans, setBestTrans, setDocsId, setOriginId, setDocsPart } =
     useEditorStore();
-  //모달 관련 상태
-  const { isAlertOpen, toggleAlert } = useAlertStore();
-  const { openEditor, openArchive, toggleArchive, toggleEditor } =
-    useModalStore();
-
-  //ui 관련
-  const toggleButton = (partId, e) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    const mouseY = e.clientY - rect.top;
-
-    // 버튼 컨테이너의 높이 (두 버튼의 높이 + 간격)
-    const buttonContainerHeight = 100; // 대략적인 높이값
-
-    // y 위치 제한
-    const limitedY = Math.min(
-      Math.max(buttonContainerHeight / 2, mouseY),
-      rect.height - buttonContainerHeight / 2
-    );
-
-    setMousePositions((prev) => ({
-      ...prev,
-      [partId]: {
-        x: e.clientX - rect.left,
-        y: limitedY,
-      },
-    }));
-
-    setButtonStates((prev) => ({
-      ...Object.keys(prev).reduce((acc, key) => {
-        if (key !== partId) {
-          acc[key] = false;
-        }
-        return acc;
-      }, {}),
-      [partId]: !prev[partId],
-    }));
-  };
-
-  const toggleDocpart = (partId) => {
-    setDocpartStates((prev) => ({
-      ...Object.keys(prev).reduce((acc, key) => {
-        if (key !== partId) {
-          acc[key] = false;
-        }
-        return acc;
-      }, {}),
-      [partId]: !prev[partId],
-    }));
-  };
+  // const { openEditor, openArchive, toggleArchive, toggleEditor } =
+  //   useModalStore();
 
   // 문서 내용 전부 가져오기
   const loadMore = async () => {
@@ -142,7 +84,6 @@ const BestTransViewer = () => {
   useEffect(() => {
     let isMounted = true; // 컴포넌트 마운트 상태 추적
     closeAllConnections();
-
     // 상태 초기화
     setDocParts([]);
     setProcessedCount(0);
@@ -151,8 +92,28 @@ const BestTransViewer = () => {
     setIsDbInitialized(false); // 여기로 이동
     docData.current = [];
 
+    const fetchData = async () => {
+      const data = await fetchBestTranslate(docsId, "best");
+      tmpTransList.current = data;
+      console.log("tmpTransList.current", tmpTransList.current);
+      tmpTransList.current.forEach((element) => {
+        tmpBestTransList.current[element.originId] = {
+          element,
+          key: element.originId,
+        };
+      });
+      console.log(
+        "번역 전체 보기 데이터를 불러왔습니다.: ",
+        tmpBestTransList.current
+      );
+    };
+
+    // const processFetchedData = async () => {
+
+    // };
+
     async function checkDB() {
-      if (!isMounted) return; // 컴포넌트가 언마운트되었다면 중단
+      if (!isMounted) return; // 컴포넌트가 언마운트되었습니다면 중단
       setLoading(true);
 
       try {
@@ -200,9 +161,8 @@ const BestTransViewer = () => {
         }
       }
     }
-
     checkDB();
-
+    fetchData();
     // 클린업 함수
     return () => {
       isMounted = false;
@@ -231,116 +191,24 @@ const BestTransViewer = () => {
       <div className="flex flex-col gap-2">
         {docParts.map((part, index) => (
           <div key={index} className="paragraph flex flex-row gap-4 relative">
-            <div
-              onClick={async (e) => {
-                e.stopPropagation();
-                if (localStorage.getItem("token")) {
-                  toggleButton(part.id, e);
-                }
-                const tmpTransList = await fetchBestTranslate(
-                  part.docsId,
-                  "best"
-                );
-                setTransList(tmpTransList);
-                if (tmpTransList !== undefined) {
-                  const filteredTranslations = tmpTransList.filter(
-                    (item) => item.originId === part.originId
-                  );
-                  if (filteredTranslations.length > 0) {
-                    setBestTrans(filteredTranslations[0].content);
-                  } else {
-                    setBestTrans("");
-                  }
-                } else {
-                  setBestTrans("");
-                }
-                toggleDocpart(part.id);
-              }}
-              className="cursor-pointer p-4 rounded-xl text-[#424242] bg-gray-200 hover:bg-[#cfccc9] hover:shadow-lg flex flex-col w-full transition-all duration-200 shadow-md"
-            >
-              <div
-                ref={(element) => {
-                  if (element && !initialHeights.current[part.id]) {
-                    // ToastViewer가 렌더링된 후 약간의 지연을 주고 높이를 측정
-                    setTimeout(() => {
-                      const height = element.offsetHeight;
-                      initialHeights.current[part.id] = height + "px";
-                      setHeightStates((prev) => ({
-                        ...prev,
-                        [part.id]: initialHeights.current[part.id],
-                      }));
-                    }, 50);
-                  }
-                }}
-                style={{ height: heightStates[part.id] }}
-              >
-                {!docpartStates[part.id] ? (
-                  <ToastViewer content={part.content} />
+            <div className="p-4 rounded-xl text-[#424242] bg-gray-200 hover:bg-[#cfccc9] hover:shadow-lg flex flex-col w-full transition-all duration-200 shadow-md">
+              <div className="flex justify-between">
+                {tmpBestTransList.current[part.id] ? (
+                  <ToastViewer
+                    content={tmpBestTransList.current[part.id].element.content}
+                  />
                 ) : (
-                  <div className="flex justify-between">
-                    <ToastViewer content={bestTrans} />
-                    {bestTrans !== "" && (
-                      <Trophy className="w-6 h-6 shrink-0 m-2 text-yellow-500" />
-                    )}
-                  </div>
+                  <ToastViewer content={""} />
+                )}
+
+                {bestTrans !== "" && (
+                  <Trophy className="w-6 h-6 shrink-0 m-2 text-yellow-500" />
                 )}
               </div>
             </div>
-            {buttonStates[part.id] && (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{
-                  duration: 0.3,
-                  scale: {
-                    type: "spring",
-                    visualDuration: 0.2,
-                    bounce: 0.25,
-                  },
-                }}
-              >
-                <div
-                  className="flex flex-col min-w-fit h-fit z-95 items-center gap-4"
-                  style={{
-                    position: "relative",
-                    top: mousePositions[part.id]?.y || 0,
-                    transform: "translate(0px,-50%)",
-                  }}
-                >
-                  <RectBtn
-                    onClick={async () => {
-                      useEditorStore.setState({
-                        docsPart: part.content,
-                        porder: part.porder,
-                        docsId: part.docsId,
-                        originId: part.originId,
-                      });
-                      await openEditor();
-                      toggleEditor();
-                    }}
-                    text="번역하기"
-                    className="opacity-90 hover:opacity-100 transition-opacity duration-200 shadow-sm hover:shadow-md w-full"
-                  />
-                  <RectBtn
-                    onClick={async () => {
-                      setDocsPart(part.content);
-                      setDocsId(part.docsId);
-                      console.log("현재docsId", part.docsId);
-                      setOriginId(part.originId);
-                      await fetchBestTranslate(part.docsId, "");
-                      await openArchive();
-                      toggleArchive();
-                    }}
-                    text="번역기록"
-                    className="opacity-90 hover:opacity-100 transition-opacity duration-200 shadow-sm hover:shadow-md"
-                  />
-                </div>
-              </motion.div>
-            )}
           </div>
         ))}
       </div>
-
       <div ref={loadingRef} className="py-6 text-center">
         {loading && (
           <div className="flex justify-center items-center" role="status">

@@ -39,7 +39,16 @@ const TranslateArchive = () => {
     setOrderByLike,
     setOrderByUpdatedAt,
   } = useArchiveStore();
-  const { openReport, toggleReport } = useReportStore();
+  const {
+    openReport,
+    toggleReport,
+    originContent,
+    reportedUser,
+    chatId,
+    articleId,
+    transId,
+    commentId,
+  } = useReportStore();
 
   //모달 관련 상태
   const { isArchiveOpen, closeArchive, isArchiveVisible, toggleArchive } =
@@ -124,14 +133,7 @@ const TranslateArchive = () => {
             }}
             className="fixed inset-0 flex items-center justify-center min-w-full min-h-full "
           >
-            <ReportModal
-              originalContent={originId}
-              reportedUserId={null}
-              replyId={null}
-              articleId={null}
-              transId={null}
-              chatId={null}
-            />
+            <ReportModal />
             <div className="relative m-5 p-6 w-1/2 h-[95%] min-w-[768px] min-h-[80%] max-w-full max-h-full rounded-2xl bg-white shadow-lg overflow-y-scroll transition-all duration-300 ease-in-out">
               <div className="flex shrink-0 pb-6 text-2xl font-semibold text-slate-800 justify-between items-center">
                 <img

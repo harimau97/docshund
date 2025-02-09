@@ -16,7 +16,7 @@ const ViewerMainPage = () => {
             ? navigate(`/translate/main/viewer/${docsId}/best`)
             : navigate(`/translate/main/viewer/${docsId}`);
         }}
-        className="fixed flex items-center justify-center h-12 w-12 top-2 right-36 cursor-pointer rounded-full bg-[#BC5B39] hover:bg-[#C96442]"
+        className="absolute flex items-center justify-center h-12 w-12 top-2 right-36 cursor-pointer rounded-full bg-[#BC5B39] hover:bg-[#C96442]"
       >
         <Languages />
       </button>
