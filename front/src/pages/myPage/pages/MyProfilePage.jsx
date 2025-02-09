@@ -4,6 +4,7 @@ import { toast } from "react-toastify";
 import { ChevronRight } from "lucide-react";
 import authService from "../../../services/authService";
 import useUserProfileStore from "../../../store/myPageStore/userProfileStore";
+import userProfileService from "../services/userProfileService";
 import ProfileCard from "./ProfileCard";
 import SettingsCard from "./SettingsCard";
 
@@ -47,14 +48,36 @@ const MyProfilePage = () => {
     }
   }, [error]);
 
-  // 편집 모드 시작
+  // 편집 모드 시작 취소
   const handleEditClick = () => setIsEditing(true);
-
-  // 편집 모드 취소
   const handleCancelClick = () => {
     setIsEditing(false);
     setEditedProfile(profile);
     setProfileImageFile(null);
+  };
+
+  // 닉네임 중복 체크
+  const checkNickname = async () => {
+    if (!editedProfile.nickname) {
+      toast.warn("닉네임을 입력해주세요.");
+      return false;
+    }
+    try {
+      const isAvailable = await userProfileService.checkNickname(
+        editedProfile.nickname,
+        profile.nickname
+      );
+      if (isAvailable) {
+        toast.success("사용 가능한 닉네임입니다.");
+        return true;
+      } else {
+        toast.error("사용할 수 없는 닉네임입니다.");
+        return false;
+      }
+    } catch (error) {
+      toast.error("닉네임 중복 확인 중 오류가 발생했습니다.");
+      return false;
+    }
   };
 
   // 편집 모드 저장 (저장 후 페이지 리로딩 제거)
@@ -69,6 +92,9 @@ const MyProfilePage = () => {
       toast.warn("모든 필드를 입력해주세요.");
       return;
     }
+
+    const isUnique = await checkNickname();
+    if (!isUnique) return;
 
     const formData = new FormData();
     formData.append(
@@ -94,7 +120,6 @@ const MyProfilePage = () => {
       await updateProfile(userId, formData);
       toast.success("프로필이 성공적으로 업데이트되었습니다.");
       setIsEditing(false);
-      // 필요시 업데이트 후 fetchProfile(userId) 호출하여 최신 정보 반영 가능
     } catch (error) {
       toast.error("프로필 업데이트 중 오류가 발생했습니다.");
       console.error("프로필 업데이트 실패", error);
@@ -226,6 +251,7 @@ const MyProfilePage = () => {
         editedProfile={editedProfile}
         handleChange={handleChange}
         handleImageChange={handleImageChange}
+        handleNicknameCheck={checkNickname}
       />
 
       <h1 className="font-bold text-2xl mt-5 mb-5">환경설정</h1>
