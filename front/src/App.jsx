@@ -36,16 +36,12 @@ function App() {
 
   const pathname = location.pathname;
   // console.log("Current pathname:", pathname);
-
-  const isTranslateViewerPage = pathname.includes("/translate/viewer");
-
-  const { isChatBotVisible, toggleChatBot } = ChatBotStore();
+  const isTranslateViewerPage = pathname.includes("/translate/main/viewer");
   const { isChatVisible, toggleChat } = ChatStore();
 
   return (
     <div className="flex flex-col min-h-screen min-w-[768px] overflow-hidden">
       <ToastModal />
-
       {isTranslateViewerPage ? <LeftNav /> : <UpperNav />}
       <div className="flex-grow">
         <AppRouter />
@@ -68,7 +64,6 @@ function App() {
       ) : null}
       <ChatBotBtn />
       {isChatVisible && <Chat />}
-
       {isTranslateViewerPage ? null : <Footer />}
       <LoginModal />
     </div>

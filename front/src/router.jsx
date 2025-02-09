@@ -28,8 +28,10 @@ import TermsPage from "./pages/helpDesk/TermsPage.jsx";
 import PrivacyPage from "./pages/helpDesk/PrivacyPage.jsx";
 
 // 번역 관련 페이지
+import ViewerMainPage from "./pages/translate/viewerMainPage.jsx";
 import TranslatePage from "./pages/translate/translate.jsx";
 import TranslateViewer from "./pages/translate/translateViewer.jsx";
+import BestTransViewer from "./pages/translate/bestTransViewer.jsx";
 
 // Community 관련 페이지
 import CommunityPage from "./pages/community/community.jsx";
@@ -52,7 +54,10 @@ function AppRoutes() {
       <Route path="/" element={<LandingPage />} />
       {/* 번역 관련 주소 */}
       <Route path="/translate" element={<TranslatePage />} />
-      <Route path="/translate/viewer/:docsId" element={<TranslateViewer />} />
+      <Route path="/translate/main" element={<ViewerMainPage />}>
+        <Route path="viewer/:docsId" element={<TranslateViewer />} />
+        <Route path="viewer/:docsId/best" element={<BestTransViewer />} />
+      </Route>
 
       {/* 커뮤니티 관련 주소 */}
       <Route path="/community" element={<CommunityPage />}>
@@ -90,12 +95,6 @@ function AppRoutes() {
           />
         }
       />
-
-      {/* 번역뷰어 */}
-      <Route
-        path="translate/viewer/:docsId"
-        element={<TranslateViewer />}
-      ></Route>
 
       {/* 비로그인 접근 불가 */}
       <Route element={<ProtectedRoute />}>
