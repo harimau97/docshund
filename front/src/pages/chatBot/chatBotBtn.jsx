@@ -78,7 +78,7 @@ const ChatBotBtn = () => {
 
   const testGeminiAPI = async (chatContent) => {
     setLoading(true);
-    // console.log(chatContent);
+    console.log("Sending chat content:", chatContent);
     try {
       const cloudFunctionUrl = `${import.meta.env.VITE_CLOUD_FUNCTION_URL}`;
       const response = await axios.post(
@@ -87,7 +87,6 @@ const ChatBotBtn = () => {
         {
           headers: {
             "Content-Type": "application/json",
-            "x-api-key": import.meta.env.VITE_API_KEY,
           },
         }
       );
@@ -120,16 +119,15 @@ const ChatBotBtn = () => {
       //     }),
       //   }
       // );
-
-      const data = await response.json();
+      console.log(response);
+      const data = await response.data;
       const botResponse = {
-        text:
-          data.candidates?.[0]?.content?.parts?.[0]?.text ||
-          "응답을 받아오는데 실패했습니다.",
+        text: response.data.response || "응답을 받아오는데 실패했습니다.",
         isUser: false,
         timestamp: new Date().toLocaleTimeString(),
       };
 
+      console.log("Processed bot response:", botResponse);
       setMessages((prev) => [...prev, botResponse]);
     } catch (error) {
       const errorMessage = {
