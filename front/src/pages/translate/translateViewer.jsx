@@ -12,8 +12,6 @@ import {
 } from "./hooks/translateGetService.jsx";
 import * as motion from "motion/react-client";
 // 컴포넌트 import
-import AlertModal from "../../components/alertModal/alertModal.jsx";
-import useAlertStore from "../../store/alertStore.jsx";
 import TranslateEditor from "./translateEditor.jsx";
 import TranslateArchive from "./translateArchive.jsx";
 import ToastViewer from "./components/toastViewer.jsx";
@@ -27,7 +25,6 @@ import useArchiveStore from "../../store/translateStore/archiveStore.jsx";
 
 //이미지 import
 import loadingGif from "../../assets/loading.gif";
-import warning from "../../assets/icon/warning.png";
 import { Trophy } from "lucide-react";
 
 const TranslateViewer = () => {
@@ -58,7 +55,6 @@ const TranslateViewer = () => {
   const { bestTrans, setBestTrans, setDocsId, setOriginId, setDocsPart } =
     useEditorStore();
   //모달 관련 상태
-  const { isAlertOpen, toggleAlert } = useAlertStore();
   const { openEditor, openArchive, toggleArchive, toggleEditor } =
     useModalStore();
 
@@ -142,7 +138,6 @@ const TranslateViewer = () => {
   useEffect(() => {
     let isMounted = true; // 컴포넌트 마운트 상태 추적
     closeAllConnections();
-    toggleAlert(1000); // 새로운 문서에 들어갈 경우를 위해 기존 db와 연결 해제
     // 상태 초기화
     setDocParts([]);
     setProcessedCount(0);
@@ -228,17 +223,6 @@ const TranslateViewer = () => {
 
   return (
     <div className="h-[99%] min-w-[800px] w-[70%] absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 overflow-x-auto overflow-y-scroll p-6 flex flex-col z-[1000] max-w-screen-xl mx-auto">
-      <AlertModal
-        imgSrc={warning}
-        alertTitle={"알림"}
-        alertText={
-          "[서비스 이용 안내]\n\n" +
-          "1. 이 번역본은 공식 번역이 아니며, 원본의 정확성과 완전성을 보장하지 않습니다.\n" +
-          "2. 참고용으로만 사용하시고, 공식 정보를 확인하시려면 원본 문서를 직접 참조하시기 바랍니다.\n\n" +
-          "3. 본 서비스는 공익적인 목적을 위해 제공되며, 상업적 이용 시 발생하는 모든 법적 책임은의 사용자에게 있으며, 서비스 제공자는 이에 대한 책임을 지지 않습니다."
-        }
-        isVisible={isAlertOpen}
-      />
       <div className="flex flex-col gap-2">
         {docParts.map((part, index) => (
           <div key={index} className="paragraph flex flex-row gap-4 relative">
