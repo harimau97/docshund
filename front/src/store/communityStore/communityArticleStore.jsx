@@ -57,9 +57,11 @@ const communityArticleStore = create((set) => ({
 
   // reply list의 초기값 설정
   replies: [],
+  commentCount: 0,
 
   // reply list의 메소드 설정
   setReplies: (replies) => set({ replies }),
+  setCommentCount: (commentCount) => set({ commentCount }),
 }));
 
 export default communityArticleStore;

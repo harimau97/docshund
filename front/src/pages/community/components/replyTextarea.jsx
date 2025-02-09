@@ -1,19 +1,37 @@
+import propTypes from "prop-types";
 import { useState } from "react";
+import { useParams } from "react-router-dom";
 
 import ReplyItemService from "../services/replyItemService";
 
 import RectBtn from "../../../components/button/rectBtn";
-import { useParams } from "react-router-dom";
 
-const ReplyTextarea = () => {
+const ReplyTextarea = ({ setReplyFlag, reCommentFlag, commentId }) => {
   const { articleId } = useParams();
   const [replyContent, setReplyContent] = useState("");
 
+  // store에서 데이터를 가져오기 위해 정의
+
   const handleSubmit = async () => {
     // 댓글 작성
-    await ReplyItemService.postReplyItem(articleId, replyContent);
+    // 대댓글인지 원댓글인지에 따라 다르게 처리
+    if (reCommentFlag) {
+      // 대댓글 작성
+      // 대댓글 작성 시에는 대댓글을 작성하는 원댓글의 id를 가져와야 함
+      await ReplyItemService.postReReplyItem(
+        articleId,
+        commentId,
+        replyContent
+      );
+    } else {
+      // 원댓글 작성
+      await ReplyItemService.postReplyItem(articleId, replyContent);
+    }
+
     setReplyContent(""); // 제출 후 입력창 초기화
-    // 제출 후 댓글 리스트 다시 불러오기
+
+    // 제출 후 댓글 리스트 리렌더링
+    setReplyFlag((prev) => !prev);
   };
 
   return (
@@ -33,6 +51,12 @@ const ReplyTextarea = () => {
       </div>
     </div>
   );
+};
+
+ReplyTextarea.propTypes = {
+  setReplyFlag: propTypes.func,
+  reCommentFlag: propTypes.bool,
+  commentId: propTypes.number,
 };
 
 export default ReplyTextarea;

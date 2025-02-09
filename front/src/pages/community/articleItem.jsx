@@ -9,21 +9,23 @@ import ArticleFooter from "./components/articleFooter";
 import ReplyList from "./replyList";
 
 import RectBtn from "../../components/button/rectBtn";
-import like from "../../assets/icon/heartFilled24.png";
-import likeCancel from "../../assets/icon/heartEmpty24.png";
 
 const ArticleItem = () => {
   const { articleId } = useParams();
   const [isLiked, setIsLiked] = useState(false);
 
+  const articles = communityArticleStore((state) => state.articles);
   const articleData = communityArticleStore((state) => state.articleItems);
-  const storeArticleId = communityArticleStore((state) => state.articleId);
   const likeCount = communityArticleStore((state) => state.likeCount);
+  const commentCount = communityArticleStore((state) => state.commentCount);
 
   // store의 메소드를 가져오기 위해 정의
   const setArticleId = communityArticleStore((state) => state.setArticleId);
   const setArticleItems = communityArticleStore(
     (state) => state.setArticleItems
+  );
+  const setCommentCount = communityArticleStore(
+    (state) => state.setCommentCount
   );
   const setLikeCount = communityArticleStore((state) => state.setLikeCount);
   const setLoading = communityArticleStore((state) => state.setLoading);
@@ -31,8 +33,6 @@ const ArticleItem = () => {
 
   // NOTE: 즉시 store에 접근하여 데이터를 가져오기 위해 useEffect 사용
   useEffect(() => {
-    let isMounted = true;
-
     const fetchArticleItems = async (articleId) => {
       // 데이터를 가져오기 전에 로딩 상태를 true로 변경
       setLoading(true);
@@ -42,7 +42,7 @@ const ArticleItem = () => {
         // detailedArticleService.fetchDetailedArticle 함수를 호출하여 데이터를 가져옴
         const data = await ArticleItemService.fetchArticleItem(articleId);
 
-        if (isMounted && data) {
+        if (data) {
           setArticleId(articleId);
           setArticleItems(data);
           setIsLiked(data.liked);
@@ -51,16 +51,19 @@ const ArticleItem = () => {
       } catch (error) {
         setError(error);
       } finally {
-        if (isMounted) setLoading(false);
+        setLoading(false);
       }
     };
 
+    // 게시글 목록에서 해당 게시글을 찾아서 commentCount를 가져와서 미리 세팅
+    articles.map((article) => {
+      if (article.articleId == articleId) {
+        setCommentCount(article.commentCount);
+      }
+    });
+
     // 게시글 아이템을 가져오는 fetchArticleItems 함수 호출
     if (articleId) fetchArticleItems(articleId);
-
-    return () => {
-      isMounted = false;
-    };
   }, []);
 
   return (
@@ -165,26 +168,9 @@ const ArticleItem = () => {
             <ArticleFooter articleData={articleData} />
           </div>
         </div>
-        {/* TODO: 댓글 쓰기 창 구현 */}
-        <ReplyList articleData={articleData} />
+        {/* 댓글 리스트 */}
+        <ReplyList replyCount={articleData.commentCount} />
       </main>
-      {/* 
-      articleId: 16
-      commentCount: 0
-      content: "1234567890123456789012345678901234567890"
-      createdAt: "2025-02-06T13:26:28.42431"
-      docsId: 1
-      documentName: "Spring Framework"
-      likeCount: 0
-      liked: false
-      nickname: "gg_788544"
-      position: "BACKEND"
-      profileImage: "https://docshundbucket.s3.ap-northeast-2.amazonaws.com/small_logo.png"
-      title: "제목 16입니다"
-      updatedAt: "2025-02-06T13:26:28.42431"
-      userId: 43
-      viewCount: 0
-      */}
     </div>
   );
 };
