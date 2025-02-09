@@ -13,5 +13,5 @@ public interface TranslatedDocumentRepository extends JpaRepository<TranslatedDo
 	List<TranslatedDocument> findByOriginDocument_Document_DocsIdAndStatus(Integer docsId, Status status);
 
 	// 특정 유저의 번역문서 조회
-	List<TranslatedDocument> findByUser_UserIdAndStatus(Long userId, String status);
+	List<TranslatedDocument> findByUser_UserIdAndStatus(Long userId, Status status);
 }
