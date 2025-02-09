@@ -16,4 +16,12 @@ public interface ReportRepository extends JpaRepository<Report, Integer>, Report
 	boolean existsByUserAndTransId(User user, Integer transId);
 
 	boolean existsByUserAndChatId(User user, Long chatId);
+
+	int deleteAllByCommentId(Integer commentId);
+
+	int deleteAllByTransId(Integer transId);
+
+	int deleteAllByArticleId(Integer articleId);
+
+	int deleteAllByChatId(Long chatId);
 }

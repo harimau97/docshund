@@ -77,6 +77,22 @@ public class ReportServiceImpl implements ReportService {
 		reportRepositroy.save(report);
 	}
 
+	@Override
+	@Transactional
+	public void withdrawReport(Integer reportId) {
+		isAdminByReport();
+
+		Report report = reportRepositroy.findById(reportId)
+			.orElseThrow(() -> new RuntimeException("해당 신고를 찾을 수 없습니다."));
+		UserInfo reportedUserInfo = userInfoRepository.findByUserAndUserInfo(report.getReportedUser())
+			.orElseThrow(() -> new RuntimeException("신고할 대상을 찾을 수 없습니다."));
+
+		handleWithdrawTranslatedDocumentReport(report, reportedUserInfo);
+		handleWithdrawArticleReport(report, reportedUserInfo);
+		handleWithdrawCommentReport(report, reportedUserInfo);
+		handleWithdrawChatReport(report, reportedUserInfo);
+	}
+
 	private void handleCommentReport(ReportRequestDto reportRequestDto, User user, Report report) {
 		if (reportRequestDto.getCommentId() != null) {
 			if (reportRepositroy.existsByUserAndCommentId(user, reportRequestDto.getCommentId())) {
@@ -138,6 +154,50 @@ public class ReportServiceImpl implements ReportService {
 			if (chat.getReportCount() >= INVISIBLE_REPORT_COUNT) {
 				chat.modifyToInvisible();
 			}
+		}
+	}
+
+	private void handleWithdrawTranslatedDocumentReport(Report report, UserInfo reportedUserInfo) {
+		if (report.getTransId() != null) {
+			int reportCount = reportRepositroy.deleteAllByTransId((report.getTransId()));
+			log.info("삭제된 신고 개수 = " + reportCount);
+			TranslatedDocument translatedDocument = translatedDocumentRepository.findById(report.getTransId())
+				.orElseThrow(() -> new RuntimeException("신고철회 할 대상을 찾을 수 없습니다."));
+			translatedDocument.resetReportCount();
+			reportedUserInfo.decreaseReportCount(reportCount);
+		}
+	}
+
+	private void handleWithdrawArticleReport(Report report, UserInfo reportedUserInfo) {
+		if (report.getArticleId() != null) {
+			int reportCount = reportRepositroy.deleteAllByArticleId((report.getArticleId()));
+			log.info("삭제된 신고 개수 = " + reportCount);
+			Article article = articleRepository.findById(report.getArticleId())
+				.orElseThrow(() -> new RuntimeException("신고철회 할 대상을 찾을 수 없습니다."));
+			article.resetReportCount();
+			reportedUserInfo.decreaseReportCount(reportCount);
+		}
+	}
+
+	private void handleWithdrawCommentReport(Report report, UserInfo reportedUserInfo) {
+		if (report.getCommentId() != null) {
+			int reportCount = reportRepositroy.deleteAllByCommentId((report.getCommentId()));
+			log.info("삭제된 신고 개수 = " + reportCount);
+			Comment comment = commentRepository.findById(report.getCommentId())
+				.orElseThrow(() -> new RuntimeException("신고철회 할 대상을 찾을 수 없습니다."));
+			comment.resetReportCount();
+			reportedUserInfo.decreaseReportCount(reportCount);
+		}
+	}
+
+	private void handleWithdrawChatReport(Report report, UserInfo reportedUserInfo) {
+		if (report.getChatId() != null) {
+			int reportCount = reportRepositroy.deleteAllByChatId((report.getChatId()));
+			log.info("삭제된 신고 개수 = " + reportCount);
+			Chat chat = chatRepository.findById(report.getChatId())
+				.orElseThrow(() -> new RuntimeException("신고철회 할 대상을 찾을 수 없습니다."));
+			chat.resetReportCount();
+			reportedUserInfo.decreaseReportCount(reportCount);
 		}
 	}
 
