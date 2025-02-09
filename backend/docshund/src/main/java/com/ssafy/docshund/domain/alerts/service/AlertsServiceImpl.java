@@ -7,10 +7,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-import com.ssafy.docshund.domain.docs.entity.TranslatedDocument;
-import com.ssafy.docshund.domain.forums.entity.Article;
-import com.ssafy.docshund.domain.forums.entity.Comment;
-import com.ssafy.docshund.domain.supports.entity.Inquiry;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
@@ -19,6 +15,10 @@ import com.ssafy.docshund.domain.alerts.dto.AlertOutputDto;
 import com.ssafy.docshund.domain.alerts.dto.Category;
 import com.ssafy.docshund.domain.alerts.entity.Alert;
 import com.ssafy.docshund.domain.alerts.repository.AlertRepository;
+import com.ssafy.docshund.domain.docs.entity.TranslatedDocument;
+import com.ssafy.docshund.domain.forums.entity.Article;
+import com.ssafy.docshund.domain.forums.entity.Comment;
+import com.ssafy.docshund.domain.supports.entity.Inquiry;
 import com.ssafy.docshund.domain.users.entity.User;
 import com.ssafy.docshund.global.util.user.UserUtil;
 
@@ -38,7 +38,7 @@ public class AlertsServiceImpl implements AlertsService {
 	@Override
 	public List<AlertOutputDto> getAllAlerts(Long userId) {
 		User currentUser = userUtil.getUser();
-		if(!currentUser.getUserId().equals(userId) && !userUtil.isAdmin(currentUser)) {
+		if (!currentUser.getUserId().equals(userId) && !userUtil.isAdmin(currentUser)) {
 			throw new SecurityException("관리자 외에는 본인의 알림만 조회할 수 있습니다.");
 		}
 		List<Alert> alerts = alertRepository.findByUserUserId(userId);
@@ -51,7 +51,7 @@ public class AlertsServiceImpl implements AlertsService {
 		Alert alert = alertRepository.findById(alertId)
 			.orElseThrow(() -> new IllegalArgumentException("알림을 찾을 수 없습니다."));
 		User currentUser = userUtil.getUser();
-		if(!currentUser.equals(alert.getUser()) && !userUtil.isAdmin(currentUser)) {
+		if (!currentUser.equals(alert.getUser()) && !userUtil.isAdmin(currentUser)) {
 			throw new SecurityException("관리자 외에는 본인의 알림만 조회할 수 있습니다.");
 		}
 		return convertToOutputDto(alert);
@@ -63,7 +63,7 @@ public class AlertsServiceImpl implements AlertsService {
 	@Override
 	@Transactional
 	public SseEmitter subscribe(Long userId) {
-		SseEmitter emitter = new SseEmitter(30 * 60 * 1000L);	// 30분 적용
+		SseEmitter emitter = new SseEmitter(10 * 60 * 1000L);    // 10분 적용
 		emitters.put(userId, emitter);
 		emitter.onCompletion(() -> emitters.remove(userId));
 		emitter.onTimeout(() -> {
@@ -222,10 +222,10 @@ public class AlertsServiceImpl implements AlertsService {
 
 		// 새로운 알림 생성
 		Alert alert = new Alert(
-				"🤎 내가 번역한 문서에 좋아요가 추가되었어요!",
-				author,
-				translatedDocument, null, null, null,
-				null
+			"🤎 내가 번역한 문서에 좋아요가 추가되었어요!",
+			author,
+			translatedDocument, null, null, null,
+			null
 		);
 
 		alertRepository.save(alert);
@@ -235,17 +235,17 @@ public class AlertsServiceImpl implements AlertsService {
 	}
 
 	// 게시글 좋아요 알림 (고도화시 고려)
-//	@Override
-//	@Transactional
-//	public void sendArticleLikeAlert(Article article, User liker) {
-//		// 게시글 작성자
-//		User author = article.getUser();
-//
-//		// 본인이 자신의 게시글에 좋아요하면 알림을 보내지 않음
-//		if (author.equals(liker)) {
-//			return;
-//		}
-//	}
+	//	@Override
+	//	@Transactional
+	//	public void sendArticleLikeAlert(Article article, User liker) {
+	//		// 게시글 작성자
+	//		User author = article.getUser();
+	//
+	//		// 본인이 자신의 게시글에 좋아요하면 알림을 보내지 않음
+	//		if (author.equals(liker)) {
+	//			return;
+	//		}
+	//	}
 
 	// 게시글 댓글 알림 전송
 	@Override
@@ -260,10 +260,10 @@ public class AlertsServiceImpl implements AlertsService {
 
 		// 새로운 알림 생성
 		Alert alert = new Alert(
-				"💬 내 게시글에 새로운 댓글이 달렸어요!",
-				author,
-				null, article, null, null,
-				null
+			"💬 내 게시글에 새로운 댓글이 달렸어요!",
+			author,
+			null, article, null, null,
+			null
 		);
 
 		alertRepository.save(alert);
@@ -286,10 +286,10 @@ public class AlertsServiceImpl implements AlertsService {
 
 		// 새로운 알림 생성
 		Alert alert = new Alert(
-				"💬 내 댓글에 대댓글이 달렸어요!",
-				author,
-				null, null, parentComment, null,
-				null
+			"💬🔄 내 댓글에 대댓글이 달렸어요!",
+			author,
+			null, null, parentComment, null,
+			null
 		);
 
 		alertRepository.save(alert);
@@ -305,10 +305,10 @@ public class AlertsServiceImpl implements AlertsService {
 
 		// 새로운 알림 생성
 		Alert alert = new Alert(
-				"💌 문의에 대한 답변이 등록되었습니다!",
-				author,
-				null, null, null, inquiry,
-				null
+			"💌 문의에 대한 답변이 등록되었습니다!",
+			author,
+			null, null, null, inquiry,
+			null
 		);
 
 		alertRepository.save(alert);

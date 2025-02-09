@@ -548,8 +548,9 @@ public class DocsServiceImpl implements DocsService {
 			throw new SecurityException("You are not authorized to delete this translation.");
 		}
 
-		// 번역 삭제
-		translatedDocumentRepository.delete(translatedDocument);
+		// 번역삭제
+		translatedDocument.setStatus(Status.DELETED);
+		translatedDocumentRepository.save(translatedDocument);
 	}
 
 	// 번역 투표 / 투표해제
