@@ -37,7 +37,7 @@ public class Document extends BaseTimeEntity {
 	@Column(name = "document_link", nullable = false)
 	private String documentLink;
 
-	@Column(name = "view_count", nullable = false)
+	@Column(name = "view_count", nullable = false, columnDefinition = "INT DEFAULT 0")
 	@Setter
 	private Integer viewCount;
 

@@ -286,7 +286,7 @@ public class AlertsServiceImpl implements AlertsService {
 
 		// 새로운 알림 생성
 		Alert alert = new Alert(
-			"💬 내 댓글에 대댓글이 달렸어요!",
+			"💬🔄 내 댓글에 대댓글이 달렸어요!",
 			author,
 			null, null, parentComment, null,
 			null
