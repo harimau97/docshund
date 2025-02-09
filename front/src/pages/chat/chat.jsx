@@ -1,23 +1,22 @@
 import { useEffect, useState, useRef } from "react";
 import { Stomp } from "@stomp/stompjs";
-import * as motion from "motion/react-client";
-import { AnimatePresence } from "motion/react";
-import { useLocation } from "react-router-dom";
+import { AnimatePresence, motion as m } from "motion/react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import { axiosJsonInstance } from "../../utils/axiosInstance.jsx";
 import ChatStore from "../../store/chatStore.jsx";
+import { Flag, Send } from "lucide-react";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Chat = () => {
-  const stompClient = useRef(null); //웹소켓 연결 객체
-  const [messages, setMessages] = useState([]); // 메시지 리스트
-  const [inputValue, setInputValue] = useState(""); // 사용자 입력을 저장할 변수
-  const { isChatVisible, toggleChat } = ChatStore(); // 채팅창 표시 여부
-
-  // 현재 페이지의 URL에서 문서 ID 추출
+  const stompClient = useRef(null);
+  const [messages, setMessages] = useState([]);
+  const [inputValue, setInputValue] = useState("");
+  const { isChatVisible, toggleChat } = ChatStore();
   const location = useLocation();
+  const navigate = useNavigate();
   const docsId = location.pathname.split("/")[3];
-
-  // 로그인한 사용자의 ID
   const [userId, setUserId] = useState(null);
   const token = localStorage.getItem("token");
 
@@ -28,25 +27,21 @@ const Chat = () => {
     }
   }, [token]);
 
-  // 이전 채팅 메시지 불러오기
-  const fetchMessages = () => {
-    return axiosJsonInstance
-      .get(`chats/${docsId}`)
-      .then((response) => {
-        console.log("Fetched messages:", response.data.content);
+  const fetchMessages = async () => {
+    try {
+      const response = await axiosJsonInstance.get(`chats/${docsId}`);
+      if (response.data.content.length === 0) {
+        setMessages([]);
+      } else {
         setMessages(response.data.content.reverse() || []);
-      })
-      .catch((error) => {
-        console.error("Error fetching messages:", error);
-      });
+      }
+    } catch (error) {
+      console.error("Error fetching messages:", error);
+    }
   };
 
-  // 웹소켓 연결
   const connect = () => {
-    if (stompClient.current && stompClient.current.connected) {
-      console.log("WebSocket is already connected");
-      return;
-    }
+    if (stompClient.current && stompClient.current.connected) return;
 
     const socketFactory = () =>
       new WebSocket("ws://i12a703.p.ssafy.io:8081/ws-connect");
@@ -56,92 +51,53 @@ const Chat = () => {
       () => {
         stompClient.current.subscribe(`/sub/chats/${docsId}`, (message) => {
           const newMessage = JSON.parse(message.body);
-          console.log("Received message headers:", message.headers);
-          console.log("Received message body:", newMessage);
-          setMessages((prevMessages) => {
-            if (!Array.isArray(prevMessages)) {
-              prevMessages = [];
-            }
-            return [...prevMessages, newMessage];
-          });
+          setMessages((prev) => [...prev, newMessage]);
         });
       },
       (error) => {
         console.error("WebSocket connection error:", error);
-        if (error.headers && error.headers.message) {
-          console.error("Error message:", error.headers.message);
-        }
       }
     );
   };
 
-  // 웹소켓 연결 해제
   const disconnect = () => {
-    try {
-      if (stompClient.current && stompClient.current.connected) {
-        stompClient.current.disconnect(() => {
-          console.log("WebSocket disconnected");
-        });
-      }
-    } catch (error) {
-      console.error("Error during WebSocket disconnect:", error);
+    if (stompClient.current && stompClient.current.connected) {
+      stompClient.current.disconnect(() =>
+        console.log("WebSocket disconnected")
+      );
     }
   };
 
-  // 컴포넌트가 처음 렌더링될 때 웹소켓 연결
   useEffect(() => {
     connect();
     fetchMessages();
-
-    return () => {
-      disconnect();
-    };
+    return () => disconnect();
   }, []);
 
-  // 메시지 리스트의 맨 아래로 스크롤
   const messagesEndRef = useRef(null);
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
+  useEffect(() => scrollToBottom(), [messages]);
 
-  // 페이지 URL 변경 시 채팅창 숨기기
-  useEffect(() => {
-    toggleChat();
-  }, [location.pathname]); // pathname이 변경될 때마다 실행
-
-  // 입력 필드 값 변경 시 호출되는 함수
   const handleInputChange = (event) => {
     setInputValue(event.target.value);
   };
 
-  // Enter 키를 눌렀을 때 메시지 전송
   const handleKeyDown = (event) => {
-    if (event.key === "Enter") {
-      sendMessage();
-    }
+    if (event.key === "Enter") sendMessage();
   };
 
-  //메세지 전송
   const sendMessage = () => {
     if (inputValue.length > 255) {
-      alert("255자 이상 메세지는 보낼 수 없습니다.");
+      toast.error("255자 이상 메세지는 보낼 수 없습니다.");
       return;
     }
-
-    if (stompClient.current && stompClient.current.connected && inputValue) {
-      const headers = {
-        Authorization: `Bearer ${token}`,
-      };
-      const body = {
-        docsId: docsId,
-        content: inputValue,
-      };
+    if (stompClient.current?.connected && inputValue) {
+      const body = { docsId, content: inputValue };
       stompClient.current.send(
         `/pub/chats/${docsId}`,
-        headers,
+        { Authorization: `Bearer ${token}` },
         JSON.stringify(body)
       );
       setInputValue("");
@@ -155,7 +111,7 @@ const Chat = () => {
           className="fixed inset-0 flex items-center justify-center z-[2500]"
           onClick={toggleChat}
         >
-          <motion.div
+          <m.div
             key="chat-modal"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -164,65 +120,71 @@ const Chat = () => {
               ease: "easeInOut",
               duration: 0.3,
             }}
-            className="chat-modal fixed bottom-23 right-5 w-3/10 h-4/5 bg-white rounded-xl shadow-lg border border-gray-200 z-[2600]"
+            className="fixed bottom-22 right-5 w-[400px] h-[600px] bg-white rounded-xl shadow-lg border border-gray-200 flex flex-col z-[2600]"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="w-full h-full p-4 flex flex-col">
-              <div className="flex-grow overflow-y-auto bg-gray-100 p-2 rounded-lg">
-                {/* 메시지 리스트 출력 */}
-                {messages.length > 0 ? (
-                  messages.map((item, index) => (
-                    <div
-                      key={index}
-                      className={`flex mb-2 ${
-                        item.userId === userId ? "justify-end" : "justify-start"
-                      }`}
-                    >
-                      {item.userId !== userId && (
-                        <img
-                          src={item.profileImg}
-                          alt="Profile"
-                          className="w-8 h-8 rounded-full mr-2"
-                        />
-                      )}
-                      <span
-                        className={`inline-block px-3 py-2 rounded-lg ${
-                          item.userId === userId
-                            ? "bg-[#bc5b39] text-white"
-                            : "bg-[#E4DCD4] text-black"
-                        }`}
-                      >
-                        {item.content}
-                      </span>
-                    </div>
-                  ))
-                ) : (
-                  <div className="text-center text-gray-500">
-                    메시지가 없습니다.
-                  </div>
-                )}
-                <div ref={messagesEndRef} />
-              </div>
-              <div className="mt-4 flex gap-1.5">
-                {/* 입력 필드 */}
-                <input
-                  type="text"
-                  value={inputValue}
-                  onChange={handleInputChange}
-                  onKeyDown={handleKeyDown}
-                  className="w-full px-2 border border-[#E1E1DF] rounded-md focus:outline-none focus:ring-[#bc5b39] focus:border-[#bc5b39] sm:text-sm"
-                  placeholder="메시지를 입력하세요..."
-                />
-                {/* 메시지 전송, 메시지 리스트에 추가 */}
-                <button
-                  onClick={sendMessage}
-                  className="w-3/10 py-2 px-4 bg-[#bc5b39] text-white rounded-md shadow-sm text-center cursor-pointer hover:bg-[#C96442] text-sm"
-                >
-                  전송
-                </button>
-              </div>
+            <div className="p-4 bg-[#C96442] rounded-t-xl text-white font-semibold flex items-center justify-between">
+              <span>문서 채팅</span>
+              <button onClick={toggleChat} className="cursor-pointer">
+                &times;
+              </button>
             </div>
-          </motion.div>
+
+            <div className="flex-1 overflow-y-auto p-4 space-y-4">
+              {/* 메시지가 없을 때 표시 */}
+              {messages.length === 0 && (
+                <div className="text-center text-gray-500">
+                  메시지가 없습니다.
+                </div>
+              )}
+              {messages.map((item, index) => (
+                <div
+                  key={index}
+                  className={`flex ${
+                    item.userId === userId ? "justify-end" : "justify-start"
+                  }`}
+                >
+                  {item.userId !== userId && (
+                    <img
+                      src={item.profileImg}
+                      alt="Profile"
+                      className="w-8 h-8 rounded-full cursor-pointer mr-2"
+                      onClick={() => {
+                        toggleChat();
+                        setTimeout(() => {
+                          navigate(`/userPage/${item.userId}`);
+                        }, 300);
+                      }}
+                    />
+                  )}
+                  <div className="max-w-[70%] p-3 rounded-lg bg-gray-100">
+                    <p className="text-sm">{item.content}</p>
+                    <button className="text-xs text-red-500 flex items-center gap-1 mt-1 cursor-pointer hover:underline">
+                      <Flag size={14} /> 신고
+                    </button>
+                  </div>
+                </div>
+              ))}
+              <div ref={messagesEndRef} />
+            </div>
+
+            <div className="p-4 border-t border-gray-200 flex gap-2">
+              <input
+                type="text"
+                value={inputValue}
+                onChange={handleInputChange}
+                onKeyDown={handleKeyDown}
+                className="flex-1 px-4 py-2 border rounded-full focus:outline-none focus:ring-[#bc5b39] focus:border-[#bc5b39]"
+                placeholder="메시지를 입력하세요..."
+              />
+              <button
+                onClick={sendMessage}
+                className="px-3 py-3 bg-[#bc5b39] text-white rounded-full hover:bg-[#C96442] cursor-pointer"
+              >
+                <Send />
+              </button>
+            </div>
+          </m.div>
         </div>
       )}
     </AnimatePresence>

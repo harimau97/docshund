@@ -4,9 +4,10 @@ import { toast } from "react-toastify";
 const ProfileCard = ({
   isEditing,
   editedProfile,
-  handleChange,
-  handleImageChange,
+  handleChange = null,
+  handleImageChange = null,
 }) => {
+  const profile = editedProfile || {};
   const getByteLength = (str) => new Blob([str]).size;
   const MAX_NICKNAME_BYTES = 20;
   const MAX_CONTENT_BYTES = 225;
@@ -27,12 +28,12 @@ const ProfileCard = ({
 
   // 닉네임 중복 확인
   const handleNicknameCheck = async () => {
-    if (!editedProfile.nickname) {
+    if (!profile.nickname) {
       toast.warn("닉네임을 입력해주세요.");
       return;
     }
     // 실제 API 호출로 중복 여부 확인 가능
-    if (editedProfile.nickname === "taken") {
+    if (profile.nickname === "taken") {
       toast.error("이미 사용중인 닉네임입니다.");
     } else {
       toast.success("사용 가능한 닉네임입니다.");
@@ -46,7 +47,7 @@ const ProfileCard = ({
         {isEditing ? (
           <>
             <img
-              src={editedProfile.profileImage}
+              src={profile.profileImage || "/default-profile.png"}
               alt="Profile"
               className="w-32 h-32 rounded-full"
             />
@@ -68,7 +69,7 @@ const ProfileCard = ({
           </>
         ) : (
           <img
-            src={editedProfile.profileImage}
+            src={profile.profileImage || "/default-profile.png"}
             alt="Profile"
             className="w-32 h-32 rounded-full"
           />
@@ -82,7 +83,7 @@ const ProfileCard = ({
               <input
                 type="text"
                 name="nickname"
-                value={editedProfile.nickname || ""}
+                value={profile.nickname || ""}
                 onChange={handleNicknameInputChange}
                 placeholder="닉네임을 입력해주세요."
                 className="border p-2 rounded mr-3 focus:outline-none focus:ring-[#bc5b39] focus:border-[#bc5b39]"
@@ -100,7 +101,7 @@ const ProfileCard = ({
             </p>
           </div>
         ) : (
-          <p className="font-semibold ">{editedProfile.nickname}</p>
+          <p className="font-semibold ">{profile.nickname}</p>
         )}
       </div>
       <div className="flex mb-4">
@@ -108,7 +109,7 @@ const ProfileCard = ({
         {isEditing ? (
           <select
             name="hobby"
-            value={editedProfile.hobby || ""}
+            value={profile.hobby || ""}
             onChange={handleChange}
             className="border p-2 rounded focus:outline-none focus:ring-[#bc5b39] focus:border-[#bc5b39]"
           >
@@ -117,7 +118,7 @@ const ProfileCard = ({
             <option value="Backend">Backend</option>
           </select>
         ) : (
-          <p>{editedProfile.hobby}</p>
+          <p>{profile.hobby}</p>
         )}
       </div>
       <h3 className="w-30 mb-4">자기소개</h3>
@@ -125,19 +126,18 @@ const ProfileCard = ({
         <>
           <textarea
             name="introduce"
-            value={editedProfile.introduce || ""}
+            value={profile.introduce || ""}
             onChange={handleIntroduceInputChange}
             placeholder="자기소개를 입력해주세요."
             className="border p-2 rounded w-full focus:outline-none focus:ring-[#bc5b39] focus:border-[#bc5b39]"
             style={{ height: "100px", resize: "none" }}
           />
           <p className="text-xs text-gray-500 mt-1 mr-2 text-right">
-            {getByteLength(editedProfile.introduce || "")} / {MAX_CONTENT_BYTES}{" "}
-            byte
+            {getByteLength(profile.introduce || "")} / {MAX_CONTENT_BYTES} byte
           </p>
         </>
       ) : (
-        <p className="break-all">{editedProfile.introduce}</p>
+        <p className="break-all">{profile.introduce}</p>
       )}
     </div>
   );
@@ -151,9 +151,9 @@ ProfileCard.propTypes = {
     hobby: PropTypes.string,
     introduce: PropTypes.string,
   }).isRequired,
-  handleChange: PropTypes.func.isRequired,
-  handleImageChange: PropTypes.func.isRequired,
-  handleNicknameCheck: PropTypes.func.isRequired,
+  handleChange: PropTypes.func,
+  handleImageChange: PropTypes.func,
+  handleNicknameCheck: PropTypes.func,
 };
 
 export default ProfileCard;
