@@ -94,4 +94,9 @@ public class Article extends BaseTimeEntityWithUpdatedAt {
 	public void decreaseReportCount() {
 		this.reportCount--;
 	}
+
+	public void resetReportCount() {
+		this.reportCount = 0;
+		this.status = Status.VISIBLE;
+	}
 }

@@ -73,4 +73,8 @@ public class TranslatedDocument extends BaseTimeEntityWithUpdatedAt {
 		this.status = Status.INVISIBLE;
 	}
 
+	public void resetReportCount() {
+		this.reportCount = 0;
+		this.status = Status.VISIBLE;
+	}
 }
