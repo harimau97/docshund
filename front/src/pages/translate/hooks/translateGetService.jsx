@@ -8,6 +8,7 @@ import useArchiveStore from "../../../store/translateStore/archiveStore";
 import useDocsStore from "../../../store/translateStore/docsStore";
 import useEditorStore from "../../../store/translateStore/editorStore";
 
+// import DocsStore from "../../../store/translateStore/docsStore";
 const baseUrl = "http://i12a703.p.ssafy.io:8081/api/v1/docshund/docs";
 
 // 좋아요한 문서 조회
@@ -22,16 +23,11 @@ export const fetchLikedList = async (docsId) => {
 };
 
 // 문서 리스트 조회
-export const fetchDocsList = async (test) => {
+export const fetchDocsList = async () => {
   try {
-    if (!test) {
-      const response = await axiosJsonInstance.get(`${baseUrl}`);
-      const data = response.data;
-      useDocsStore.setState({ docsList: data });
-    } else {
-      const data = TmpDocsList.docsList;
-      useDocsStore.setState({ docsList: data });
-    }
+    const response = await axiosJsonInstance.get(`${baseUrl}`);
+    const data = response.data;
+    return data;
   } catch (error) {
     console.log(error);
   }
@@ -47,9 +43,6 @@ export const fetchTranslateData = async (docsId, test) => {
       );
       const data = response.data;
       return data;
-    } else {
-      const tempContent = TmpTranslateData.transData;
-      return tempContent;
     }
   } catch (error) {
     console.log(error);
@@ -58,7 +51,7 @@ export const fetchTranslateData = async (docsId, test) => {
 };
 
 // 베스트 번역본 조회
-export const fetchBestTranslate = async (docsId, isBest, test) => {
+export const fetchBestTranslate = async (docsId, isBest) => {
   const status = isBest ? "best" : "";
   try {
     if (isBest === "best") {
@@ -66,17 +59,14 @@ export const fetchBestTranslate = async (docsId, isBest, test) => {
         `${baseUrl}/${docsId}/trans?status=${status}`
       );
       const data = response.data;
-      console.log("베스트 번역본", data);
-      useArchiveStore.setState({ transList: data });
+      console.log(data);
+      return data;
     } else {
-      // console.log("번역데이터 가져오기 시작");
       const response = await axiosJsonInstance.get(
         `${baseUrl}/${docsId}/trans?status=${status}`
       );
       const data = response.data;
-      console.log(data);
-      useArchiveStore.setState({ transList: data });
-      // console.log(useArchiveStore.getState().transList[0]);
+      return data;
     }
   } catch (error) {
     console.log(error);

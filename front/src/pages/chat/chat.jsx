@@ -33,7 +33,8 @@ const Chat = () => {
     return axiosJsonInstance
       .get(`chats/${docsId}`)
       .then((response) => {
-        setMessages(response.data || []);
+        console.log("Fetched messages:", response.data.content);
+        setMessages(response.data.content.reverse() || []);
       })
       .catch((error) => {
         console.error("Error fetching messages:", error);
@@ -42,8 +43,14 @@ const Chat = () => {
 
   // 웹소켓 연결
   const connect = () => {
-    const socket = new WebSocket("ws://i12a703.p.ssafy.io:8081/ws-connect");
-    stompClient.current = Stomp.over(socket);
+    if (stompClient.current && stompClient.current.connected) {
+      console.log("WebSocket is already connected");
+      return;
+    }
+
+    const socketFactory = () =>
+      new WebSocket("ws://i12a703.p.ssafy.io:8081/ws-connect");
+    stompClient.current = Stomp.over(socketFactory);
     stompClient.current.connect(
       { Authorization: `Bearer ${token}` },
       () => {
@@ -51,7 +58,12 @@ const Chat = () => {
           const newMessage = JSON.parse(message.body);
           console.log("Received message headers:", message.headers);
           console.log("Received message body:", newMessage);
-          setMessages((prevMessages) => [...prevMessages, newMessage]);
+          setMessages((prevMessages) => {
+            if (!Array.isArray(prevMessages)) {
+              prevMessages = [];
+            }
+            return [...prevMessages, newMessage];
+          });
         });
       },
       (error) => {
@@ -65,9 +77,14 @@ const Chat = () => {
 
   // 웹소켓 연결 해제
   const disconnect = () => {
-    if (stompClient.current) {
-      stompClient.current.disconnect();
-      console.log("WebSocket disconnected");
+    try {
+      if (stompClient.current && stompClient.current.connected) {
+        stompClient.current.disconnect(() => {
+          console.log("WebSocket disconnected");
+        });
+      }
+    } catch (error) {
+      console.error("Error during WebSocket disconnect:", error);
     }
   };
 
@@ -81,14 +98,41 @@ const Chat = () => {
     };
   }, []);
 
+  // 메시지 리스트의 맨 아래로 스크롤
+  const messagesEndRef = useRef(null);
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  // 페이지 URL 변경 시 채팅창 숨기기
+  useEffect(() => {
+    // 페이지 이동 시 채팅창을 숨김
+    toggleChat();
+  }, [location.pathname]); // pathname이 변경될 때마다 실행
+
   // 입력 필드 값 변경 시 호출되는 함수
   const handleInputChange = (event) => {
     setInputValue(event.target.value);
   };
 
+  // Enter 키를 눌렀을 때 메시지 전송
+  const handleKeyDown = (event) => {
+    if (event.key === "Enter") {
+      sendMessage();
+    }
+  };
+
   //메세지 전송
   const sendMessage = () => {
-    if (stompClient.current && inputValue) {
+    if (inputValue.length > 255) {
+      alert("255자 이상 메세지는 보낼 수 없습니다.");
+      return;
+    }
+
+    if (stompClient.current && stompClient.current.connected && inputValue) {
       const headers = {
         Authorization: `Bearer ${token}`,
       };
@@ -149,7 +193,7 @@ const Chat = () => {
                             : "bg-[#E4DCD4] text-black"
                         }`}
                       >
-                        {item.message}
+                        {item.content}
                       </span>
                     </div>
                   ))
@@ -158,6 +202,7 @@ const Chat = () => {
                     메시지가 없습니다.
                   </div>
                 )}
+                <div ref={messagesEndRef} />
               </div>
               <div className="mt-4 flex gap-1.5">
                 {/* 입력 필드 */}
@@ -165,6 +210,7 @@ const Chat = () => {
                   type="text"
                   value={inputValue}
                   onChange={handleInputChange}
+                  onKeyDown={handleKeyDown}
                   className="w-full px-2 border border-[#E1E1DF] rounded-md focus:outline-none focus:ring-[#bc5b39] focus:border-[#bc5b39] sm:text-sm"
                   placeholder="메시지를 입력하세요..."
                 />

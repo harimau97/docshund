@@ -10,6 +10,9 @@ const docsStore = create((set) => ({
   documentVersion: "",
   documentLogo: "",
   position: "",
+  setDocsList: (docs) => {
+    set({ docsList: docs });
+  },
 }));
 
 export default docsStore;
