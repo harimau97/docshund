@@ -12,6 +12,7 @@ import com.ssafy.docshund.domain.users.dto.page.UserAndInfoDto;
 import com.ssafy.docshund.domain.users.dto.page.UserProfileDto;
 import com.ssafy.docshund.domain.users.dto.page.UserSearchCondition;
 import com.ssafy.docshund.domain.users.dto.profile.ProfileRequestDto;
+import com.ssafy.docshund.domain.users.dto.profile.UserStatusRequestDto;
 import com.ssafy.docshund.domain.users.entity.User;
 
 public interface UserService {
@@ -23,6 +24,8 @@ public interface UserService {
 	public void modifyUserProfile(User user, ProfileRequestDto profileRequestDto, MultipartFile file);
 
 	public String duplicateNickname(String nickname);
+
+	public void modifyUserStatus(Long userId, UserStatusRequestDto userStatusRequestDto);
 
 	// 메모 생성
 	void createMemo(Long userId, MemoRequestDto memoRequestDto);

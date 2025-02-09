@@ -90,4 +90,8 @@ public class User extends BaseTimeEntityWithUpdatedAt {
 	public void changeUser() {
 		this.role = Role.ROLE_USER;
 	}
+
+	public void modifyStatus(Status status) {
+		this.status = status;
+	}
 }

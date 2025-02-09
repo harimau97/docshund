@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -26,6 +27,7 @@ import com.ssafy.docshund.domain.users.dto.page.UserAndInfoDto;
 import com.ssafy.docshund.domain.users.dto.page.UserProfileDto;
 import com.ssafy.docshund.domain.users.dto.page.UserSearchCondition;
 import com.ssafy.docshund.domain.users.dto.profile.ProfileRequestDto;
+import com.ssafy.docshund.domain.users.dto.profile.UserStatusRequestDto;
 import com.ssafy.docshund.domain.users.entity.Hobby;
 import com.ssafy.docshund.domain.users.entity.User;
 import com.ssafy.docshund.domain.users.service.UserService;
@@ -86,6 +88,15 @@ public class UserController {
 		userService.modifyUserProfile(user, request, file);
 
 		return ResponseEntity.ok("프로필이 수정되었습니다.");
+	}
+
+	@PutMapping("/{userId}/status")
+	public ResponseEntity<String> modifyUserStatus(@PathVariable Long userId,
+		@RequestBody UserStatusRequestDto userStatusRequestDto) {
+
+		userService.modifyUserStatus(userId, userStatusRequestDto);
+
+		return ResponseEntity.ok("상태가 변경되었습니다.");
 	}
 
 	// 메모 생성
