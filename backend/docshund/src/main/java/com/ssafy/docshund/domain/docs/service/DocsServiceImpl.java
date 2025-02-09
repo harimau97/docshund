@@ -8,13 +8,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.ssafy.docshund.domain.alerts.service.AlertsService;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ssafy.docshund.domain.alerts.service.AlertsService;
 import com.ssafy.docshund.domain.docs.dto.DocumentDto;
 import com.ssafy.docshund.domain.docs.dto.OriginDocumentDto;
 import com.ssafy.docshund.domain.docs.dto.TranslatedDocumentDto;
@@ -337,7 +337,7 @@ public class DocsServiceImpl implements DocsService {
 	public List<TranslatedDocumentDto> getAllTranslatedDocuments(Integer docsId) {
 
 		List<TranslatedDocument> translatedDocuments = translatedDocumentRepository.findByOriginDocument_Document_DocsIdAndStatus(
-			docsId, String.valueOf(Status.VISIBLE));
+			docsId, Status.VISIBLE);
 
 		// 번역 문서 ID 목록 추출
 		List<Long> transIds = translatedDocuments.stream().map(TranslatedDocument::getTransId).toList();
@@ -439,7 +439,8 @@ public class DocsServiceImpl implements DocsService {
 	@Transactional(readOnly = true)
 	@Override
 	public List<UserTransDocumentDto> getUserTransDocument(Long userId) {
-		List<TranslatedDocument> userTransDocuments = translatedDocumentRepository.findByUser_UserIdAndStatus(userId, String.valueOf(Status.VISIBLE));
+		List<TranslatedDocument> userTransDocuments = translatedDocumentRepository.findByUser_UserIdAndStatus(userId,
+			String.valueOf(Status.VISIBLE));
 
 		// 번역 문서 ID 목록 추출
 		List<Long> transIds = userTransDocuments.stream().map(TranslatedDocument::getTransId).toList();
