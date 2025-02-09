@@ -25,13 +25,13 @@ public class Document extends BaseTimeEntity {
 	@Column(name = "docs_id")
 	private Integer docsId;
 
-	@Column(name = "document_category", nullable = false)
+	@Column(name = "document_category", nullable = false, length = 50)
 	private String documentCategory;
 
-	@Column(name = "document_name", nullable = false)
+	@Column(name = "document_name", nullable = false, length = 50)
 	private String documentName;
 
-	@Column(name = "license", nullable = false)
+	@Column(name = "license", nullable = false, length = 20)
 	private String license;
 
 	@Column(name = "document_link", nullable = false)
@@ -41,7 +41,7 @@ public class Document extends BaseTimeEntity {
 	@Setter
 	private Integer viewCount;
 
-	@Column(name = "document_version", nullable = false)
+	@Column(name = "document_version", nullable = false, length = 30)
 	private String documentVersion;
 
 	@Column(name = "document_logo")

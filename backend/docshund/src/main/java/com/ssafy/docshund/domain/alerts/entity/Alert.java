@@ -32,7 +32,7 @@ public class Alert extends BaseTimeEntity {
 	@Column(name = "alert_id")
 	private Integer alertId;
 
-	@Column(name = "title", nullable = false, length = 30)
+	@Column(name = "title", nullable = false, length = 100)
 	private String title;
 
 	@ManyToOne
@@ -59,7 +59,8 @@ public class Alert extends BaseTimeEntity {
 	@Column(name = "checked_at")
 	private LocalDateTime checkedAt;
 
-	public Alert(String title, User user, TranslatedDocument translatedDocument, Article article, Comment comment, Inquiry inquiry, LocalDateTime checkedAt) {
+	public Alert(String title, User user, TranslatedDocument translatedDocument, Article article, Comment comment,
+		Inquiry inquiry, LocalDateTime checkedAt) {
 		this.title = title;
 		this.user = user;
 		this.translatedDocument = translatedDocument;
