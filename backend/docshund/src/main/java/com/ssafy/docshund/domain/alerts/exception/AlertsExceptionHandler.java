@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 public class AlertsExceptionHandler {
 
     @ExceptionHandler(AlertsException.class)
-    public ResponseEntity memberException(
+    public ResponseEntity alertsException(
             AlertsException exception
     ) {
         log.error("{}", exception.getMessage());

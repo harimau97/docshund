@@ -14,7 +14,7 @@ public enum DocsExceptionCode implements ExceptionCode {
 	USER_NOT_FOUND(NOT_FOUND, "D-C-001", "회원을 찾을 수 없습니다."),
 	USER_NOT_AUTHORIZED(UNAUTHORIZED, "D-C-002", "로그인 상태가 아닙니다."),
 	NO_PERMISSION(FORBIDDEN, "D-C-003", "관리자가 아닙니다."),
-	NOT_YOUR_CONTENT(FORBIDDEN, "D-C-004", "본인의 번역만 수정할 수 있습니다."),
+	NOT_YOUR_CONTENT(FORBIDDEN, "D-C-004", "본인의 번역만 수정/삭제할 수 있습니다."),
 	DOCS_NOT_FOUND(NOT_FOUND, "D-C-005", "해당 문서를 찾을 수 없습니다."),
 	ORIGIN_NOT_FOUND(NOT_FOUND, "D-C-006", "해당 문단을 찾을 수 없습니다."),
 	TRANSLATION_NOT_FOUND(NOT_FOUND, "D-C-007", "해당 번역을 찾을 수 없습니다."),

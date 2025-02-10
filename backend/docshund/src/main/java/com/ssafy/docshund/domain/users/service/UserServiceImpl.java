@@ -3,6 +3,8 @@ package com.ssafy.docshund.domain.users.service;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+import com.ssafy.docshund.domain.users.exception.MemoException;
+import com.ssafy.docshund.domain.users.exception.MemoExceptionCode;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
@@ -106,15 +108,33 @@ public class UserServiceImpl implements UserService {
 		return user;
 	}
 
+	// 메모 쪽 유저 관련 예외처리 공통 메서드
+	private User checkMemoUser(Long userId) {
+		if (userId == null) {
+			throw new MemoException(MemoExceptionCode.ILLEGAL_ARGUMENT);
+		}
+
+		User user = checkUser(userId);
+
+		if (userUtil.getUser() == null) {
+			throw new MemoException(MemoExceptionCode.USER_NOT_AUTHORIZED);
+		}
+		if (userUtil.getUser() != user) {
+			throw new MemoException(MemoExceptionCode.NOT_YOUR_MEMO);
+		}
+
+		return user;
+	}
+
 	// 메모 생성
 	@Override
 	@Transactional
 	public void createMemo(Long userId, MemoRequestDto memoRequestDto) {
-		User user = checkUser(userId);
+		User user = checkMemoUser(userId);
 
 		// 메모 제목, 콘텐츠 비어있을 때 예외 처리
-		if (memoRequestDto.getTitle().isEmpty() || memoRequestDto.getContent().isEmpty()) {
-			throw new IllegalArgumentException("TITLE OR CONTENT IS EMPTY");
+		if (memoRequestDto.getTitle() == null || memoRequestDto.getContent() == null) {
+			throw new MemoException(MemoExceptionCode.REQUIRED_IS_EMPTY);
 		}
 
 		memoRepository.save(
@@ -124,7 +144,7 @@ public class UserServiceImpl implements UserService {
 	// 메모 조회 (일괄)
 	@Override
 	public List<MemoResponseDto> getMemos(Long userId) {
-		User user = checkUser(userId);
+		User user = checkMemoUser(userId);
 
 		List<Memo> memos = memoRepository.findByUserUserId(userId);
 
@@ -136,10 +156,13 @@ public class UserServiceImpl implements UserService {
 	// 메모 조회 (단일)
 	@Override
 	public MemoResponseDto getMemo(Long userId, Integer memoId) {
-		User user = checkUser(userId);
+		if (memoId == null) {
+			throw new MemoException(MemoExceptionCode.ILLEGAL_ARGUMENT);
+		}
+		User user = checkMemoUser(userId);
 
 		Memo memo = memoRepository.findByMemoIdAndUserUserId(memoId, userId)
-			.orElseThrow(() -> new NoSuchElementException("해당 메모를 찾을 수 없습니다."));
+			.orElseThrow(() -> new MemoException(MemoExceptionCode.MEMO_NOT_FOUND));
 
 		return MemoResponseDto.fromEntity(memo);
 	}
@@ -148,14 +171,17 @@ public class UserServiceImpl implements UserService {
 	@Override
 	@Transactional
 	public void modifyMemo(Long userId, Integer memoId, MemoRequestDto memoRequestDto) {
-		User user = checkUser(userId);
+		if (memoId == null) {
+			throw new MemoException(MemoExceptionCode.ILLEGAL_ARGUMENT);
+		}
+		User user = checkMemoUser(userId);
 
 		Memo memo = memoRepository.findByMemoIdAndUserUserId(memoId, userId)
-			.orElseThrow(() -> new NoSuchElementException("해당 메모를 찾을 수 없습니다."));
+			.orElseThrow(() -> new MemoException(MemoExceptionCode.MEMO_NOT_FOUND));
 
 		// 제목과 내용이 비어있는 경우 예외 발생
-		if (memoRequestDto.getTitle().isEmpty() || memoRequestDto.getContent().isEmpty()) {
-			throw new IllegalArgumentException("TITLE OR CONTENT IS EMPTY");
+		if (memoRequestDto.getTitle() == null || memoRequestDto.getContent() == null) {
+			throw new MemoException(MemoExceptionCode.REQUIRED_IS_EMPTY);
 		}
 
 		memo.modifyMemo(memoRequestDto.getTitle(), memoRequestDto.getContent());
@@ -166,10 +192,15 @@ public class UserServiceImpl implements UserService {
 	@Override
 	@Transactional
 	public void deleteMemo(Long userId, Integer memoId) {
-		User user = checkUser(userId);
+
+		if (memoId == null) {
+			throw new MemoException(MemoExceptionCode.ILLEGAL_ARGUMENT);
+		}
+
+		User user = checkMemoUser(userId);
 
 		Memo memo = memoRepository.findByMemoIdAndUserUserId(memoId, userId)
-			.orElseThrow(() -> new NoSuchElementException("해당 메모를 찾을 수 없습니다."));
+			.orElseThrow(() -> new MemoException(MemoExceptionCode.MEMO_NOT_FOUND));
 
 		memoRepository.delete(memo);
 	}

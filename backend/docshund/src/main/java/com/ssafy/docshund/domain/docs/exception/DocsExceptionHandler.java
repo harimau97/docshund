@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 public class DocsExceptionHandler {
 
     @ExceptionHandler(DocsException.class)
-    public ResponseEntity memberException(
+    public ResponseEntity docsException(
             DocsException exception
     ) {
         log.error("{}", exception.getMessage());
