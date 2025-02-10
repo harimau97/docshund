@@ -59,7 +59,7 @@ function App() {
               <img
                 className="group-hover:rotate-12 transition-transform duration-300"
                 src={chatImg}
-                alt="챗봇 아이콘"
+                alt="채팅 아이콘"
               />
             </div>
           )}
