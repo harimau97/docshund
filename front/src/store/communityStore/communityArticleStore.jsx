@@ -48,18 +48,26 @@ const communityArticleStore = create((set) => ({
   position: "", // 문서(대분류) 제목
   category: "", // 문서(소분류) 제목
   content: "",
+  fileUrl: "", // 파일 URL
 
   // 글 작성에 필요한 메소드 설정
   setTitle: (title) => set({ title }),
   setPosition: (position) => set({ position }), // 문서(대분류) 제목 수정
   setCategory: (category) => set({ category }), // 문서(소분류) 제목 수정
   setContent: (content) => set({ content }),
+  setFileUrl: (fileUrl) => set({ fileUrl }),
 
   // reply list의 초기값 설정
-  replies: [],
+  replies: [], // 댓글 리스트
+  commentCount: 0, // 댓글 개수
+  isReplied: false, // 댓글 작성 후 댓글 리스트 리렌더링을 위한 flag
+  replyId: 0, // 대댓글 작성 시 대댓글을 작성하는 원댓글의 id
 
   // reply list의 메소드 설정
   setReplies: (replies) => set({ replies }),
+  setCommentCount: (commentCount) => set({ commentCount }),
+  setIsReplied: (isReplied) => set({ isReplied }),
+  setReplyId: (replyId) => set({ replyId }),
 }));
 
 export default communityArticleStore;

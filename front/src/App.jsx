@@ -13,6 +13,7 @@ import LeftNav from "./components/Nav/leftNav.jsx";
 import Modal from "react-modal";
 import LoginModal from "./components/LoginModal.jsx";
 import ToastModal from "./components/alertModal/toastModal.jsx";
+import notificationModalStore from "./store/notificationModalStore.jsx";
 
 //챗봇
 import ChatBotBtn from "./pages/chatBot/chatBotBtn.jsx";
