@@ -14,7 +14,7 @@ const Chat = () => {
   const { isChatVisible, toggleChat } = ChatStore();
   const location = useLocation();
   const navigate = useNavigate();
-  const docsId = location.pathname.split("/")[3];
+  const docsId = location.pathname.split("/")[4];
   const token = localStorage.getItem("token");
   const { openReport, toggleReport } = useReportStore();
 

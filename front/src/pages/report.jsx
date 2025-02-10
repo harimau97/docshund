@@ -91,6 +91,9 @@ const reportModal = () => {
       toast.error("문의 제출 중 오류가 발생했습니다.");
       console.log("문의 등록 실패", error);
     }
+
+    toggleReport();
+    closeReport();
   };
 
   const handleFileChange = (e) => {
@@ -126,7 +129,7 @@ const reportModal = () => {
             }}
             className="fixed inset-0 flex items-center justify-center min-w-full min-h-full "
           >
-            <div className="p-10 bg-white h-2/3 rounded-xl border-b border-l border-r border-[#E1E1DF] text-[#7D7C77] mb-5">
+            <div className="p-6 bg-white h-fit rounded-xl border-b border-l border-r border-[#E1E1DF] text-[#7D7C77] mb-5">
               <div className="w-full h-fit flex justify-end items-center">
                 <button
                   onClick={() => {

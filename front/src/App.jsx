@@ -15,9 +15,8 @@ import LoginModal from "./components/LoginModal.jsx";
 import ToastModal from "./components/alertModal/toastModal.jsx";
 
 //챗봇
-import ChatBot from "./pages/chatBot/chatBot.jsx";
+import ChatBotBtn from "./pages/chatBot/chatBotBtn.jsx";
 import ChatBotStore from "./store/chatBotStore.jsx";
-import { Bot } from "lucide-react";
 
 //문서채팅
 import Chat from "./pages/chat/chat.jsx";
@@ -30,8 +29,8 @@ function App() {
   // 번역 뷰어 페이지일 때만 좌측 내브바 표시
   const location = useLocation();
   const pathname = location.pathname;
-  const isTranslateViewerPage = pathname.includes("/translate/viewer");
-
+  const isTranslateViewerPage = pathname.includes("/translate/main/viewer");
+  const isAdminPage = pathname.includes("/admin");
   const { isChatBotVisible, toggleChatBot } = ChatBotStore();
   const { isChatVisible, toggleChat } = ChatStore();
 
@@ -44,8 +43,8 @@ function App() {
   return (
     <div className="flex flex-col min-h-screen min-w-[768px] overflow-hidden">
       <ToastModal />
-
-      {isTranslateViewerPage ? <LeftNav /> : <UpperNav />}
+      {isTranslateViewerPage ? <LeftNav /> : null}
+      {!isTranslateViewerPage && !isAdminPage ? <UpperNav /> : null}
       <div className="flex-grow">
         <AppRouter />
       </div>
@@ -65,22 +64,9 @@ function App() {
           )}
         </div>
       ) : null}
-      {isTranslateViewerPage ? (
-        <div className="fixed bottom-4 left-4 z-[1900] group">
-          {localStorage.getItem("token") && (
-            <div
-              onClick={toggleChatBot}
-              className="rounded-full w-16 h-16 bg-gradient-to-r from-[#BC5B39] to-[#E4DCD4] flex justify-center items-center cursor-pointer shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 border-2 border-white"
-            >
-              <Bot className="h-8 w-8 text-white group-hover:rotate-12 transition-transform duration-300" />
-            </div>
-          )}
-        </div>
-      ) : null}
-
+      <ChatBotBtn />
       {isChatVisible && <Chat />}
-      {isChatBotVisible && <ChatBot />}
-      {isTranslateViewerPage ? null : <Footer />}
+      {isTranslateViewerPage || isAdminPage ? null : <Footer />}
       <LoginModal />
     </div>
   );

@@ -28,8 +28,10 @@ import TermsPage from "./pages/helpDesk/TermsPage.jsx";
 import PrivacyPage from "./pages/helpDesk/PrivacyPage.jsx";
 
 // 번역 관련 페이지
+import ViewerMainPage from "./pages/translate/viewerMainPage.jsx";
 import TranslatePage from "./pages/translate/translate.jsx";
 import TranslateViewer from "./pages/translate/translateViewer.jsx";
+import BestTransViewer from "./pages/translate/bestTransViewer.jsx";
 
 // Community 관련 페이지
 import CommunityPage from "./pages/community/community.jsx";
@@ -37,6 +39,14 @@ import ArticleList from "./pages/community/articleList.jsx";
 import WriteArticle from "./pages/community/writeArticle.jsx";
 import ModifyArticle from "./pages/community/modifyArticle.jsx";
 import ArticleItem from "./pages/community/articleItem.jsx";
+
+//admin 관련 페이지
+import Admin from "./pages/admin/admin.jsx";
+import ManageUser from "./pages/admin/manageUser.jsx";
+import ManageInquiry from "./pages/admin/manageInquiry.jsx";
+import ManageDocs from "./pages/admin/manageDocs.jsx";
+import ManageReport from "./pages/admin/manageReport.jsx";
+import ManageNotification from "./pages/admin/manageNotification.jsx";
 
 // error 페이지
 import ErrorPage from "./pages/errorPage.jsx";
@@ -51,7 +61,10 @@ function AppRoutes() {
       <Route path="/" element={<LandingPage />} />
       {/* 번역 관련 주소 */}
       <Route path="/translate" element={<TranslatePage />} />
-      <Route path="/translate/viewer/:docsId" element={<TranslateViewer />} />
+      <Route path="/translate/main" element={<ViewerMainPage />}>
+        <Route path="viewer/:docsId" element={<TranslateViewer />} />
+        <Route path="viewer/:docsId/best" element={<BestTransViewer />} />
+      </Route>
 
       {/* 커뮤니티 관련 주소 */}
       <Route path="/community" element={<CommunityPage />}>
@@ -73,6 +86,15 @@ function AppRoutes() {
       <Route path="/terms" element={<TermsPage />} />
       <Route path="/privacy" element={<PrivacyPage />} />
 
+      {/* 관리자 관련 주소 */}
+      {/* <Route path="/admin" element={<Admin />}>
+        <Route path="manageUser" element={<ManageUser />} />
+        <Route path="manageInquiry" element={<ManageInquiry />} />
+        <Route path="manageDocs" element={<ManageDocs />} />
+        <Route path="manageReport" element={<ManageReport />} />
+        <Route path="manageNotification" element={<ManageNotification />} />
+      </Route> */}
+
       {/* 에러페이지 */}
       <Route path="/error" element={<ErrorPage />} />
       <Route
@@ -84,12 +106,6 @@ function AppRoutes() {
           />
         }
       />
-
-      {/* 번역뷰어 */}
-      <Route
-        path="translate/viewer/:docsId"
-        element={<TranslateViewer />}
-      ></Route>
 
       {/* 비로그인 접근 불가 */}
       <Route element={<ProtectedRoute />}>
@@ -112,6 +128,14 @@ function AppRoutes() {
         </Route>
         {/* 유어마이페이지 */}
         <Route path="/userPage/:userId" element={<UserPage />}></Route>
+      </Route>
+      {/* 관리자 관련 주소 */}
+      <Route path="/admin" element={<Admin />}>
+        <Route path="manageUser" element={<ManageUser />} />
+        <Route path="manageInquiry" element={<ManageInquiry />} />
+        <Route path="manageDocs" element={<ManageDocs />} />
+        <Route path="manageReport" element={<ManageReport />} />
+        <Route path="manageNotification" element={<ManageNotification />} />
       </Route>
     </Routes>
   );

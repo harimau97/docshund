@@ -66,36 +66,38 @@ const TransLatePage = () => {
               key={index}
               className="group relative bg-white rounded-xl overflow-hidden hover:shadow-xl transition-all duration-300 border border-gray-100"
             >
-              <button
-                onClick={() => handleLike(docs.docsId)}
-                className={`absolute right-2 top-2 p-2 rounded-full transition-all duration-300 cursor-pointer ${
-                  docs.likeUserIds.includes(
-                    Number(localStorage.getItem("userId"))
-                  )
-                    ? "bg-red-600 text-white"
-                    : "bg-gray-300"
-                }`}
-              >
-                <svg
-                  className="h-6 w-6"
-                  fill={
+              {localStorage.getItem("token") && (
+                <button
+                  onClick={() => handleLike(docs.docsId)}
+                  className={`absolute right-2 top-2 p-2 rounded-full transition-all duration-300 cursor-pointer ${
                     docs.likeUserIds.includes(
                       Number(localStorage.getItem("userId"))
                     )
-                      ? "white"
-                      : "currentColor"
-                  }
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
+                      ? "bg-red-600 text-white"
+                      : "bg-gray-300"
+                  }`}
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-                  />
-                </svg>
-              </button>
+                  <svg
+                    className="h-6 w-6"
+                    fill={
+                      docs.likeUserIds.includes(
+                        Number(localStorage.getItem("userId"))
+                      )
+                        ? "white"
+                        : "currentColor"
+                    }
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+                    />
+                  </svg>
+                </button>
+              )}
               <div className="p-6 flex flex-col items-center">
                 <div className="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center mb-4">
                   <img
@@ -109,11 +111,11 @@ const TransLatePage = () => {
                 </h3>
                 <button
                   onClick={() => {
-                    navigate(`/translate/viewer/${docs.docsId}`);
+                    navigate(`/translate/main/viewer/${docs.docsId}`);
                   }}
                   className="cursor-pointer mt-4 px-6 py-2 bg-[rgba(188,91,57,1)] text-white rounded-lg hover:bg-[rgba(188,91,57,0.8)] transition-colors duration-200 font-medium"
                 >
-                  번역하기
+                  {localStorage.getItem("token") ? "번역 하기" : "번역 보기"}
                 </button>
               </div>
             </div>
