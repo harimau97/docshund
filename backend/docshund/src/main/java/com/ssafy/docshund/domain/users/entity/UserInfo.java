@@ -46,7 +46,7 @@ public class UserInfo extends BaseTimeEntityWithUpdatedAt {
 		UserInfo userInfo = new UserInfo();
 		userInfo.user = user;
 		userInfo.isDarkmode = false;
-		userInfo.introduce = INTRODUCE_TEXT;
+		userInfo.introduce = "";
 
 		return userInfo;
 	}
