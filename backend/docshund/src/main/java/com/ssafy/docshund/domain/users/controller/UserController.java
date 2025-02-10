@@ -36,6 +36,7 @@ import com.ssafy.docshund.domain.users.service.UserService;
 import com.ssafy.docshund.global.util.user.UserUtil;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -65,7 +66,8 @@ public class UserController {
 	}
 
 	@GetMapping("/profile")
-	public ResponseEntity<String> duplicatedUserNickname(@RequestParam String nickname) {
+	public ResponseEntity<String> duplicatedUserNickname(
+		@RequestParam @Size(max = 20, message = "닉네임은 10자 이하입니다") String nickname) {
 		return ResponseEntity.ok(userService.duplicateNickname(nickname));
 	}
 

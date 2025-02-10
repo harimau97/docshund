@@ -12,10 +12,10 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @ControllerAdvice
 @RequiredArgsConstructor
-public class UseExceptionHandler {
+public class UserExceptionHandler {
 
 	@ExceptionHandler(UserException.class)
-	public ResponseEntity memberException(
+	public ResponseEntity userException(
 		UserException exception
 	) {
 		log.error("{}", exception.getMessage());

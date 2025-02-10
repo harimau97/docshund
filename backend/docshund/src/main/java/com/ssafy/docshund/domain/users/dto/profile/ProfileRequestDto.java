@@ -11,7 +11,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ProfileRequestDto {
-	@Size(max = 20, message = "20자를 넘을 수 없습니다.")
+	@Size(max = 10, message = "10자를 넘을 수 없습니다.")
 	@Pattern(regexp = "^(?!멍멍이$).*", message = "사용할 수 없는 닉네임입니다.")
 	private String nickname;
 

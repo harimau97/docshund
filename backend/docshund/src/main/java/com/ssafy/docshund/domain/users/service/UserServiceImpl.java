@@ -1,11 +1,15 @@
 package com.ssafy.docshund.domain.users.service;
 
+import static com.ssafy.docshund.domain.users.exception.auth.AuthExceptionCode.INVALID_MEMBER_ROLE;
+import static com.ssafy.docshund.domain.users.exception.auth.AuthExceptionCode.NOT_AUTHORIZATION_USER;
+import static com.ssafy.docshund.domain.users.exception.user.UserExceptionCode.USER_INFO_NOT_FOUND;
+import static com.ssafy.docshund.domain.users.exception.user.UserExceptionCode.USER_NOT_FOUND;
+
 import java.util.List;
 import java.util.NoSuchElementException;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -20,6 +24,8 @@ import com.ssafy.docshund.domain.users.dto.profile.UserStatusRequestDto;
 import com.ssafy.docshund.domain.users.entity.Memo;
 import com.ssafy.docshund.domain.users.entity.User;
 import com.ssafy.docshund.domain.users.entity.UserInfo;
+import com.ssafy.docshund.domain.users.exception.auth.AuthException;
+import com.ssafy.docshund.domain.users.exception.user.UserException;
 import com.ssafy.docshund.domain.users.repository.MemoRepository;
 import com.ssafy.docshund.domain.users.repository.UserInfoRepository;
 import com.ssafy.docshund.domain.users.repository.UserRepository;
@@ -71,7 +77,8 @@ public class UserServiceImpl implements UserService {
 			String profile = s3FileUploadService.uploadFile(file, "profile");
 			user.modifyProfileUrl(profile);
 		}
-		UserInfo userInfo = userInfoRepository.findByUser(user).get();
+		UserInfo userInfo = userInfoRepository.findByUser(user)
+			.orElseThrow(() -> new UserException(USER_INFO_NOT_FOUND));
 		user.modifyNickname(profileRequestDto.getNickname());
 		userInfo.modifyInfo(profileRequestDto);
 	}
@@ -85,11 +92,11 @@ public class UserServiceImpl implements UserService {
 	public void modifyUserStatus(Long userId, UserStatusRequestDto userStatusRequestDto) {
 		User user = userUtil.getUser();
 		if (!userUtil.isAdmin(user)) {
-			throw new RuntimeException("어드민이 아닙니다.");
+			throw new AuthException(INVALID_MEMBER_ROLE);
 		}
 
 		User findUser = userRepository.findById(userId)
-			.orElseThrow(() -> new RuntimeException("해당 유저를 찾을 수 없습니다."));
+			.orElseThrow(() -> new UserException(USER_NOT_FOUND));
 
 		findUser.modifyStatus(userStatusRequestDto.getStatus());
 	}
@@ -98,10 +105,10 @@ public class UserServiceImpl implements UserService {
 	private User checkUser(Long userId) {
 		User user = userUtil.getUser();
 		if (user == null) {
-			throw new AccessDeniedException("NO PERMISSION TO UNLOGINED USER");
+			throw new UserException(USER_NOT_FOUND);
 		}
 		if (!user.getUserId().equals(userId)) {
-			throw new AccessDeniedException("NO PERMISSION FOR THIS USER");
+			throw new AuthException(NOT_AUTHORIZATION_USER);
 		}
 		return user;
 	}
