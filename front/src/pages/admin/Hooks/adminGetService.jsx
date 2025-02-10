@@ -9,18 +9,18 @@ export const fetchUserList = async () => {
     const data = response.data;
     return data;
   } catch (error) {
-    console.log("좋아요한 문서 조회 실패", error);
+    console.log("유저 목록 조회 실패", error);
   }
 };
 
-export const fetchReportList = async (page, size, userId) => {
+export const fetchReportList = async (page, userId) => {
   try {
     const response = await axiosJsonInstance.get(
-      `${baseUrl}/supports/reports?page=${page}&size=${size}&userId=${userId}`
+      `${baseUrl}/supports/reports?pageable=${page}&&userId=${userId}`
     );
     const data = response.data;
     return data;
   } catch (error) {
-    console.log("좋아요한 문서 조회 실패", error);
+    console.log("신고 목록 조회 실패", error);
   }
 };

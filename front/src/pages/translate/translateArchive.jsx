@@ -4,13 +4,14 @@ import { likeTranslate } from "./hooks/translatePostService.jsx";
 import * as motion from "motion/react-client";
 import { AnimatePresence } from "motion/react";
 import Modal from "react-modal";
-import ReportModal from "../report.jsx";
 import useModalStore from "../../store/translateStore/translateModalStore.jsx";
 import GoBack from "../../assets/icon/goBack.png";
 import useEditorStore from "../../store/translateStore/editorStore.jsx";
 import useArchiveStore from "../../store/translateStore/archiveStore.jsx";
-import useReportStore from "../../store/reportStore.jsx";
 import ToastViewer from "./components/toastViewer.jsx";
+
+import ReportModal from "../report.jsx";
+import useReportStore from "../../store/reportStore.jsx";
 
 const TranslateArchive = () => {
   const [transStates, setTransStates] = useState({});

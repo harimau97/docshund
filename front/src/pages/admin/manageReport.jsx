@@ -38,7 +38,7 @@ const ManageReport = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const data = await fetchReportList();
+      const data = await fetchReportList(0, localStorage.getItem("userId"));
       reportListData.current = data;
       setReportList(data);
     };

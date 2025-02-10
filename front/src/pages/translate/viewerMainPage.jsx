@@ -12,7 +12,7 @@ const ViewerMainPage = () => {
   const { isAlertOpen, toggleAlert } = useAlertStore();
 
   useEffect(() => {
-    toggleAlert();
+    useAlertStore.setState({ isAlertOpen: true });
   }, []);
 
   return (
