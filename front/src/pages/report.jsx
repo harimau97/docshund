@@ -35,7 +35,7 @@ const reportModal = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!category || !title || !email || !content) {
+    if (!category || !content) {
       toast.warn("신고 카테고리, 내용을 모두 입력해주세요.");
       return;
     }
@@ -108,7 +108,7 @@ const reportModal = () => {
       style={{
         overlay: {
           backgroundColor: "rgba(240,238,229,0.8)",
-          zIndex: 2200,
+          zIndex: 3000,
         },
       }}
       className="border-box w-full h-full flex items-center justify-center"
@@ -218,7 +218,7 @@ const reportModal = () => {
                     className="mt-1 block w-full py-2 px-3 border rounded-md shadow-sm focus:outline-none focus:ring-[#bc5b39] focus:border-[#bc5b39] sm:text-sm"
                     rows="4"
                     placeholder="내용을 입력하세요"
-                    style={{ height: "250px" }}
+                    style={{ height: "250px", resize: "none" }}
                   ></textarea>
                 </div>
                 <div className="mb-6">
