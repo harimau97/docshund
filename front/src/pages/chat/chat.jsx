@@ -118,7 +118,11 @@ const Chat = () => {
     }
   };
 
-  const handleInputChange = (event) => setInputValue(event.target.value);
+  const handleInputChange = (event) => {
+    if (event.target.value.length <= 255) {
+      setInputValue(event.target.value);
+    }
+  };
   const handleKeyDown = (event) => {
     if (event.key === "Enter") sendMessage();
   };
