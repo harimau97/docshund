@@ -22,6 +22,8 @@ import notification from "../../assets/icon/notification32.png";
 const UpperNav = () => {
   const location = useLocation();
   const navigate = useNavigate();
+
+  const [isAdmin, setIsAdmin] = useState(false);
   const { token, isAuthenticated, logout } = authService();
   const { profile, fetchProfile } = useUserProfileStore();
   const { openModal } = useModalStore();
@@ -59,6 +61,24 @@ const UpperNav = () => {
       openModal(); //로그인 모달 열기
     }
   };
+
+  const handleImageClick = () => {
+    if (isAuthenticated() && isAdmin) {
+      navigate("/admin/manageUser");
+    } else if (isAuthenticated() && !isAdmin) {
+      navigate("/myPage/profile");
+    }
+  };
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      const decodedToken = jwtDecode(token);
+      const role = decodedToken.role;
+      console.log(role);
+      if (role === "ROLE_ADMIN") setIsAdmin(true); // 로그인 상태와 관리자 여부를 판단
+    }
+  }, [localStorage.getItem("token")]);
 
   // 링크 스타일
   const activeLink = "font-bold text-[clamp(16px,1.5vw,20px)] text-[#bc5b39]";
@@ -148,7 +168,8 @@ const UpperNav = () => {
 
           {isAuthenticated() && profileImgUrl && (
             <img
-              onClick={() => navigate("/myPage/profile")}
+              onClick={() => handleImageClick()}
+              // onClick={() => navigate("/myPage/profile")}
               className="w-[clamp(40px,4vw,64px)] border-1 border-[#c5afa7] shadow-sm rounded-full h-auto cursor-pointer"
               src={profileImgUrl}
               alt="프로필 이미지"
