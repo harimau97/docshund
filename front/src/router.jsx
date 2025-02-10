@@ -41,6 +41,9 @@ import ArticleItem from "./pages/community/articleItem.jsx";
 // error 페이지
 import ErrorPage from "./pages/errorPage.jsx";
 
+// 유어마이페이지
+import UserPage from "./pages/userPage.jsx";
+
 function AppRoutes() {
   return (
     <Routes>
@@ -107,6 +110,8 @@ function AppRoutes() {
           <Route path="memo" element={<MemoPage />} />
           <Route path="inquiry" element={<InquiryPage />} />
         </Route>
+        {/* 유어마이페이지 */}
+        <Route path="/userPage/:userId" element={<UserPage />}></Route>
       </Route>
     </Routes>
   );
