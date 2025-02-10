@@ -27,7 +27,7 @@ const Sidebar = () => {
   const location = useLocation();
 
   return (
-    <div className="w-auto p-4 text-[#7D7C77]">
+    <div className="w-auto p-4 text-[#7D7C77] text-sm">
       <div className="border-1 border-[#E1E1DF] rounded-xl p-3 bg-[#FFFFFF]">
         {/* 상위 메뉴 항목 */}
         {mainMenuItems.map((item) => {
@@ -50,13 +50,13 @@ const Sidebar = () => {
 
               {/* 해당 항목에 하위 메뉴가 있을 때만 하위 메뉴 표시 */}
               {subMenuItems[item.path] && (
-                <div className="ml-4">
+                <div className="pl-4 md:pl-3 sm:pl-2 lg:pl-5">
                   {subMenuItems[item.path].map((subItem) => (
                     <NavLink
                       key={subItem.path}
                       to={`/myPage/${item.path}/${subItem.path}`}
                       className={({ isActive: subNavLinkIsActive }) =>
-                        `block py-2 px-8 mb-2 text-left ${
+                        `block py-2 px-4 md:px-3 sm:px-2 lg:px-5 mb-2 ${
                           subNavLinkIsActive
                             ? "text-[#bc5b39]"
                             : "text-[#7D7C77]"

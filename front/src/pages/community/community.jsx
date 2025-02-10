@@ -1,9 +1,16 @@
-const CommunityPage = () => {
+import CommunityLeftNav from "./components/communityLeftNav";
+
+import { Outlet, Route, Routes } from "react-router-dom";
+
+const community = () => {
   return (
-    <div>
-      <h1>Community Page</h1>
+    <div className="flex">
+      {/* 좌측 내비게이션 바 */}
+      <CommunityLeftNav />
+      {/* 리스트, 글 상세, 글 작성, 글 수정 페이지 routes */}
+      <Outlet />
     </div>
   );
 };
 
-export default CommunityPage;
+export default community;
