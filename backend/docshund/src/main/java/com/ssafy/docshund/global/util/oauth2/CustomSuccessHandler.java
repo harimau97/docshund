@@ -2,12 +2,12 @@ package com.ssafy.docshund.global.util.oauth2;
 
 import java.io.IOException;
 
-import com.ssafy.docshund.domain.alerts.service.AlertsService;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
+import com.ssafy.docshund.domain.alerts.service.AlertsService;
 import com.ssafy.docshund.domain.users.dto.auth.CustomOAuth2User;
 import com.ssafy.docshund.global.util.jwt.JwtUtil;
 
@@ -34,7 +34,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
 		String personalId = userDetails.getPersonalId();
 		Long userId = userDetails.getUserId();
-		System.out.println("받아온 userId: " + userId);
+		log.info("받아온 userId: {}", userId);
 		alertsService.subscribe(userId);
 
 		String role = authentication.getAuthorities().stream()

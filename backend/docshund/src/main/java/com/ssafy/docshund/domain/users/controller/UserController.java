@@ -1,11 +1,13 @@
 package com.ssafy.docshund.domain.users.controller;
 
+import static com.ssafy.docshund.domain.users.exception.auth.AuthExceptionCode.AUTH_MEMBER_NOT_FOUND;
+import static com.ssafy.docshund.domain.users.exception.auth.AuthExceptionCode.INVALID_MEMBER_ROLE;
+
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -29,10 +31,12 @@ import com.ssafy.docshund.domain.users.dto.profile.ProfileRequestDto;
 import com.ssafy.docshund.domain.users.dto.profile.UserStatusRequestDto;
 import com.ssafy.docshund.domain.users.entity.Hobby;
 import com.ssafy.docshund.domain.users.entity.User;
+import com.ssafy.docshund.domain.users.exception.auth.AuthException;
 import com.ssafy.docshund.domain.users.service.UserService;
 import com.ssafy.docshund.global.util.user.UserUtil;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -49,11 +53,10 @@ public class UserController {
 	public ResponseEntity<Page<UserAndInfoDto>> searchUsers(@RequestParam(required = false) String nickname,
 		@RequestParam(required = false) String email, @RequestParam(required = false) Hobby category,
 		Pageable pageable) {
-
 		User user = userUtil.getUser();
 
 		if (user == null || !userUtil.isAdmin(user)) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+			throw new AuthException(INVALID_MEMBER_ROLE);
 		}
 
 		UserSearchCondition condition = new UserSearchCondition(nickname, email, category);
@@ -63,7 +66,8 @@ public class UserController {
 	}
 
 	@GetMapping("/profile")
-	public ResponseEntity<String> duplicatedUserNickname(@RequestParam String nickname) {
+	public ResponseEntity<String> duplicatedUserNickname(
+		@RequestParam @Size(max = 20, message = "닉네임은 10자 이하입니다") String nickname) {
 		return ResponseEntity.ok(userService.duplicateNickname(nickname));
 	}
 
@@ -71,8 +75,9 @@ public class UserController {
 	public ResponseEntity<UserProfileDto> getProfileUser(@PathVariable Long userId) {
 		UserProfileDto userProfile = userService.getUserProfile(userId);
 
-		if (userProfile == null)
-			return ResponseEntity.badRequest().build();
+		if (userProfile == null) {
+			throw new AuthException(AUTH_MEMBER_NOT_FOUND);
+		}
 
 		return ResponseEntity.ok(userProfile);
 	}
@@ -82,8 +87,9 @@ public class UserController {
 		@Valid @RequestPart("profile") ProfileRequestDto request,
 		@RequestPart(value = "file", required = false) MultipartFile file) {
 		User user = userUtil.getUser();
-		if (user == null || !userUtil.isMine(userId, user))
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("자신의 프로필이 아닙니다.");
+		if (user == null || !userUtil.isMine(userId, user)) {
+			throw new AuthException(INVALID_MEMBER_ROLE);
+		}
 
 		userService.modifyUserProfile(user, request, file);
 
@@ -92,7 +98,7 @@ public class UserController {
 
 	@PatchMapping("/{userId}/status")
 	public ResponseEntity<String> modifyUserStatus(@PathVariable Long userId,
-		@RequestBody UserStatusRequestDto userStatusRequestDto) {
+		@Valid @RequestBody UserStatusRequestDto userStatusRequestDto) {
 
 		userService.modifyUserStatus(userId, userStatusRequestDto);
 

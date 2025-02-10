@@ -1,5 +1,8 @@
 package com.ssafy.docshund.global.util.stomp;
 
+import static com.ssafy.docshund.domain.users.exception.auth.AuthExceptionCode.EXPIRED_TOKEN;
+import static com.ssafy.docshund.domain.users.exception.auth.AuthExceptionCode.INVALID_TOKEN;
+
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.messaging.Message;
@@ -10,6 +13,7 @@ import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Component;
 
+import com.ssafy.docshund.domain.users.exception.auth.AuthException;
 import com.ssafy.docshund.global.util.jwt.JwtUtil;
 
 import lombok.RequiredArgsConstructor;
@@ -21,35 +25,33 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class StompHandler implements ChannelInterceptor {
 
-    private final JwtUtil jwtUtil;
+	private final JwtUtil jwtUtil;
 
-    @Override
-    public Message<?> preSend(Message<?> message, MessageChannel channel) {
-        StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
-        if (StompCommand.CONNECT == accessor.getCommand() || StompCommand.SEND == accessor.getCommand()) {
+	@Override
+	public Message<?> preSend(Message<?> message, MessageChannel channel) {
+		StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
+		if (StompCommand.CONNECT == accessor.getCommand() || StompCommand.SEND == accessor.getCommand()) {
 
-            String authHeader = accessor.getFirstNativeHeader("Authorization");
-            log.info("authHeader: {}", authHeader);
+			String authHeader = accessor.getFirstNativeHeader("Authorization");
+			log.info("authHeader: {}", authHeader);
 
-            if(jwtUtil.isValidAuthorization(authHeader)) {
-                log.error("WEBSOCKET CONNECTION ERROR - JWT TOKEN IS INVALID");
-                throw new IllegalArgumentException("WEBSOCKET CONNECTION ERROR - JWT TOKEN IS INVALID");
-            }
+			if (jwtUtil.isValidAuthorization(authHeader)) {
+				throw new AuthException(INVALID_TOKEN);
+			}
 
-            String token = authHeader.replace("Bearer ", "");
-            if(jwtUtil.isExpired(token)) {
-                log.error("WEBSOCKET CONNECTION ERROR - JWT TOKEN IS EXPIRED");
-                throw new IllegalArgumentException("WEBSOCKET CONNECTION ERROR - JWT TOKEN IS EXPIRED");
-            }
+			String token = authHeader.replace("Bearer ", "");
+			if (jwtUtil.isExpired(token)) {
+				throw new AuthException(EXPIRED_TOKEN);
+			}
 
-            Long userId = jwtUtil.getUserlId(token);
+			Long userId = jwtUtil.getUserId(token);
 
-            accessor.setUser(new StompPrincipal(userId.toString()));
-            log.info("Principal set in StompHandler -> {}", accessor.getUser().getName());
-        }
-        return MessageBuilder
-                .withPayload(message.getPayload())
-                .copyHeaders(accessor.getMessageHeaders())
-                .build();
-    }
+			accessor.setUser(new StompPrincipal(userId.toString()));
+			log.info("Principal set in StompHandler -> {}", accessor.getUser().getName());
+		}
+		return MessageBuilder
+			.withPayload(message.getPayload())
+			.copyHeaders(accessor.getMessageHeaders())
+			.build();
+	}
 }

@@ -1,4 +1,4 @@
-package com.ssafy.docshund.domain.users.exception;
+package com.ssafy.docshund.domain.users.exception.auth;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -12,12 +12,10 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @ControllerAdvice
 @RequiredArgsConstructor
-public class UseExceptionHandler {
+public class AuthExceptionHandler {
 
-	@ExceptionHandler(UserException.class)
-	public ResponseEntity memberException(
-		UserException exception
-	) {
+	@ExceptionHandler(AuthException.class)
+	public ResponseEntity authException(AuthException exception) {
 		log.error("{}", exception.getMessage());
 
 		return new ResponseEntity<>(
@@ -25,4 +23,5 @@ public class UseExceptionHandler {
 			exception.getExceptionCode().getHttpStatus()
 		);
 	}
+
 }

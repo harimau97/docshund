@@ -38,8 +38,8 @@ public class Report extends BaseTimeEntity {
 	@Column(name = "content", nullable = false)
 	private String content;  // 신고 내용
 
-	@Column(name = "origin_content", nullable = false)
-	private String originContent;  // 신고된 내용 (번역, 게시글, 댓글 등)
+	@Column(name = "origin_content", nullable = false, columnDefinition = "TEXT")
+	private String originContent;
 
 	@Column(name = "reported_user", nullable = false)
 	private Long reportedUser;  // 신고된 유저 (외래 키 아님)
