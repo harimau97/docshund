@@ -407,7 +407,7 @@ class DocsControllerTest {
 	void postTransVotesTest() throws Exception {
 		// given
 		when(userUtil.getUser()).thenReturn(Mockito.mock(com.ssafy.docshund.domain.users.entity.User.class));
-		when(docsService.toggleVotes(1, 1L, userUtil.getUser())).thenReturn(true);
+		when(docsService.toggleVotes(1, 1L)).thenReturn(true);
 
 		// 좋아요 추가 테스트
 		mockMvc.perform(post("/api/v1/docshund/docs/1/trans/paragraph/1/votes"))
@@ -415,17 +415,17 @@ class DocsControllerTest {
 			.andExpect(jsonPath("$.message").value("Translation liked successfully."))
 			.andExpect(jsonPath("$.liked").value(true));
 
-		verify(docsService, times(1)).toggleVotes(1, 1L, userUtil.getUser());
+		verify(docsService, times(1)).toggleVotes(1, 1L);
 
 		// 좋아요 취소 테스트
-		when(docsService.toggleVotes(1, 1L, userUtil.getUser())).thenReturn(false);
+		when(docsService.toggleVotes(1, 1L)).thenReturn(false);
 
 		mockMvc.perform(post("/api/v1/docshund/docs/1/trans/paragraph/1/votes"))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.message").value("Translation unliked successfully."))
 			.andExpect(jsonPath("$.liked").value(false));
 
-		verify(docsService, times(2)).toggleVotes(1, 1L, userUtil.getUser());
+		verify(docsService, times(2)).toggleVotes(1, 1L);
 	}
 
 	// 특정 유저가 좋아한 번역 테스트
