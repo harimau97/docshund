@@ -1,29 +1,36 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { format, isSameDay } from "date-fns";
+import { jwtDecode } from "jwt-decode";
 
-import ArticleItemService from "./services/articleItemService";
 import communityArticleStore from "../../store/communityStore/communityArticleStore";
+import ArticleItemService from "./services/articleItemService";
 import CommunityHeader from "./components/communityHeader";
 import ArticleFooter from "./components/articleFooter";
 import ReplyList from "./replyList";
-
 import RectBtn from "../../components/button/rectBtn";
-import like from "../../assets/icon/heartFilled24.png";
-import likeCancel from "../../assets/icon/heartEmpty24.png";
+import ToastViewer from "../translate/components/toastViewer";
 
 const ArticleItem = () => {
+  const navigate = useNavigate();
   const { articleId } = useParams();
   const [isLiked, setIsLiked] = useState(false);
 
+  const token = localStorage.getItem("token");
+  const decoded = jwtDecode(token);
+
+  const articles = communityArticleStore((state) => state.articles);
   const articleData = communityArticleStore((state) => state.articleItems);
-  const storeArticleId = communityArticleStore((state) => state.articleId);
   const likeCount = communityArticleStore((state) => state.likeCount);
+  const commentCount = communityArticleStore((state) => state.commentCount);
 
   // store의 메소드를 가져오기 위해 정의
   const setArticleId = communityArticleStore((state) => state.setArticleId);
   const setArticleItems = communityArticleStore(
     (state) => state.setArticleItems
+  );
+  const setCommentCount = communityArticleStore(
+    (state) => state.setCommentCount
   );
   const setLikeCount = communityArticleStore((state) => state.setLikeCount);
   const setLoading = communityArticleStore((state) => state.setLoading);
@@ -31,8 +38,6 @@ const ArticleItem = () => {
 
   // NOTE: 즉시 store에 접근하여 데이터를 가져오기 위해 useEffect 사용
   useEffect(() => {
-    let isMounted = true;
-
     const fetchArticleItems = async (articleId) => {
       // 데이터를 가져오기 전에 로딩 상태를 true로 변경
       setLoading(true);
@@ -42,7 +47,7 @@ const ArticleItem = () => {
         // detailedArticleService.fetchDetailedArticle 함수를 호출하여 데이터를 가져옴
         const data = await ArticleItemService.fetchArticleItem(articleId);
 
-        if (isMounted && data) {
+        if (data) {
           setArticleId(articleId);
           setArticleItems(data);
           setIsLiked(data.liked);
@@ -51,16 +56,19 @@ const ArticleItem = () => {
       } catch (error) {
         setError(error);
       } finally {
-        if (isMounted) setLoading(false);
+        setLoading(false);
       }
     };
 
+    // 게시글 목록에서 해당 게시글을 찾아서 commentCount를 가져와서 미리 세팅
+    articles.map((article) => {
+      if (article.articleId == articleId) {
+        setCommentCount(article.commentCount);
+      }
+    });
+
     // 게시글 아이템을 가져오는 fetchArticleItems 함수 호출
     if (articleId) fetchArticleItems(articleId);
-
-    return () => {
-      isMounted = false;
-    };
   }, []);
 
   return (
@@ -79,10 +87,10 @@ const ArticleItem = () => {
                 <div className="flex gap-2 text-sm text-gray-500">
                   <button
                     className="hover:text-gray-700 cursor-pointer"
-                    onClick={() =>
+                    onClick={() => {
                       // 수정 페이지로 이동
-                      console.log("수정 페이지로 이동", articleId)
-                    }
+                      navigate(`/community/modify/${articleId}`);
+                    }}
                   >
                     수정
                   </button>
@@ -95,11 +103,16 @@ const ArticleItem = () => {
                   >
                     삭제
                   </button>
-                  <span>|</span>
+
                   {/* TODO: 신고 기능 추가: 모달 or 페이지 or 그냥 바로? */}
-                  <button className="hover:text-gray-700 cursor-pointer">
-                    신고
-                  </button>
+                  {decoded?.userId != articleData.userId && (
+                    <div className="flex gap-2 text-sm text-gray-500">
+                      <span>|</span>
+                      <button className="hover:text-gray-700 cursor-pointer">
+                        신고
+                      </button>
+                    </div>
+                  )}
                 </div>
               </div>
               <div className="flex justify-between items-center text-[#7d7c77]">
@@ -131,11 +144,10 @@ const ArticleItem = () => {
               </div>
             </div>
 
-            {/* TODO: 본문 이미지 구현 관련...? */}
             {/* 게시글 본문 */}
             <div className="border-b border-[#E1E1DF] pb-4 mb-4">
               <div className="min-h-[200px] whitespace-pre-wrap mb-6">
-                {articleData.content}
+                <ToastViewer content={articleData.content} />
               </div>
               <div className="flex justify-center items-center gap-4">
                 <RectBtn
@@ -165,26 +177,9 @@ const ArticleItem = () => {
             <ArticleFooter articleData={articleData} />
           </div>
         </div>
-        {/* TODO: 댓글 쓰기 창 구현 */}
-        <ReplyList articleData={articleData} />
+        {/* 댓글 리스트 */}
+        <ReplyList replyCount={commentCount} />
       </main>
-      {/* 
-      articleId: 16
-      commentCount: 0
-      content: "1234567890123456789012345678901234567890"
-      createdAt: "2025-02-06T13:26:28.42431"
-      docsId: 1
-      documentName: "Spring Framework"
-      likeCount: 0
-      liked: false
-      nickname: "gg_788544"
-      position: "BACKEND"
-      profileImage: "https://docshundbucket.s3.ap-northeast-2.amazonaws.com/small_logo.png"
-      title: "제목 16입니다"
-      updatedAt: "2025-02-06T13:26:28.42431"
-      userId: 43
-      viewCount: 0
-      */}
     </div>
   );
 };

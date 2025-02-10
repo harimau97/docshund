@@ -16,7 +16,7 @@ const docsCategoryStore = create((set) => ({
   setPositions: (positions) => set({ positions }),
 
   // 대분류에 해당하는 소분류 목록 (문서 제목들)
-  documentNames: [],
+  documentNames: [{}],
   // 소분류 목록 메소드 설정
   setDocumentNames: (documentNames) => set({ documentNames }),
 }));

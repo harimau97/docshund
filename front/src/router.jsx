@@ -71,7 +71,7 @@ function AppRoutes() {
         <Route index element={<Navigate to="list" replace />} />
         <Route path="list" element={<ArticleList />} />
         <Route path="article/:articleId" element={<ArticleItem />} />
-        <Route path="modify" element={<ModifyArticle />} />
+        <Route path="modify/:articleId" element={<ModifyArticle />} />
         <Route path="write" element={<WriteArticle />} />
       </Route>
 

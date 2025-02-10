@@ -19,7 +19,9 @@ import ToastViewer from "./components/toastViewer.jsx";
 import RectBtn from "../../components/button/rectBtn.jsx";
 
 //상태 import
+import useTestStore from "../../store/translateStore/testStore.jsx";
 import useModalStore from "../../store/translateStore/translateModalStore.jsx";
+
 import useEditorStore from "../../store/translateStore/editorStore.jsx";
 import useArchiveStore from "../../store/translateStore/archiveStore.jsx";
 
