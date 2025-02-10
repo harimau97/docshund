@@ -11,10 +11,12 @@ const MyTranslationPage = () => {
   const token = localStorage.getItem("token");
 
   // store에서 데이터를 가져오기 위해 store의 상태 정의
-  const translations = TranslationStore((state) => state.translations);
+  const myTranslations = TranslationStore((state) => state.myTranslations);
 
   // set(메소드) 정의
-  const setTranslations = TranslationStore((state) => state.setTranslations);
+  const setMyTranslations = TranslationStore(
+    (state) => state.setMyTranslations
+  );
   const setLoading = TranslationStore((state) => state.setLoading);
   const setError = TranslationStore((state) => state.setError);
 
@@ -35,9 +37,10 @@ const MyTranslationPage = () => {
           const decoded = jwtDecode(token);
           const userId = decoded.userId;
           const data = await MyTranslationService.fetchTranslations(userId);
+
           // data가 존재하면 setTranslations로 데이터를 저장
           if (data.length > 0) {
-            setTranslations(data);
+            setMyTranslations(data);
           }
         }
       } catch (error) {
@@ -51,15 +54,21 @@ const MyTranslationPage = () => {
 
   // 페이지네이션 관련 상태들을 하나의 useEffect로 통합
   useEffect(() => {
-    if (translations.length > 0) {
+    console.log("translations", myTranslations);
+    console.log("data", currentData);
+    // TEST: length 0인 경우 체크
+    if (myTranslations.length > 0) {
       const startIndex = currentPage * itemsPerPage;
-      const endIndex = Math.min(startIndex + itemsPerPage, translations.length);
-      const newTotalPages = Math.ceil(translations.length / itemsPerPage);
+      const endIndex = Math.min(
+        startIndex + itemsPerPage,
+        myTranslations.length
+      );
+      const newTotalPages = Math.ceil(myTranslations.length / itemsPerPage);
 
       setTotalPages(newTotalPages);
-      setCurrentData(translations.slice(startIndex, endIndex));
+      setCurrentData(myTranslations.slice(startIndex, endIndex));
     }
-  }, [translations, currentPage, itemsPerPage]);
+  }, [myTranslations, currentPage, itemsPerPage]);
 
   const renderTranslation = (item) => (
     <div className="flex justify-between text-lg px-3">

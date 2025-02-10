@@ -9,10 +9,12 @@ const TranslationStore = create((set) => ({
   setError: (error) => set({ error }),
 
   // state 정의
-  translations: [], // 좋아요한 번역 목록
+  likeTranslations: [], // 관심 번역 목록
+  myTranslations: [], // 나의 번역 목록
 
   // set(메소드) 정의
-  setTranslations: (translations) => set({ translations }),
+  setMyTranslations: (myTranslations) => set({ myTranslations }),
+  setLikeTranslations: (likeTranslations) => set({ likeTranslations }),
 }));
 
 export default TranslationStore;

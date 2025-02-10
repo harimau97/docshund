@@ -12,13 +12,10 @@ const ReplyTextarea = ({ reCommentFlag, commentId }) => {
 
   // store에서 데이터를 가져오기 위해 정의
   const setIsReplied = communityArticleStore((state) => state.setIsReplied);
-  const setCommentCount = communityArticleStore(
-    (state) => state.setCommentCount
-  );
 
   // 댓글 작성
   const handleSubmit = async () => {
-    if (!replyContent) {
+    if (!replyContent.trim()) {
       alert("댓글을 입력해주세요.");
       return;
     }
@@ -65,7 +62,6 @@ const ReplyTextarea = ({ reCommentFlag, commentId }) => {
 };
 
 ReplyTextarea.propTypes = {
-  setReplyTextareaFlag: propTypes.func,
   reCommentFlag: propTypes.bool,
   commentId: propTypes.number,
 };

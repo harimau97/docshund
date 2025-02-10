@@ -1,14 +1,23 @@
 import { useEffect, useState } from "react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
+
+// components
 import RectBtn from "../button/rectBtn";
+import NotificationModal from "../notificationModal/notificationModal";
+
+// store
 import useUserProfileStore from "../../store/myPageStore/userProfileStore";
 import useModalStore from "../../store/modalStore";
+import notificationModalStore from "../../store/notificationModalStore";
+import communityArticleStore from "../../store/communityStore/communityArticleStore";
+
+// services
 import authService from "../../services/authService";
+
+// assets
 import logo from "../../assets/logo.png";
 import notification from "../../assets/icon/notification32.png";
-
-import communityArticleStore from "../../store/communityStore/communityArticleStore";
 
 const UpperNav = () => {
   const location = useLocation();
@@ -16,6 +25,7 @@ const UpperNav = () => {
   const { token, isAuthenticated, logout } = authService();
   const { profile, fetchProfile } = useUserProfileStore();
   const { openModal } = useModalStore();
+  const { toggleModal, isOpen } = notificationModalStore();
 
   // 게시글 작성 페이지로 이동 시 페이지 초기화
   const setCurrentPage = communityArticleStore((state) => state.setCurrentPage);
@@ -88,10 +98,10 @@ const UpperNav = () => {
           </div>
           <div
             onClick={() => {
-              setCurrentPage(0); // 페이지 초기화
-              setSortType("latest"); // 최신순 정렬
-              setKeyword(""); // 검색어 초기화
-              setCategory(""); // 카테고리 초기화
+              setCurrentPage(0);
+              setSortType("latest");
+              setKeyword("");
+              setCategory("");
               navigate("/community");
             }}
             className={`cursor-pointer ${
@@ -116,11 +126,19 @@ const UpperNav = () => {
         {/* 로그인 여부에 따라 표시되는 요소 */}
         <div className="flex items-center gap-4">
           {isAuthenticated() && (
-            <img
-              className="w-[clamp(20px,2.1vw,32px)] h-auto cursor-pointer"
-              src={notification}
-              alt="알림 아이콘"
-            />
+            <div className="relative">
+              <img
+                className="w-[clamp(20px,2.1vw,32px)] h-auto cursor-pointer"
+                src={notification}
+                alt="알림 아이콘"
+                onClick={() => toggleModal()}
+              />
+              {isOpen && (
+                <div className="absolute left-1/2 -translate-x-1/2 top-[calc(100%+2.2rem)] z-[1000]">
+                  <NotificationModal />
+                </div>
+              )}
+            </div>
           )}
 
           <RectBtn

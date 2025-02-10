@@ -7,12 +7,7 @@ import ReplyItemService from "../services/replyItemService";
 import ListRender from "../../../components/pagination/listRender";
 import ReplyRenderItem from "./replyRenderItem";
 
-const ReplyItem = ({
-  replyTextareaFlag,
-  setReplyTextareaFlag,
-  reCommentFlag,
-  setReCommentFlag,
-}) => {
+const ReplyItem = ({ reCommentFlag, setReCommentFlag }) => {
   const { articleId } = useParams();
 
   // store에서 데이터를 가져오기 위해 정의
@@ -59,8 +54,7 @@ const ReplyItem = ({
       {/* 원댓글 렌더링 */}
       <ReplyRenderItem
         item={item}
-        replyTextareaFlag={replyTextareaFlag}
-        setReplyTextareaFlag={setReplyTextareaFlag}
+        rootCommentId={item.commentId}
         reCommentFlag={reCommentFlag}
         setReCommentFlag={setReCommentFlag}
       />
@@ -94,8 +88,7 @@ const ReplyItem = ({
                 <div className="w-full">
                   <ReplyRenderItem
                     item={reply}
-                    replyTextareaFlag={replyTextareaFlag}
-                    setReplyTextareaFlag={setReplyTextareaFlag}
+                    rootCommentId={item.commentId}
                     reCommentFlag={true}
                     setReCommentFlag={setReCommentFlag}
                   />
@@ -123,8 +116,6 @@ const ReplyItem = ({
 };
 
 ReplyItem.propTypes = {
-  replyTextareaFlag: PropTypes.bool,
-  setReplyTextareaFlag: PropTypes.func,
   reCommentFlag: PropTypes.bool,
   setReCommentFlag: PropTypes.func,
 };

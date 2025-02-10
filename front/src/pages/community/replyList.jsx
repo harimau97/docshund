@@ -1,6 +1,7 @@
 import { useState } from "react";
 import PropTypes from "prop-types";
 
+import communityArticleStore from "../../store/communityStore/communityArticleStore";
 import ReplyHeader from "./components/replyHeader";
 import ReplyItemArea from "./components/replyItemArea";
 import ReplyTextarea from "./components/replyTextarea";
@@ -13,8 +14,9 @@ import ReplyTextarea from "./components/replyTextarea";
 
 const ReplyList = ({ replyCount }) => {
   const token = localStorage.getItem("token");
-  const [replyTextareaFlag, setReplyTextareaFlag] = useState(false); // 댓글 작성창 보여주는 여부를 알기 위한 flag.
   const [reCommentFlag, setReCommentFlag] = useState(false); // 대댓글 작성 여부를 알기 위한 flag
+
+  const replyId = communityArticleStore((state) => state.replyId);
 
   return (
     <div className="mt-6 bg-white rounded-lg border border-[#E1E1DF] p-6">
@@ -24,17 +26,14 @@ const ReplyList = ({ replyCount }) => {
       <div className="border-b border-[#E1E1DF]"></div>
       {/* 댓글 리스트는 여기에 구현 */}
       <ReplyItemArea
-        replyTextareaFlag={replyTextareaFlag} // 댓글 작성창 보여주는 여부를 알기 위한 flag
-        setReplyTextareaFlag={setReplyTextareaFlag}
         reCommentFlag={reCommentFlag} // 대댓글 작성 여부를 알기 위한 flag
         setReCommentFlag={setReCommentFlag}
       />
 
       {/* 댓글 쓰기 창 */}
       {/* 로그인 한 회원만 보여주기 */}
-      {token && (
+      {token && replyId == 0 && (
         <ReplyTextarea
-          setReplyTextareaFlag={setReplyTextareaFlag}
           reCommentFlag={reCommentFlag}
           commentId={0} // 대댓글 작성 시 대댓글을 작성하는 원댓글의 id. 원댓글 작성 시 사용X
         />
