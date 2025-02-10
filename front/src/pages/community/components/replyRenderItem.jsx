@@ -2,6 +2,7 @@ import { useState } from "react";
 import Proptypes from "prop-types";
 import { jwtDecode } from "jwt-decode";
 
+import communityArticleStore from "../../../store/communityStore/communityArticleStore";
 import ReplyTextarea from "./replyTextarea";
 import ReplyItemService from "../services/replyItemService";
 
@@ -15,6 +16,11 @@ const ReplyRenderItem = ({
   const token = localStorage.getItem("token");
   const decoded = jwtDecode(token);
   const [replyId, setReplyId] = useState(0);
+
+  const setIsReplied = communityArticleStore((state) => state.setIsReplied);
+  const setCommentCount = communityArticleStore(
+    (state) => state.setCommentCount
+  );
 
   // TODO: 댓글 레이아웃 다듬기
   return (
@@ -40,13 +46,14 @@ const ReplyRenderItem = ({
             {decoded?.userId === item.userId && (
               <button
                 className="hover:text-gray-700 cursor-pointer"
-                onClick={() => {
-                  ReplyItemService.deleteReplyItem(
+                onClick={async () => {
+                  await ReplyItemService.deleteReplyItem(
                     item.articleId,
                     item.commentId
                   );
 
-                  setReplyTextareaFlag((prev) => !prev); // 댓글 삭제 후 댓글 리스트 리렌더링
+                  //  삭제 후 댓글 리스트 리렌더링
+                  setIsReplied((prev) => !prev);
                 }}
               >
                 삭제
@@ -75,20 +82,15 @@ const ReplyRenderItem = ({
 
       {/* TODO: textarea가 하나에만 뜨게 하기 */}
       {/* 유저고, 대댓글이고, 원댓글의 밑에 대해서 */}
-      {token &&
-        replyTextareaFlag &&
-        replyId === item.commentId &&
-        (console.log("replyRenderItem, 댓글 달기 -> ", replyId),
-        (
-          <div className="ml-14 mt-2">
-            {/* 대댓글 작성 */}
-            <ReplyTextarea
-              setReplyFlag={setReplyTextareaFlag} // 댓글 작성창 보여주는 여부를 알기 위한 flag
-              reCommentFlag={reCommentFlag} // 대댓글 작성 여부를 알기 위한 flag
-              commentId={item.commentId} // 대댓글 작성 시 대댓글을 작성하는 원댓글의 id
-            />
-          </div>
-        ))}
+      {token && replyTextareaFlag && replyId === item.commentId && (
+        <div className="ml-14 mt-2">
+          {/* 대댓글 작성 */}
+          <ReplyTextarea
+            reCommentFlag={reCommentFlag} // 대댓글 작성 여부를 알기 위한 flag
+            commentId={item.commentId} // 대댓글 작성 시 대댓글을 작성하는 원댓글의 id
+          />
+        </div>
+      )}
     </div>
   );
 };

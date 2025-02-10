@@ -60,10 +60,12 @@ const communityArticleStore = create((set) => ({
   // reply list의 초기값 설정
   replies: [], // 댓글 리스트
   commentCount: 0, // 댓글 개수
+  isReplied: false, // 댓글 작성 후 댓글 리스트 리렌더링을 위한 flag
 
   // reply list의 메소드 설정
   setReplies: (replies) => set({ replies }),
   setCommentCount: (commentCount) => set({ commentCount }),
+  setIsReplied: (isReplied) => set({ isReplied }),
 }));
 
 export default communityArticleStore;

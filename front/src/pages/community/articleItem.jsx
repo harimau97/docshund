@@ -10,7 +10,6 @@ import ArticleFooter from "./components/articleFooter";
 import ReplyList from "./replyList";
 import RectBtn from "../../components/button/rectBtn";
 import ToastViewer from "../translate/components/toastViewer";
-import { div } from "framer-motion/client";
 
 const ArticleItem = () => {
   const navigate = useNavigate();
@@ -179,7 +178,7 @@ const ArticleItem = () => {
           </div>
         </div>
         {/* 댓글 리스트 */}
-        <ReplyList replyCount={articleData.commentCount} />
+        <ReplyList replyCount={commentCount} />
       </main>
     </div>
   );

@@ -18,10 +18,15 @@ const ReplyItem = ({
   // store에서 데이터를 가져오기 위해 정의
   const [replyList, setReplyList] = useState([]);
 
+  const isReplied = communityArticleStore((state) => state.isReplied);
+
   // store의 메소드를 가져오기 위해 정의
   const setArticleId = communityArticleStore((state) => state.setArticleId);
   const setLoading = communityArticleStore((state) => state.setLoading);
   const setError = communityArticleStore((state) => state.setError);
+  const setCommentCount = communityArticleStore(
+    (state) => state.setCommentCount
+  );
 
   useEffect(() => {
     // 댓글 아이템을 가져오는 함수
@@ -34,8 +39,9 @@ const ReplyItem = ({
         const data = await ReplyItemService.fetchReplyItem(articleId);
 
         if (data?.length > 0) {
-          setArticleId(articleId);
-          setReplyList(data);
+          setArticleId(articleId); // articleId를 state에 저장
+          setReplyList(data); // 댓글 리스트 데이터를 state에 저장
+          setCommentCount(data.length); // 댓글 개수를 state에 저장
         }
       } catch (error) {
         setError(error);
@@ -46,7 +52,7 @@ const ReplyItem = ({
 
     // 댓글 아이템을 가져오는 fetchReplyItems 함수 호출
     fetchReplyItems(articleId);
-  }, [articleId, replyTextareaFlag]);
+  }, [articleId, isReplied]);
 
   const renderItem = (item) => (
     <div className="w-full">

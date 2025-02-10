@@ -13,15 +13,14 @@ import ReplyTextarea from "./components/replyTextarea";
 
 const ReplyList = ({ replyCount }) => {
   const token = localStorage.getItem("token");
-
   const [replyTextareaFlag, setReplyTextareaFlag] = useState(false); // 댓글 작성창 보여주는 여부를 알기 위한 flag.
   const [reCommentFlag, setReCommentFlag] = useState(false); // 대댓글 작성 여부를 알기 위한 flag
 
   return (
     <div className="mt-6 bg-white rounded-lg border border-[#E1E1DF] p-6">
       {/* 댓글 헤더 */}
-      {/* TODO: 댓글 개수 보여주는 거 더 빠르게 */}
       <ReplyHeader replyCount={replyCount} />
+
       <div className="border-b border-[#E1E1DF]"></div>
       {/* 댓글 리스트는 여기에 구현 */}
       <ReplyItemArea
