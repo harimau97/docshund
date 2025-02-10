@@ -32,6 +32,7 @@ import com.ssafy.docshund.domain.users.entity.User;
 import com.ssafy.docshund.domain.users.service.UserService;
 import com.ssafy.docshund.global.util.user.UserUtil;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -78,7 +79,7 @@ public class UserController {
 
 	@PatchMapping(value = "/profile/{userId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	public ResponseEntity<String> modifyProfile(@PathVariable Long userId,
-		@RequestPart("profile") ProfileRequestDto request,
+		@Valid @RequestPart("profile") ProfileRequestDto request,
 		@RequestPart(value = "file", required = false) MultipartFile file) {
 		User user = userUtil.getUser();
 		if (user == null || !userUtil.isMine(userId, user))

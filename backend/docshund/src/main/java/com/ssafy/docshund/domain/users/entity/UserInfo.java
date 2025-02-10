@@ -20,8 +20,6 @@ import lombok.Getter;
 @Table(name = "user_info")
 public class UserInfo extends BaseTimeEntityWithUpdatedAt {
 
-	private static final String INTRODUCE_TEXT = "자기소개를 설정해주세요.";
-
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "user_info_id")
@@ -48,7 +46,7 @@ public class UserInfo extends BaseTimeEntityWithUpdatedAt {
 		UserInfo userInfo = new UserInfo();
 		userInfo.user = user;
 		userInfo.isDarkmode = false;
-		userInfo.introduce = INTRODUCE_TEXT;
+		userInfo.introduce = "";
 
 		return userInfo;
 	}
