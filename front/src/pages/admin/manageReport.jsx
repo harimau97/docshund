@@ -1,58 +1,76 @@
 import React, { useState, useEffect, useRef } from "react";
-import { fetchReportList } from "../admin/Hooks/adminGetService";
+import { fetchReportList, fetchUserList } from "../admin/Hooks/adminGetService";
 import { MoveRight, Download } from "lucide-react";
 import useUserManagerStore from "../../store/adminStore/userManagerStore";
 
 const ManageReport = () => {
   const reportListData = useRef([]);
+  const [userList, setUserList] = useState([]);
   const [reportList, setReportList] = useState([]);
   const [activeFilter, setActiveFilter] = useState("all");
   const { currentUserList, addUserList, removeUserList } =
     useUserManagerStore();
 
-  const handleFilter = async (labels) => {
-    if (labels === "all") {
+  const handleFilter = async (category) => {
+    if (category === "all") {
       setReportList(reportListData.current);
-    } else if (labels === "translate") {
+    } else if (category === "transId") {
       const tmpReportList = reportListData.current.filter(
-        (report) => report.labels === "translate"
+        (report) => report.transId !== null
       );
       setReportList(tmpReportList);
-    } else if (labels === "article") {
+    } else if (category === "articleId") {
       const tmpReportList = reportListData.current.filter(
-        (report) => report.labels === "article"
+        (report) => report.articleId !== null
       );
       setReportList(tmpReportList);
-    } else if (labels === "comment") {
+    } else if (category === "commentId") {
       const tmpReportList = reportListData.current.filter(
-        (report) => report.labels === "comment"
+        (report) => report.commentId !== null
       );
       setReportList(tmpReportList);
-    } else if (labels === "chat") {
+    } else if (category === "chatId") {
       const tmpReportList = reportListData.current.filter(
-        (report) => report.labels === "chat"
+        (report) => report.chatId !== null
       );
       setReportList(tmpReportList);
     }
   };
 
+  const processUserList = (userListContent) => {
+    userListContent.forEach((user) => {
+      currentUserList[user.userId] = user.nickname;
+    });
+  };
+
   useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const data = await fetchUserList();
+        data.sort((a, b) => b.reportCount - a.reportCount);
+        setUserList(data);
+        processUserList(data);
+      } catch (error) {
+        console.error("Error fetching users:", error);
+      }
+    };
+
     const fetchData = async () => {
-      const data = await fetchReportList(0, localStorage.getItem("userId"));
+      const data = await fetchReportList();
       reportListData.current = data;
       setReportList(data);
     };
-    console.log(reportListData.current);
-    console.log(currentUserList);
+
+    fetchUsers();
     fetchData();
   }, []);
 
   const filterButtons = [
     { label: "전체", value: "all" },
-    { label: "번역본", value: "translate" },
-    { label: "게시글", value: "article" },
-    { label: "댓글", value: "comment" },
-    { label: "채팅", value: "chat" },
+    { label: "번역본", value: "transId" },
+    { label: "게시글", value: "articleId" },
+    { label: "댓글", value: "commentId" },
+    { label: "채팅", value: "chatId" },
   ];
 
   return (
@@ -140,11 +158,13 @@ const ManageReport = () => {
                     {report.category}
                   </td>
                   <td className="flex gap-1 px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {currentUserList[report.userId]} <MoveRight />{" "}
+                    {currentUserList[report.user.userId]} <MoveRight />{" "}
                     {currentUserList[report.reportedUser]}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {report.createdAt}
+                    {new Date(
+                      new Date(report.createdAt).toISOString()
+                    ).toLocaleString()}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span

@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import { fetchUserList } from "../admin/Hooks/adminGetService";
+import { changeUserStatus } from "../admin/Hooks/adminPatchService";
 import useUserManagerStore from "../../store/adminStore/userManagerStore";
-
+import { toast } from "react-toastify";
+import { RefreshCw } from "lucide-react";
 const ManageUser = () => {
   const [userList, setUserList] = useState([]);
   const { addUserList, removeUserList, currentUserList } =
@@ -11,14 +13,14 @@ const ManageUser = () => {
     const searchKeyword = e.target.value;
     if (!searchKeyword) {
       const data = await fetchUserList();
-      data.sort((a, b) => b.userInfo.reportCount - a.userInfo.reportCount);
+      data.sort((a, b) => b.reportCount - a.reportCount);
       setUserList(data);
       return;
     } else {
       const filteredList = userList.filter(
         (item) =>
-          item.user.email.includes(searchKeyword.toLowerCase()) ||
-          item.user.nickname.includes(searchKeyword.toLowerCase())
+          item.email.includes(searchKeyword.toLowerCase()) ||
+          item.nickname.includes(searchKeyword.toLowerCase())
       );
       setUserList(filteredList);
     }
@@ -26,15 +28,45 @@ const ManageUser = () => {
 
   const processUserList = (userListContent) => {
     userListContent.forEach((user) => {
-      currentUserList[user.user.userId] = user.user.email;
+      currentUserList[user.userId] = user.nickname;
     });
+  };
+
+  const handleUserStatus = async (userId, currentStatus) => {
+    if (currentStatus === "ACTIVE") {
+      const response = await changeUserStatus(userId, "WITHDRAWN");
+      if (response === 200) {
+        toast.success("상태 변경 완료");
+      } else {
+        toast.error("상태 변경 실패");
+      }
+    } else if (currentStatus === "WITHDRAWN") {
+      const response = await changeUserStatus(userId, "BANNED");
+      if (response === 200) {
+        toast.success("상태 변경 완료");
+      } else {
+        toast.error("상태 변경 실패");
+      }
+    } else if (currentStatus === "BANNED") {
+      const response = await changeUserStatus(userId, "ACTIVE");
+      if (response === 200) {
+        toast.success("상태 변경 완료");
+      } else {
+        toast.error("상태 변경 실패");
+      }
+    }
+
+    const data = await fetchUserList();
+    data.sort((a, b) => b.reportCount - a.reportCount);
+    setUserList(data);
   };
 
   useEffect(() => {
     const fetchUsers = async () => {
       try {
         const data = await fetchUserList();
-        data.sort((a, b) => b.userInfo.reportCount - a.userInfo.reportCount);
+        console.log(data);
+        data.sort((a, b) => b.reportCount - a.reportCount);
         setUserList(data);
         console.log(userList);
         processUserList(data);
@@ -55,7 +87,7 @@ const ManageUser = () => {
           <input
             onChange={handleSearch}
             type="text"
-            placeholder="이메일, 닉네임, 관심분야 검색"
+            placeholder="이메일, 닉네임 검색"
             className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:border-[#bc5b39] focus:ring-1 focus:ring-[#bc5b39] transition-colors duration-200"
           />
           <svg
@@ -104,27 +136,39 @@ const ManageUser = () => {
                   className="hover:bg-gray-50 transition-colors duration-150"
                 >
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {user.user.email}
+                    {user.email}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {user.user.nickname}
+                    {user.nickname}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {user.user.createdAt}
+                    {user.createdAt}
                   </td>
-                  <td className="px-3 py-4 whitespace-nowrap">
+                  <td className="px-3 py-4 whitespace-nowrap w-28 flex items-center gap-2">
                     <span
-                      className={`px-3 py-1 text-xs font-medium rounded-full ${
-                        user.user.status === "ACTIVE"
+                      className={`flex justify-center items-center py-1 px-2 w-3/4 text-xs font-medium rounded-full ${
+                        user.status === "ACTIVE"
                           ? "bg-green-100 text-green-800"
-                          : "bg-red-100 text-red-800"
+                          : user.status === "BANNED"
+                          ? "bg-red-100 text-red-800"
+                          : "bg-orange-400 text-white"
                       }`}
                     >
-                      {user.user.status === "ACTIVE" ? "활성" : "비활성"}
+                      {user.status === "ACTIVE"
+                        ? "ACTIVE"
+                        : user.status === "BANNED"
+                        ? "BANNED"
+                        : "BLIND"}
                     </span>
+                    <button
+                      onClick={() => handleUserStatus(user.userId, user.status)}
+                      className="cursor-pointer"
+                    >
+                      <RefreshCw />
+                    </button>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
-                    {user.userInfo.reportCount}
+                    {user.reportCount}
                   </td>
                 </tr>
               ))}

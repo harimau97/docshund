@@ -4,7 +4,7 @@ const ReportService = {
   async submitReport(formData) {
     try {
       const response = await axiosMultipartInstance.post(
-        "/supports/report",
+        "/supports/reports",
         formData
       );
       return response.data;

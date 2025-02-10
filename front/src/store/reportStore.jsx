@@ -14,11 +14,22 @@ const reportStore = create((set) => ({
   },
   closeReport: () => {
     set({ isReportOpen: false });
+    clearReportContent();
   },
   toggleReport: () => {
     set((state) => ({
       isReportVisible: !state.isReportVisible,
     }));
+  },
+  clearReportContent: () => {
+    set({
+      originContent: "",
+      reportedUser: "",
+      chatId: "",
+      articleId: "",
+      transId: "",
+      commentId: "",
+    });
   },
 }));
 
