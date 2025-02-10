@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import com.querydsl.core.annotations.QueryProjection;
 
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -15,9 +16,9 @@ import lombok.Setter;
 public class MemoRequestDto {
 	private Integer memoId;
 	private Long userId;
-	@NotNull(message = "제목은 비워둘 수 없습니다.")
+	@NotNull(message = "제목은 비워둘 수 없습니다.") @Size(max = 50, message = "제목은 50자 이내로 작성해야합니다.")
 	private String title;
-	@NotNull(message = "내용은 비워둘 수 없습니다.")
+	@NotNull(message = "내용은 비워둘 수 없습니다.") @Size(max = 20000, message = "내용은 20000자 이내로 작성해야합니다.")
 	private String content;
 	private LocalDateTime createdAt;
 	private LocalDateTime updatedAt;

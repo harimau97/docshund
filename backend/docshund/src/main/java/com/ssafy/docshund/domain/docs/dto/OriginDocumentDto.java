@@ -12,9 +12,9 @@ public record OriginDocumentDto(
 	Integer docsId,
 	@NotNull @Min(1)
 	Integer pOrder,
-	@NotNull @Size(max = 10)
+	@NotNull @Size(max = 10, message = "태그는 10자 이내로 작성해야합니다.")
 	String tag,
-	@NotNull
+	@NotNull @Size(max = 20000, message = "문서의 원문은 각 문단 당 20000자 이내로 작성해야합니다.")
 	String content) {
 
 	public static OriginDocumentDto fromEntity(OriginDocument originDocument) {

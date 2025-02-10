@@ -1,6 +1,7 @@
 package com.ssafy.docshund.domain.docs.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -14,6 +15,6 @@ public interface OriginDocumentRepository extends JpaRepository<OriginDocument, 
 	List<OriginDocument> findByDocument_DocsId(Integer docsId);
 
 	// 특정 문서의 특정 단락 원본 조회
-	OriginDocument findByOriginId(Integer originId);
+	Optional<OriginDocument> findByOriginId(Integer originId);
 
 }

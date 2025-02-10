@@ -6,8 +6,13 @@ import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.ssafy.docshund.domain.docs.exception.DocsException;
+import com.ssafy.docshund.domain.docs.exception.DocsExceptionCode;
+import com.ssafy.docshund.domain.docs.exception.DocsExceptionHandler;
+import com.ssafy.docshund.domain.users.repository.UserRepository;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -50,6 +55,7 @@ public class DocsServiceImpl implements DocsService {
 	private final AlertsService alertsService;
 	private final ObjectMapper objectMapper = new ObjectMapper();
 	private final UserUtil userUtil;
+	private final UserRepository userRepository;
 
 	// 전체 문서 목록 조회
 	@Override
@@ -103,6 +109,7 @@ public class DocsServiceImpl implements DocsService {
 	@Transactional
 	public DocumentDto getDocumentDetail(Integer docsId) {
 
+		// 문서가 존재하지 않으면 예외처리
 		Document document = documentRepository.findById(docsId)
 			.orElseThrow(() -> new EntityNotFoundException("Document not found with id: " + docsId));
 
@@ -132,10 +139,15 @@ public class DocsServiceImpl implements DocsService {
 	// 문서 생성
 	@Override
 	@Transactional
-	public DocumentDto createDocument(DocumentDto documentDto, User user) {
+	public DocumentDto createDocument(DocumentDto documentDto) {
 
+		// 유저가 존재하는지, 어드민인지 확인 후 예외처리
+		User user = userUtil.getUser();
+		if (user == null) {
+			throw new DocsException(DocsExceptionCode.USER_NOT_AUTHORIZED);
+		}
 		if (!userUtil.isAdmin(user)) {
-			throw new SecurityException("Only admins can create documents.");
+			throw new DocsException(DocsExceptionCode.NO_PERMISSION);
 		}
 
 		Document document = new Document(
@@ -156,7 +168,14 @@ public class DocsServiceImpl implements DocsService {
 	// 관심문서 등록 및 해제
 	@Override
 	@Transactional
-	public DocumentDto toggleLikes(Integer docsId, User user) {
+	public DocumentDto toggleLikes(Integer docsId) {
+
+		// 로그인하지 않은 유저 예외처리
+		User user = userUtil.getUser();
+		if (user == null) {
+			throw new DocsException(DocsExceptionCode.USER_NOT_AUTHORIZED);
+		}
+
 		// 현재 사용자가 해당 문서를 좋아요 했는지 확인
 		boolean isLiked = documentLikeRepository.existsByDocument_DocsIdAndUser_UserId(docsId, user.getUserId());
 
@@ -166,7 +185,7 @@ public class DocsServiceImpl implements DocsService {
 		} else {
 			// 좋아요 등록
 			Document document = documentRepository.findById(docsId)
-				.orElseThrow(() -> new EntityNotFoundException("Document not found with id: " + docsId));
+				.orElseThrow(() -> new DocsException(DocsExceptionCode.DOCS_NOT_FOUND));
 
 			DocumentLike documentLike = new DocumentLike(document, user);
 			documentLikeRepository.save(documentLike);
@@ -174,7 +193,7 @@ public class DocsServiceImpl implements DocsService {
 
 		// 문서 정보 조회
 		Document targetDocument = documentRepository.findById(docsId)
-			.orElseThrow(() -> new EntityNotFoundException("Document not found with id: " + docsId));
+			.orElseThrow(() -> new DocsException(DocsExceptionCode.DOCS_NOT_FOUND));
 
 		// 갱신된 좋아요 유저들 조회
 		List<Long> likeUserIds = documentLikeRepository.findLikedUserIdsByDocumentId(docsId);
@@ -188,6 +207,13 @@ public class DocsServiceImpl implements DocsService {
 	// 유저 관심 문서 조회
 	@Override
 	public List<DocumentDto> getLikesDocument(Long userId) {
+
+		if (userId == null) {
+			throw new DocsException(DocsExceptionCode.ILLEGAL_ARGUMENT);
+		}
+		userRepository.findById(userId)
+				.orElseThrow(() -> new DocsException(DocsExceptionCode.USER_NOT_FOUND));
+
 		List<Document> documents = customDocumentRepository.findLikedDocumentByUserId(userId);
 
 		List<Integer> documentIds = documents.stream().map(Document::getDocsId).toList();
@@ -222,6 +248,12 @@ public class DocsServiceImpl implements DocsService {
 	// 문서 원본(origin_document) 조회
 	@Override
 	public List<OriginDocumentDto> getAllOriginDocuments(Integer docsId) {
+		if (docsId == null) {
+			throw new DocsException(DocsExceptionCode.ILLEGAL_ARGUMENT);
+		}
+		if (!documentRepository.existsById(docsId)) {
+			throw new DocsException(DocsExceptionCode.DOCS_NOT_FOUND);
+		}
 		List<OriginDocument> originDocuments = originDocumentRepository.findByDocument_DocsId(docsId);
 		return originDocuments.stream()
 			.map(OriginDocumentDto::fromEntity)
@@ -231,29 +263,32 @@ public class DocsServiceImpl implements DocsService {
 	// 특정 단락 원본 조회
 	@Override
 	public OriginDocumentDto getOriginDocumentDetail(Integer originId) {
-		OriginDocument originDocument = originDocumentRepository.findByOriginId(originId);
-		if (originDocument == null) {
-			throw new EntityNotFoundException("OriginDocument not found with id: " + originId);
+		if (originId == null) {
+			throw new DocsException(DocsExceptionCode.ILLEGAL_ARGUMENT);
 		}
+		OriginDocument originDocument = originDocumentRepository.findByOriginId(originId)
+			.orElseThrow(() -> new DocsException(DocsExceptionCode.ORIGIN_NOT_FOUND));
 		return OriginDocumentDto.fromEntity(originDocument);
 	}
 
 	// 원본 생성
 	@Override
 	@Transactional
-	public List<OriginDocumentDto> createOriginDocuments(Integer docsId, String content, User user) {
+	public List<OriginDocumentDto> createOriginDocuments(Integer docsId, String content) {
+
+		User user = userUtil.getUser();
 
 		// 유저가 존재하지 않을 시 예외 처리
 		if (user == null) {
-			throw new IllegalArgumentException("User not found");
+			throw new DocsException(DocsExceptionCode.USER_NOT_AUTHORIZED);
 		}
 		// 관리자가 아닐 시 예외 처리
 		if (!userUtil.isAdmin(user)) {
-			throw new SecurityException("Only admins can create origin documents.");
+			throw new DocsException(DocsExceptionCode.NO_PERMISSION);
 		}
 		// 내용이 없을 시 예외 처리
 		if (content == null || content.trim().isEmpty()) {
-			throw new IllegalArgumentException("Content is empty or null");
+			throw new DocsException(DocsExceptionCode.REQUIRED_IS_EMPTY);
 		}
 
 		System.out.println("[Service] Received docsId: " + docsId);
@@ -302,7 +337,7 @@ public class DocsServiceImpl implements DocsService {
 
 			process.waitFor();
 			if (process.exitValue() != 0) {
-				throw new RuntimeException("Python script execution failed with exit code: " + process.exitValue());
+				throw new DocsException(DocsExceptionCode.PYTHON_ERROR);
 			}
 
 			String resultJson = resultJsonBuilder.toString();
@@ -313,7 +348,7 @@ public class DocsServiceImpl implements DocsService {
 				});
 
 			Document document = documentRepository.findById(docsId)
-				.orElseThrow(() -> new RuntimeException("Document not found with id: " + docsId));
+				.orElseThrow(() -> new DocsException(DocsExceptionCode.DOCS_NOT_FOUND));
 
 			return documents.stream().map(dto -> {
 				OriginDocument originDocument = new OriginDocument(
@@ -328,7 +363,7 @@ public class DocsServiceImpl implements DocsService {
 			}).toList();
 
 		} catch (Exception e) {
-			throw new RuntimeException("Failed to process HTML content: " + e.getMessage(), e);
+			throw new DocsException(DocsExceptionCode.PYTHON_ERROR);
 		}
 	}
 
@@ -336,8 +371,16 @@ public class DocsServiceImpl implements DocsService {
 	@Transactional(readOnly = true)
 	public List<TranslatedDocumentDto> getAllTranslatedDocuments(Integer docsId) {
 
-		List<TranslatedDocument> translatedDocuments = translatedDocumentRepository.findByOriginDocument_Document_DocsIdAndStatus(
-			docsId, Status.VISIBLE);
+		// docsId가 null이면 / docs가 없으면 예외 처리
+		if (docsId == null) {
+			throw new DocsException(DocsExceptionCode.ILLEGAL_ARGUMENT);
+		}
+		if (!documentRepository.existsById(docsId)) {
+			throw new DocsException(DocsExceptionCode.DOCS_NOT_FOUND);
+		}
+
+		List<TranslatedDocument> translatedDocuments = translatedDocumentRepository
+				.findByOriginDocument_Document_DocsIdAndStatus(docsId, Status.VISIBLE);
 
 		// 번역 문서 ID 목록 추출
 		List<Long> transIds = translatedDocuments.stream().map(TranslatedDocument::getTransId).toList();
@@ -371,6 +414,15 @@ public class DocsServiceImpl implements DocsService {
 	@Transactional(readOnly = true)
 	@Override
 	public List<TranslatedDocumentDto> getBestTranslatedDocuments(Integer docsId) {
+
+		// docsId가 null이면 / docs가 없으면 예외 처리
+		if (docsId == null) {
+			throw new DocsException(DocsExceptionCode.ILLEGAL_ARGUMENT);
+		}
+		if (!documentRepository.existsById(docsId)) {
+			throw new DocsException(DocsExceptionCode.DOCS_NOT_FOUND);
+		}
+
 		// 베스트 번역본 가져오기
 		List<TranslatedDocumentDto> bestTransDocuments = customDocumentRepository.findBestTrans(docsId);
 
@@ -396,6 +448,17 @@ public class DocsServiceImpl implements DocsService {
 	@Override
 	public List<TranslatedDocumentDto> getTranslatedDocuments(Integer docsId, Integer originId, String sort,
 		String order) {
+
+		if (docsId == null || originId == null) {
+			throw new DocsException(DocsExceptionCode.ILLEGAL_ARGUMENT);
+		}
+		if (!documentRepository.existsById(docsId)) {
+			throw new DocsException(DocsExceptionCode.DOCS_NOT_FOUND);
+		}
+		if (!originDocumentRepository.existsById(originId)) {
+			throw new DocsException(DocsExceptionCode.ORIGIN_NOT_FOUND);
+		}
+
 		// 번역문 조회
 		List<TranslatedDocumentDto> translatedDocuments = customDocumentRepository.findTranslatedDocs(docsId, originId,
 			sort, order);
@@ -411,7 +474,6 @@ public class DocsServiceImpl implements DocsService {
 				Collectors.mapping(result -> (Long)result[1], Collectors.toList()) // 좋아요한 userId 리스트로 매핑
 			));
 
-		// 4. 좋아요 정보 추가하여 DTO 변환 후 반환
 		return translatedDocuments.stream().map(transDoc -> {
 			List<Long> likeUserIds = likeUsersMap.getOrDefault(transDoc.transId(), List.of());
 			return transDoc.withLikeUserIds(likeUserIds);
@@ -421,11 +483,22 @@ public class DocsServiceImpl implements DocsService {
 	// 번역 작성하기
 	@Override
 	@Transactional
-	public TranslatedDocumentDto createTranslatedDocument(Integer docsId, Integer originId, User user,
-		String content) {
+	public TranslatedDocumentDto createTranslatedDocument(Integer docsId, Integer originId, String content) {
+		User user = userUtil.getUser();
+
+		if (user == null) {
+			throw new DocsException(DocsExceptionCode.USER_NOT_AUTHORIZED);
+		}
+		if (docsId == null || originId == null || content == null || content.trim().isEmpty()) {
+			throw new DocsException(DocsExceptionCode.REQUIRED_IS_EMPTY);
+		}
+		if (!documentRepository.existsById(docsId)) {
+			throw new DocsException(DocsExceptionCode.DOCS_NOT_FOUND);
+		}
+
 		// 원본 문서 조회
 		OriginDocument originDocument = originDocumentRepository.findById(originId)
-			.orElseThrow(() -> new EntityNotFoundException("OriginDocument not found with id: " + originId));
+			.orElseThrow(() -> new DocsException(DocsExceptionCode.ORIGIN_NOT_FOUND));
 
 		// 번역 문서 생성
 		TranslatedDocument translatedDocument = new TranslatedDocument(originDocument, user, content, 0,
@@ -439,8 +512,17 @@ public class DocsServiceImpl implements DocsService {
 	@Transactional(readOnly = true)
 	@Override
 	public List<UserTransDocumentDto> getUserTransDocument(Long userId) {
-		List<TranslatedDocument> userTransDocuments = translatedDocumentRepository.findByUser_UserIdAndStatus(userId,
-			Status.VISIBLE);
+		
+		// 유저 id가 null 인 경우, 유저가 존재하지 않는 경우 예외 처리
+		if (userId == null) {
+			throw new DocsException(DocsExceptionCode.ILLEGAL_ARGUMENT);
+		}
+		if (!userRepository.existsById(userId)) {
+			throw new DocsException(DocsExceptionCode.USER_NOT_FOUND);
+		}
+
+		List<TranslatedDocument> userTransDocuments = translatedDocumentRepository
+				.findByUser_UserIdAndStatus(userId, Status.VISIBLE);
 
 		// 번역 문서 ID 목록 추출
 		List<Long> transIds = userTransDocuments.stream().map(TranslatedDocument::getTransId).toList();
@@ -477,9 +559,18 @@ public class DocsServiceImpl implements DocsService {
 	@Transactional(readOnly = true)
 	@Override
 	public TranslatedDocumentDto getTranslatedDocumentDetail(Integer docsId, Long transId) {
+
+		if (docsId == null || transId == null) {
+			throw new DocsException(DocsExceptionCode.ILLEGAL_ARGUMENT);
+		}
+
+		if (!documentRepository.existsById(docsId)) {
+			throw new DocsException(DocsExceptionCode.DOCS_NOT_FOUND);
+		}
+
 		// 번역 문서 조회
 		TranslatedDocument translatedDocument = translatedDocumentRepository.findById(transId)
-			.orElseThrow(() -> new IllegalArgumentException("해당 번역문이 존재하지 않습니다: transId=" + transId));
+			.orElseThrow(() -> new DocsException(DocsExceptionCode.TRANSLATION_NOT_FOUND));
 
 		// 해당 번역 문서가 docsId에 속하는지 확인
 		if (!translatedDocument.getOriginDocument().getDocument().getDocsId().equals(docsId)) {
@@ -506,26 +597,36 @@ public class DocsServiceImpl implements DocsService {
 	// 번역 수정하기
 	@Override
 	@Transactional
-	public TranslatedDocumentDto updateTranslatedDocument(Integer docsId, Long transId, User user, String content) {
+	public TranslatedDocumentDto updateTranslatedDocument(Integer docsId, Long transId, String content) {
+		// 유저 조회
+		User user = userUtil.getUser();
+		if (user == null) {
+			throw new DocsException(DocsExceptionCode.USER_NOT_AUTHORIZED);
+		}
+
+		if (docsId == null || transId == null || content == null || content.trim().isEmpty()) {
+			throw new DocsException(DocsExceptionCode.ILLEGAL_ARGUMENT);
+		}
+
 		// 해당하는 번역 문서 찾기
 		TranslatedDocument translatedDocument = translatedDocumentRepository.findById(transId)
-			.orElseThrow(() -> new EntityNotFoundException("Translated document not found with id: " + transId));
+			.orElseThrow(() -> new DocsException(DocsExceptionCode.TRANSLATION_NOT_FOUND));
 
 		// docsId와 transId가 일치하는지 검증
 		if (!translatedDocument.getOriginDocument().getDocument().getDocsId().equals(docsId)) {
-			throw new IllegalArgumentException("Invalid transId or docsId does not match");
+			throw new IllegalArgumentException("해당 번역문이 주어진 문서(docsId)에 속하지 않습니다.");
 		}
 
 		// 작성자가 맞는지 확인 (작성자가 아니면 수정 불가)
 		if (!translatedDocument.getUser().getUserId().equals(user.getUserId())) {
-			throw new SecurityException("You are not the owner of this translation.");
+			throw new DocsException(DocsExceptionCode.NOT_YOUR_CONTENT);
 		}
 
 		// 내용 업데이트 후 저장
 		translatedDocument.updateContent(content);
 
 		// 좋아요한 유저 목록 가져오기
-		List<Long> likeUserIds = translatedDocumentLikeRepository.findLikedUserIdsByTransId(Long.valueOf(transId));
+		List<Long> likeUserIds = translatedDocumentLikeRepository.findLikedUserIdsByTransId(transId);
 
 		return TranslatedDocumentDto.fromEntity(translatedDocument, likeUserIds.size(), likeUserIds);
 	}
@@ -533,19 +634,29 @@ public class DocsServiceImpl implements DocsService {
 	// 번역 삭제하기
 	@Override
 	@Transactional
-	public void deleteTranslatedDocument(Integer docsId, Long transId, User user) {
+	public void deleteTranslatedDocument(Integer docsId, Long transId) {
+
+		User user = userUtil.getUser();
+
+		if (user == null) {
+			throw new DocsException(DocsExceptionCode.USER_NOT_AUTHORIZED);
+		}
+		if (docsId == null || transId == null) {
+			throw new DocsException(DocsExceptionCode.ILLEGAL_ARGUMENT);
+		}
+
 		// 번역 문서 조회
 		TranslatedDocument translatedDocument = translatedDocumentRepository.findById(transId)
-			.orElseThrow(() -> new EntityNotFoundException("Translated document not found with id: " + transId));
+			.orElseThrow(() -> new DocsException(DocsExceptionCode.TRANSLATION_NOT_FOUND));
 
 		// docsId와 transId의 문서가 일치하는지 검증
 		if (!translatedDocument.getOriginDocument().getDocument().getDocsId().equals(docsId)) {
-			throw new IllegalArgumentException("Invalid transId or docsId does not match");
+			throw new IllegalArgumentException("해당 번역문이 주어진 문서(docsId)에 속하지 않습니다.");
 		}
 
 		// 삭제 권한 확인 (작성자 본인만 삭제 가능)
 		if (!translatedDocument.getUser().getUserId().equals(user.getUserId())) {
-			throw new SecurityException("You are not authorized to delete this translation.");
+			throw new DocsException(DocsExceptionCode.NOT_YOUR_CONTENT);
 		}
 
 		// 번역삭제
@@ -556,20 +667,29 @@ public class DocsServiceImpl implements DocsService {
 	// 번역 투표 / 투표해제
 	@Override
 	@Transactional
-	public boolean toggleVotes(Integer docsId, Long transId, User user) {
-		TranslatedDocument translatedDocument = translatedDocumentRepository.findById(transId)
-			.orElseThrow(() -> new EntityNotFoundException("Translated document not found with id: " + transId));
+	public boolean toggleVotes(Integer docsId, Long transId) {
 
-		if (!translatedDocument.getOriginDocument().getDocument().getDocsId().equals(docsId)) {
-			throw new IllegalArgumentException("Invalid transId or docsId does not match");
+		User user = userUtil.getUser();
+		if (user == null) {
+			throw new DocsException(DocsExceptionCode.USER_NOT_AUTHORIZED);
+		}
+		if (docsId == null || transId == null) {
+			throw new DocsException(DocsExceptionCode.ILLEGAL_ARGUMENT);
 		}
 
-		boolean hasVoted = translatedDocumentLikeRepository.existsByTranslatedDocument_TransIdAndUser_UserId(
-			Long.valueOf(transId), user.getUserId());
+		TranslatedDocument translatedDocument = translatedDocumentRepository.findById(transId)
+			.orElseThrow(() -> new DocsException(DocsExceptionCode.TRANSLATION_NOT_FOUND));
+
+		if (!translatedDocument.getOriginDocument().getDocument().getDocsId().equals(docsId)) {
+			throw new IllegalArgumentException("해당 번역문이 주어진 문서(docsId)에 속하지 않습니다.");
+		}
+
+		boolean hasVoted = translatedDocumentLikeRepository
+				.existsByTranslatedDocument_TransIdAndUser_UserId(transId, user.getUserId());
 
 		if (hasVoted) {
-			translatedDocumentLikeRepository.deleteByTranslatedDocument_TransIdAndUser_UserId(
-				Long.valueOf(transId), user.getUserId());
+			translatedDocumentLikeRepository
+					.deleteByTranslatedDocument_TransIdAndUser_UserId(transId, user.getUserId());
 		} else {
 			translatedDocumentLikeRepository.addVote(translatedDocument, user);
 			alertsService.sendTranslationVoteAlert(translatedDocument, user);
@@ -581,6 +701,14 @@ public class DocsServiceImpl implements DocsService {
 	// 특정 유저가 좋아한 번역본 목록 조회
 	@Override
 	public List<UserTransDocumentDto> getUserLikedTrans(Long userId) {
+
+		if (userId == null) {
+			throw new DocsException(DocsExceptionCode.ILLEGAL_ARGUMENT);
+		}
+		if (!userRepository.existsById(userId)) {
+			throw new DocsException(DocsExceptionCode.USER_NOT_FOUND);
+		}
+
 		List<TranslatedDocument> userLikedTrans =
 			translatedDocumentLikeRepository.findLikedTranslatedDocsByUserId(userId);
 
@@ -617,11 +745,11 @@ public class DocsServiceImpl implements DocsService {
 	public void modifyDocsStatus(Long transId, Status status) {
 		User user = userUtil.getUser();
 		if (!userUtil.isAdmin(user)) {
-			throw new RuntimeException("어드민이 아닙니다.");
+			throw new DocsException(DocsExceptionCode.NO_PERMISSION);
 		}
 
 		TranslatedDocument translatedDocument = translatedDocumentRepository.findById(transId)
-			.orElseThrow(() -> new RuntimeException("해당 번역본을 찾을 수 없습니다."));
+			.orElseThrow(() -> new DocsException(DocsExceptionCode.TRANSLATION_NOT_FOUND));
 
 		translatedDocument.modifyStatus(status);
 	}
