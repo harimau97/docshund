@@ -11,7 +11,6 @@ const ReplyItemService = {
       const data = response.data;
       return data;
     } catch (error) {
-      //TODO: error handling -> 에러 페이지 제작후 연결까지 구현
       console.log(error);
       return null;
     }
@@ -31,7 +30,6 @@ const ReplyItemService = {
 
       return data;
     } catch (error) {
-      //TODO: error handling -> 에러 페이지 제작후 연결까지 구현
       console.log(error);
       return null;
     }

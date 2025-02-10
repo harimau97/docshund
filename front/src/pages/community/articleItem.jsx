@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { format, isSameDay } from "date-fns";
+import { jwtDecode } from "jwt-decode";
 
 import communityArticleStore from "../../store/communityStore/communityArticleStore";
 import ArticleItemService from "./services/articleItemService";
@@ -9,10 +10,15 @@ import ArticleFooter from "./components/articleFooter";
 import ReplyList from "./replyList";
 import RectBtn from "../../components/button/rectBtn";
 import ToastViewer from "../translate/components/toastViewer";
+import { div } from "framer-motion/client";
 
 const ArticleItem = () => {
+  const navigate = useNavigate();
   const { articleId } = useParams();
   const [isLiked, setIsLiked] = useState(false);
+
+  const token = localStorage.getItem("token");
+  const decoded = jwtDecode(token);
 
   const articles = communityArticleStore((state) => state.articles);
   const articleData = communityArticleStore((state) => state.articleItems);
@@ -82,10 +88,10 @@ const ArticleItem = () => {
                 <div className="flex gap-2 text-sm text-gray-500">
                   <button
                     className="hover:text-gray-700 cursor-pointer"
-                    onClick={() =>
+                    onClick={() => {
                       // 수정 페이지로 이동
-                      console.log("수정 페이지로 이동", articleId)
-                    }
+                      navigate(`/community/modify/${articleId}`);
+                    }}
                   >
                     수정
                   </button>
@@ -98,11 +104,16 @@ const ArticleItem = () => {
                   >
                     삭제
                   </button>
-                  <span>|</span>
+
                   {/* TODO: 신고 기능 추가: 모달 or 페이지 or 그냥 바로? */}
-                  <button className="hover:text-gray-700 cursor-pointer">
-                    신고
-                  </button>
+                  {decoded?.userId != articleData.userId && (
+                    <div className="flex gap-2 text-sm text-gray-500">
+                      <span>|</span>
+                      <button className="hover:text-gray-700 cursor-pointer">
+                        신고
+                      </button>
+                    </div>
+                  )}
                 </div>
               </div>
               <div className="flex justify-between items-center text-[#7d7c77]">
@@ -137,7 +148,6 @@ const ArticleItem = () => {
             {/* 게시글 본문 */}
             <div className="border-b border-[#E1E1DF] pb-4 mb-4">
               <div className="min-h-[200px] whitespace-pre-wrap mb-6">
-                {/* TODO: Toast Viewr로 변경 */}
                 <ToastViewer content={articleData.content} />
               </div>
               <div className="flex justify-center items-center gap-4">

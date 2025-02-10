@@ -68,7 +68,6 @@ const WriteArticle = () => {
       alert("모든 항목을 입력해주세요.");
       return;
     } else {
-      // TODO: title, category(sub), content를 서버로 전송
       const response = await ArticleItemService.postArticleItem(
         title,
         subCategory,
@@ -77,16 +76,10 @@ const WriteArticle = () => {
 
       const data = response.data;
 
-      // TODO: 서버로 전송 후, 성공 시 alert("글 작성이 완료되었습니다.") 후 페이지 이동
       if (response.status === 200) {
         alert("글 작성이 완료되었습니다.");
         navigate(`/community/article/${data.articleId}`);
       }
-
-      console.log("제목: ", title);
-
-      console.log("소분류: ", subCategory);
-      console.log("내용: ", content);
     }
   };
 
@@ -149,6 +142,7 @@ const WriteArticle = () => {
                 </div>
               </div>
 
+              {/* 에디터 */}
               <div className="border-b border-[#E1E1DF] pb-4 mb-4">
                 <div className="mb-6 mt-4">
                   <label className="block text-lg font-medium text-black mb-2">
@@ -159,6 +153,7 @@ const WriteArticle = () => {
                   </div>
                 </div>
 
+                {/* 파일 첨부 */}
                 <div className="mb-6">
                   <div className="flex items-center mb-2">
                     <label className="block text-lg font-medium text-black">

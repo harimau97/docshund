@@ -7,8 +7,8 @@ import ReplyItemService from "../services/replyItemService";
 
 const ReplyRenderItem = ({
   item,
-  replyFlag,
-  setReplyFlag,
+  replyTextareaFlag,
+  setReplyTextareaFlag,
   reCommentFlag,
   setReCommentFlag,
 }) => {
@@ -46,20 +46,25 @@ const ReplyRenderItem = ({
                     item.commentId
                   );
 
-                  setReplyFlag((prev) => !prev); // 댓글 삭제 후 댓글 리스트 리렌더링
+                  setReplyTextareaFlag((prev) => !prev); // 댓글 삭제 후 댓글 리스트 리렌더링
                 }}
               >
                 삭제
               </button>
             )}
 
-            <button className="hover:text-gray-700 cursor-pointer">신고</button>
+            {decoded?.userId != item.userId && (
+              <button className="hover:text-gray-700 cursor-pointer">
+                신고
+              </button>
+            )}
+
             <button
               className="hover:text-gray-700 cursor-pointer"
               onClick={() => {
-                setReplyFlag(true); // 대댓글 작성창 보여주기
+                setReplyTextareaFlag(true); // 대댓글 작성창 보여주기
                 setReplyId(item.commentId); // 대댓글 작성 시 대댓글을 작성하는 원댓글의 id
-                setReCommentFlag(true); // 대댓글 작성 여부 flag
+                setReCommentFlag((prev) => !prev); // 대댓글 작성 여부 flag
               }}
             >
               댓글 달기
@@ -67,25 +72,31 @@ const ReplyRenderItem = ({
           </div>
         </div>
       </div>
+
+      {/* TODO: textarea가 하나에만 뜨게 하기 */}
       {/* 유저고, 대댓글이고, 원댓글의 밑에 대해서 */}
-      {token && replyFlag && replyId === item.commentId && (
-        <div className="ml-14 mt-2">
-          {/* 대댓글 작성 */}
-          <ReplyTextarea
-            setReplyFlag={setReplyFlag} // 댓글 작성창 보여주는 여부를 알기 위한 flag
-            reCommentFlag={reCommentFlag} // 대댓글 작성 여부를 알기 위한 flag
-            commentId={item.commentId} // 대댓글 작성 시 대댓글을 작성하는 원댓글의 id
-          />
-        </div>
-      )}
+      {token &&
+        replyTextareaFlag &&
+        replyId === item.commentId &&
+        (console.log("replyRenderItem, 댓글 달기 -> ", replyId),
+        (
+          <div className="ml-14 mt-2">
+            {/* 대댓글 작성 */}
+            <ReplyTextarea
+              setReplyFlag={setReplyTextareaFlag} // 댓글 작성창 보여주는 여부를 알기 위한 flag
+              reCommentFlag={reCommentFlag} // 대댓글 작성 여부를 알기 위한 flag
+              commentId={item.commentId} // 대댓글 작성 시 대댓글을 작성하는 원댓글의 id
+            />
+          </div>
+        ))}
     </div>
   );
 };
 
 ReplyRenderItem.propTypes = {
   item: Proptypes.object,
-  replyFlag: Proptypes.bool,
-  setReplyFlag: Proptypes.func,
+  replyTextareaFlag: Proptypes.bool,
+  setReplyTextareaFlag: Proptypes.func,
   reCommentFlag: Proptypes.bool,
   setReCommentFlag: Proptypes.func,
 };

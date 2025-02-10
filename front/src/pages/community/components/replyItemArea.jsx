@@ -8,8 +8,8 @@ import ListRender from "../../../components/pagination/listRender";
 import ReplyRenderItem from "./replyRenderItem";
 
 const ReplyItem = ({
-  replyFlag,
-  setReplyFlag,
+  replyTextareaFlag,
+  setReplyTextareaFlag,
   reCommentFlag,
   setReCommentFlag,
 }) => {
@@ -46,15 +46,15 @@ const ReplyItem = ({
 
     // 댓글 아이템을 가져오는 fetchReplyItems 함수 호출
     fetchReplyItems(articleId);
-  }, [articleId, replyFlag]);
+  }, [articleId, replyTextareaFlag]);
 
   const renderItem = (item) => (
     <div className="w-full">
       {/* 원댓글 렌더링 */}
       <ReplyRenderItem
         item={item}
-        replyFlag={replyFlag}
-        setReplyFlag={setReplyFlag}
+        replyTextareaFlag={replyTextareaFlag}
+        setReplyTextareaFlag={setReplyTextareaFlag}
         reCommentFlag={reCommentFlag}
         setReCommentFlag={setReCommentFlag}
       />
@@ -88,8 +88,8 @@ const ReplyItem = ({
                 <div className="w-full">
                   <ReplyRenderItem
                     item={reply}
-                    replyFlag={replyFlag}
-                    setReplyFlag={setReplyFlag}
+                    replyTextareaFlag={replyTextareaFlag}
+                    setReplyTextareaFlag={setReplyTextareaFlag}
                     reCommentFlag={true}
                     setReCommentFlag={setReCommentFlag}
                   />
@@ -117,8 +117,8 @@ const ReplyItem = ({
 };
 
 ReplyItem.propTypes = {
-  replyFlag: PropTypes.bool,
-  setReplyFlag: PropTypes.func,
+  replyTextareaFlag: PropTypes.bool,
+  setReplyTextareaFlag: PropTypes.func,
   reCommentFlag: PropTypes.bool,
   setReCommentFlag: PropTypes.func,
 };

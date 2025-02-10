@@ -5,10 +5,16 @@ import ReplyHeader from "./components/replyHeader";
 import ReplyItemArea from "./components/replyItemArea";
 import ReplyTextarea from "./components/replyTextarea";
 
+/* INFO: 
+  1. 대댓글 여부를 확인해 api 호출 시 다르게 처리
+  2. 댓글 작성 시 댓글 리스트 리렌더링할 수 있게 하기
+  3. textarea는 로그인한 회원만, 하나만 보여주기 <- 대댓글 달기를 하면 다른 곳에 textarea가 보이지 않게 하기 위함  
+*/
+
 const ReplyList = ({ replyCount }) => {
   const token = localStorage.getItem("token");
 
-  const [replyFlag, setReplyFlag] = useState(false); // 댓글 작성창 보여주는 여부를 알기 위한 flag
+  const [replyTextareaFlag, setReplyTextareaFlag] = useState(false); // 댓글 작성창 보여주는 여부를 알기 위한 flag.
   const [reCommentFlag, setReCommentFlag] = useState(false); // 대댓글 작성 여부를 알기 위한 flag
 
   return (
@@ -19,8 +25,8 @@ const ReplyList = ({ replyCount }) => {
       <div className="border-b border-[#E1E1DF]"></div>
       {/* 댓글 리스트는 여기에 구현 */}
       <ReplyItemArea
-        replyFlag={replyFlag} // 댓글 작성창 보여주는 여부를 알기 위한 flag
-        setReplyFlag={setReplyFlag}
+        replyTextareaFlag={replyTextareaFlag} // 댓글 작성창 보여주는 여부를 알기 위한 flag
+        setReplyTextareaFlag={setReplyTextareaFlag}
         reCommentFlag={reCommentFlag} // 대댓글 작성 여부를 알기 위한 flag
         setReCommentFlag={setReCommentFlag}
       />
@@ -29,7 +35,7 @@ const ReplyList = ({ replyCount }) => {
       {/* 로그인 한 회원만 보여주기 */}
       {token && (
         <ReplyTextarea
-          setReplyFlag={setReplyFlag}
+          setReplyTextareaFlag={setReplyTextareaFlag}
           reCommentFlag={reCommentFlag}
           commentId={0} // 대댓글 작성 시 대댓글을 작성하는 원댓글의 id. 원댓글 작성 시 사용X
         />

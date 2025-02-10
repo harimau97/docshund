@@ -58,8 +58,8 @@ const communityArticleStore = create((set) => ({
   setFileUrl: (fileUrl) => set({ fileUrl }),
 
   // reply list의 초기값 설정
-  replies: [],
-  commentCount: 0,
+  replies: [], // 댓글 리스트
+  commentCount: 0, // 댓글 개수
 
   // reply list의 메소드 설정
   setReplies: (replies) => set({ replies }),

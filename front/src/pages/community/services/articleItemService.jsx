@@ -25,19 +25,7 @@ const ArticleItemService = {
     }
   },
 
-  async modifyArticleItem(articleId) {
-    try {
-      const response = await axiosJsonInstance.patch(`forums/${articleId}`);
-      const data = response.data;
-
-      return data;
-    } catch (error) {
-      //TODO: error handling -> 에러 페이지 제작후 연결까지 구현
-      console.log(error);
-      return error;
-    }
-  },
-
+  // 게시글 삭제 요청 함수
   async deleteArticleItem(articleId) {
     try {
       const response = await axiosJsonInstance.delete(`forums/${articleId}`);
@@ -51,6 +39,7 @@ const ArticleItemService = {
     }
   },
 
+  // 게시글 좋아요/좋아요취소소 요청 함수
   async likeArticleItem(articleId) {
     try {
       const response = await axiosJsonInstance.post(
@@ -64,6 +53,7 @@ const ArticleItemService = {
     }
   },
 
+  // 이미지 파일 업로드 요청 함수
   async uploadImageFile(file) {
     try {
       const formData = new FormData();
@@ -81,9 +71,26 @@ const ArticleItemService = {
     }
   },
 
+  // 게시글 작성 요청 함수
   async postArticleItem(title, category, content) {
     try {
       const response = await axiosJsonInstance.post("/forums", {
+        title,
+        category,
+        content,
+      });
+
+      return response;
+    } catch (error) {
+      console.log(error);
+      return error;
+    }
+  },
+
+  // 게시글 수정 요청 함수
+  async patchArticleItem(articleId, title, category, content) {
+    try {
+      const response = await axiosJsonInstance.patch(`/forums/${articleId}`, {
         title,
         category,
         content,

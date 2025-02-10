@@ -6,17 +6,17 @@ import ReplyItemService from "../services/replyItemService";
 
 import RectBtn from "../../../components/button/rectBtn";
 
-const ReplyTextarea = ({ setReplyFlag, reCommentFlag, commentId }) => {
+const ReplyTextarea = ({ setReplyTextareaFlag, reCommentFlag, commentId }) => {
   const { articleId } = useParams();
   const [replyContent, setReplyContent] = useState("");
 
   // store에서 데이터를 가져오기 위해 정의
 
+  // 댓글 작성
   const handleSubmit = async () => {
-    // 댓글 작성
-    // 대댓글인지 원댓글인지에 따라 다르게 처리
+    // NOTE: 대댓글인지 원댓글인지에 따라 다르게 처리
+    // 1. 대댓글 작성
     if (reCommentFlag) {
-      // 대댓글 작성
       // 대댓글 작성 시에는 대댓글을 작성하는 원댓글의 id를 가져와야 함
       await ReplyItemService.postReReplyItem(
         articleId,
@@ -24,14 +24,14 @@ const ReplyTextarea = ({ setReplyFlag, reCommentFlag, commentId }) => {
         replyContent
       );
     } else {
-      // 원댓글 작성
+      // 2. 원댓글 작성
       await ReplyItemService.postReplyItem(articleId, replyContent);
     }
 
     setReplyContent(""); // 제출 후 입력창 초기화
 
     // 제출 후 댓글 리스트 리렌더링
-    setReplyFlag((prev) => !prev);
+    setReplyTextareaFlag((prev) => !prev);
   };
 
   return (
@@ -54,7 +54,7 @@ const ReplyTextarea = ({ setReplyFlag, reCommentFlag, commentId }) => {
 };
 
 ReplyTextarea.propTypes = {
-  setReplyFlag: propTypes.func,
+  setReplyTextareaFlag: propTypes.func,
   reCommentFlag: propTypes.bool,
   commentId: propTypes.number,
 };
