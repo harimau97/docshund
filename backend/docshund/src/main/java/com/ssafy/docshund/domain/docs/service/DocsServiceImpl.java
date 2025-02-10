@@ -476,7 +476,7 @@ public class DocsServiceImpl implements DocsService {
 	// 번역 상세 조회
 	@Transactional(readOnly = true)
 	@Override
-	public TranslatedDocumentDto getTranslatedDocumentDetail(Integer docsId, Integer transId) {
+	public TranslatedDocumentDto getTranslatedDocumentDetail(Integer docsId, Long transId) {
 		// 번역 문서 조회
 		TranslatedDocument translatedDocument = translatedDocumentRepository.findById(transId)
 			.orElseThrow(() -> new IllegalArgumentException("해당 번역문이 존재하지 않습니다: transId=" + transId));
@@ -506,7 +506,7 @@ public class DocsServiceImpl implements DocsService {
 	// 번역 수정하기
 	@Override
 	@Transactional
-	public TranslatedDocumentDto updateTranslatedDocument(Integer docsId, Integer transId, User user, String content) {
+	public TranslatedDocumentDto updateTranslatedDocument(Integer docsId, Long transId, User user, String content) {
 		// 해당하는 번역 문서 찾기
 		TranslatedDocument translatedDocument = translatedDocumentRepository.findById(transId)
 			.orElseThrow(() -> new EntityNotFoundException("Translated document not found with id: " + transId));
@@ -533,7 +533,7 @@ public class DocsServiceImpl implements DocsService {
 	// 번역 삭제하기
 	@Override
 	@Transactional
-	public void deleteTranslatedDocument(Integer docsId, Integer transId, User user) {
+	public void deleteTranslatedDocument(Integer docsId, Long transId, User user) {
 		// 번역 문서 조회
 		TranslatedDocument translatedDocument = translatedDocumentRepository.findById(transId)
 			.orElseThrow(() -> new EntityNotFoundException("Translated document not found with id: " + transId));
@@ -556,7 +556,7 @@ public class DocsServiceImpl implements DocsService {
 	// 번역 투표 / 투표해제
 	@Override
 	@Transactional
-	public boolean toggleVotes(Integer docsId, Integer transId, User user) {
+	public boolean toggleVotes(Integer docsId, Long transId, User user) {
 		TranslatedDocument translatedDocument = translatedDocumentRepository.findById(transId)
 			.orElseThrow(() -> new EntityNotFoundException("Translated document not found with id: " + transId));
 
@@ -611,6 +611,19 @@ public class DocsServiceImpl implements DocsService {
 				likeUserIds
 			);
 		}).toList();
+	}
+
+	@Transactional
+	public void modifyDocsStatus(Long transId, Status status) {
+		User user = userUtil.getUser();
+		if (!userUtil.isAdmin(user)) {
+			throw new RuntimeException("어드민이 아닙니다.");
+		}
+
+		TranslatedDocument translatedDocument = translatedDocumentRepository.findById(transId)
+			.orElseThrow(() -> new RuntimeException("해당 번역본을 찾을 수 없습니다."));
+
+		translatedDocument.modifyStatus(status);
 	}
 }
 

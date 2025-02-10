@@ -13,7 +13,7 @@ public class ReportRequestDto {
 
 	private Integer commentId;
 	private Integer articleId;
-	private Integer transId;
+	private Long transId;
 	private Long chatId;
 	private String category;
 	private String content;

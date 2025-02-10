@@ -16,6 +16,7 @@ import com.ssafy.docshund.domain.users.dto.page.UserAndInfoDto;
 import com.ssafy.docshund.domain.users.dto.page.UserProfileDto;
 import com.ssafy.docshund.domain.users.dto.page.UserSearchCondition;
 import com.ssafy.docshund.domain.users.dto.profile.ProfileRequestDto;
+import com.ssafy.docshund.domain.users.dto.profile.UserStatusRequestDto;
 import com.ssafy.docshund.domain.users.entity.Memo;
 import com.ssafy.docshund.domain.users.entity.User;
 import com.ssafy.docshund.domain.users.entity.UserInfo;
@@ -78,6 +79,19 @@ public class UserServiceImpl implements UserService {
 	@Transactional(readOnly = true)
 	public String duplicateNickname(String nickname) {
 		return userRepository.existsByNickname(nickname) ? "사용할 수 없는 닉네임입니다." : "사용 가능한 닉네임입니다.";
+	}
+
+	@Transactional
+	public void modifyUserStatus(Long userId, UserStatusRequestDto userStatusRequestDto) {
+		User user = userUtil.getUser();
+		if (!userUtil.isAdmin(user)) {
+			throw new RuntimeException("어드민이 아닙니다.");
+		}
+
+		User findUser = userRepository.findById(userId)
+			.orElseThrow(() -> new RuntimeException("해당 유저를 찾을 수 없습니다."));
+
+		findUser.modifyStatus(userStatusRequestDto.getStatus());
 	}
 
 	// 유저가 null 이거나 요청한 유저가 본인이 아닐 때의 예외 처리 + 유저 반환

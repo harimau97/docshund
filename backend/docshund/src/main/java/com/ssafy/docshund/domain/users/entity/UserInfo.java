@@ -63,8 +63,8 @@ public class UserInfo extends BaseTimeEntityWithUpdatedAt {
 		this.reportCount++;
 	}
 
-	public void decreaseReportCount() {
-		this.reportCount--;
+	public void decreaseReportCount(int reportCount) {
+		this.reportCount = Math.max(0, this.reportCount - reportCount);
 	}
 
 }

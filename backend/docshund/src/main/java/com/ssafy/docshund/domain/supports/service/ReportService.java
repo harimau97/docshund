@@ -13,4 +13,5 @@ public interface ReportService {
 
 	public void reportUser(ReportRequestDto reportRequestDto, MultipartFile file);
 
+	public void withdrawReport(Integer reportId);
 }

@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.ssafy.docshund.domain.chats.dto.ChatDto;
 import com.ssafy.docshund.domain.chats.dto.ChatInfoDto;
 import com.ssafy.docshund.domain.chats.entity.Chat;
+import com.ssafy.docshund.domain.chats.entity.Status;
 import com.ssafy.docshund.domain.chats.repository.ChatRepository;
 import com.ssafy.docshund.domain.docs.entity.Document;
 import com.ssafy.docshund.domain.docs.repository.DocumentRepository;
@@ -24,29 +25,41 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ChatServiceImpl implements ChatService {
 
-    private final UserUtil userUtil;
-    private final DocumentRepository documentRepository;
-    private final ChatRepository chatRepository;
-    private final UserRepository userRepository;
+	private final UserUtil userUtil;
+	private final DocumentRepository documentRepository;
+	private final ChatRepository chatRepository;
+	private final UserRepository userRepository;
 
-    @Override
-    @Transactional
-    public Chat createChat(Integer docsId, Long userId, ChatDto chatDto) {
+	@Override
+	@Transactional
+	public Chat createChat(Integer docsId, Long userId, ChatDto chatDto) {
 
-        Document document = documentRepository.findByDocsId(docsId);
-        if(document == null || document.getDocsId() != chatDto.getDocsId()) {
-            throw new AccessDeniedException("NO EXISTS DOCUMENT & CHAT");
-        }
+		Document document = documentRepository.findByDocsId(docsId);
+		if (document == null || document.getDocsId() != chatDto.getDocsId()) {
+			throw new AccessDeniedException("NO EXISTS DOCUMENT & CHAT");
+		}
 
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NoSuchElementException("NO EXISTS PERSONAL ID"));
+		User user = userRepository.findById(userId)
+			.orElseThrow(() -> new NoSuchElementException("NO EXISTS PERSONAL ID"));
 
-        return chatRepository.save(new Chat(document, user, chatDto.getContent()));
-    }
+		return chatRepository.save(new Chat(document, user, chatDto.getContent()));
+	}
 
-    @Override
-    @Transactional(readOnly = true)
-    public Page<ChatInfoDto> getChatsByDocsId(Integer docsId, Pageable pageable) {
-        return chatRepository.findAllByDocsId(docsId, pageable);
-    }
+	@Override
+	@Transactional(readOnly = true)
+	public Page<ChatInfoDto> getChatsByDocsId(Integer docsId, Pageable pageable) {
+		return chatRepository.findAllByDocsId(docsId, pageable);
+	}
+
+	@Override
+	public void modifyChatStatus(Long chatId, Status status) {
+		User user = userUtil.getUser();
+		if (!userUtil.isAdmin(user)) {
+			throw new RuntimeException("어드민이 아닙니다.");
+		}
+
+		Chat chat = chatRepository.findById(chatId).orElseThrow(() -> new RuntimeException("해당 채팅을 찾을 수 없습니다."));
+
+		chat.modifyStatus(status);
+	}
 }

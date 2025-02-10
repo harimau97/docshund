@@ -18,6 +18,7 @@ import com.ssafy.docshund.domain.docs.dto.DocumentDto;
 import com.ssafy.docshund.domain.docs.dto.OriginDocumentDto;
 import com.ssafy.docshund.domain.docs.dto.TranslatedDocumentDto;
 import com.ssafy.docshund.domain.docs.dto.UserTransDocumentDto;
+import com.ssafy.docshund.domain.docs.entity.Status;
 import com.ssafy.docshund.domain.docs.service.DocsService;
 import com.ssafy.docshund.domain.users.entity.User;
 import com.ssafy.docshund.global.util.user.UserUtil;
@@ -182,7 +183,7 @@ public class DocsController {
 	@GetMapping("/{docsId}/trans/paragraph/{transId}")
 	public ResponseEntity<?> getTransDetail(
 		@PathVariable Integer docsId,
-		@PathVariable Integer transId
+		@PathVariable Long transId
 	) {
 		TranslatedDocumentDto transDocument = docsService.getTranslatedDocumentDetail(docsId, transId);
 		return ResponseEntity.ok(transDocument);
@@ -192,7 +193,7 @@ public class DocsController {
 	@PatchMapping("/{docsId}/trans/paragraph/{transId}")
 	public ResponseEntity<?> patchTrans(
 		@PathVariable Integer docsId,
-		@PathVariable Integer transId,
+		@PathVariable Long transId,
 		@RequestBody Map<String, String> requestBody
 	) {
 		User user = userUtil.getUser();
@@ -213,7 +214,7 @@ public class DocsController {
 	@DeleteMapping("/{docsId}/trans/paragraph/{transId}")
 	public ResponseEntity<?> deleteTrans(
 		@PathVariable Integer docsId,
-		@PathVariable Integer transId
+		@PathVariable Long transId
 	) {
 		User user = userUtil.getUser();
 		if (user == null) {
@@ -228,7 +229,7 @@ public class DocsController {
 	@PostMapping("/{docsId}/trans/paragraph/{transId}/votes")
 	public ResponseEntity<?> postTransVotes(
 		@PathVariable Integer docsId,
-		@PathVariable Integer transId
+		@PathVariable Long transId
 	) {
 		User user = userUtil.getUser();
 		if (user == null) {
@@ -258,5 +259,12 @@ public class DocsController {
 		}
 
 		return ResponseEntity.ok().body(likedTrans);
+	}
+
+	@PatchMapping("/{transId}/status")
+	public ResponseEntity<String> modifyTransStatus(@PathVariable Long transId, @RequestBody Status status) {
+		docsService.modifyDocsStatus(transId, status);
+
+		return ResponseEntity.ok("변경이 완료되었습니다.");
 	}
 }
