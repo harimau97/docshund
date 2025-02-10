@@ -1,19 +1,18 @@
 package com.ssafy.docshund.domain.docs.dto;
 
-import java.time.LocalDateTime;
-import java.util.List;
-
 import com.ssafy.docshund.domain.docs.entity.Status;
 import com.ssafy.docshund.domain.docs.entity.TranslatedDocument;
-
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
 public record TranslatedDocumentDto(
 	Long transId,
-	@NotNull(message = "원본 문서(문단)는 필수로 지정해야 합니다.")
+	@NotBlank(message = "원본 문서(문단)는 필수로 지정해야 합니다.")
 	Integer originId,
 	Long userId,
 	@NotBlank(message = "번역 문서 내용은 필수 입력 값으로, 비어있거나 공백일 수 없습니다.") @Size(max = 20000, message = "번역 문서 내용은 20000자 이내로 작성해야 합니다.")
