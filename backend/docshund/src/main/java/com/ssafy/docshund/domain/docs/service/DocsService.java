@@ -8,6 +8,7 @@ import com.ssafy.docshund.domain.docs.dto.DocumentDto;
 import com.ssafy.docshund.domain.docs.dto.OriginDocumentDto;
 import com.ssafy.docshund.domain.docs.dto.TranslatedDocumentDto;
 import com.ssafy.docshund.domain.docs.dto.UserTransDocumentDto;
+import com.ssafy.docshund.domain.docs.entity.Status;
 import com.ssafy.docshund.domain.users.entity.User;
 
 @Service
@@ -52,17 +53,19 @@ public interface DocsService {
 	List<UserTransDocumentDto> getUserTransDocument(Long userId);
 
 	// 번역 상세보기
-	TranslatedDocumentDto getTranslatedDocumentDetail(Integer docsId, Integer transId);
+	TranslatedDocumentDto getTranslatedDocumentDetail(Integer docsId, Long transId);
 
 	// 번역 수정하기
-	TranslatedDocumentDto updateTranslatedDocument(Integer docsId, Integer transId, User user, String content);
+	TranslatedDocumentDto updateTranslatedDocument(Integer docsId, Long transId, User user, String content);
 
 	// 번역 삭제하기
-	void deleteTranslatedDocument(Integer docsId, Integer transId, User user);
+	void deleteTranslatedDocument(Integer docsId, Long transId, User user);
 
 	// 번역 투표 / 투표해제
-	boolean toggleVotes(Integer docsId, Integer transId, User user);
+	boolean toggleVotes(Integer docsId, Long transId, User user);
 
 	// 유저가 좋아한 번역본 목록 조회
 	List<UserTransDocumentDto> getUserLikedTrans(Long userId);
+
+	public void modifyDocsStatus(Long transId, Status status);
 }

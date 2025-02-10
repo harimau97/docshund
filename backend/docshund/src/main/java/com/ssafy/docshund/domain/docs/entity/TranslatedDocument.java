@@ -68,9 +68,9 @@ public class TranslatedDocument extends BaseTimeEntityWithUpdatedAt {
 	public void decreaseReportCount() {
 		this.reportCount--;
 	}
-
-	public void modifyToInvisible() {
-		this.status = Status.INVISIBLE;
+	
+	public void modifyStatus(Status status) {
+		this.status = status;
 	}
 
 	public void resetReportCount() {
