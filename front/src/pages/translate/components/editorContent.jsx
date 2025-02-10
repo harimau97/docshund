@@ -1,8 +1,10 @@
 import { useEffect, useRef } from "react";
 import { Editor } from "@toast-ui/react-editor";
-import useEditorStore from "../../../store/translateStore/editorStore";
-import propTypes from "prop-types";
 import "@toast-ui/editor/dist/toastui-editor.css";
+import propTypes from "prop-types";
+
+import useEditorStore from "../../../store/translateStore/editorStore";
+import communityArticleStore from "../../../store/communityStore/communityArticleStore";
 
 const EditorContent = ({ initialTextContent }) => {
   // initialTextContent가 없으면 에디터 초기화
@@ -16,6 +18,9 @@ const EditorContent = ({ initialTextContent }) => {
   const editorRef = useRef(null);
   const { docsPart, bestTrans, setCurrentUserText } = useEditorStore();
 
+  const fileUrl = communityArticleStore((state) => state.fileUrl);
+  const setFileUrl = communityArticleStore((state) => state.setFileUrl);
+
   const handleEditorChange = () => {
     if (editorRef.current) {
       const editorInstance = editorRef.current.getInstance();
@@ -24,9 +29,25 @@ const EditorContent = ({ initialTextContent }) => {
     }
   };
 
+  const handleInsertImage = (url) => {
+    if (editorRef.current) {
+      const editor = editorRef.current.getInstance();
+      editor.insertText(`![image](${url})<br/>`);
+    } else {
+      console.log("editorRef is null");
+    }
+  };
+
   useEffect(() => {
     setCurrentUserText(docsPart);
   }, [docsPart]);
+
+  useEffect(() => {
+    if (fileUrl) {
+      handleInsertImage(fileUrl);
+      setFileUrl(""); // 이미지 URL 초기화
+    }
+  }, [fileUrl]);
 
   return (
     <div className="flex flex-col h-full w-full">

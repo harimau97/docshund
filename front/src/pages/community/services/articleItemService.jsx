@@ -1,5 +1,8 @@
 import PropTypes from "prop-types";
-import { axiosJsonInstance } from "../../../utils/axiosInstance";
+import {
+  axiosJsonInstance,
+  axiosMultipartInstance,
+} from "../../../utils/axiosInstance";
 
 const ArticleItemService = {
   // 게시글 상세 정보를 가져오는 함수
@@ -56,7 +59,38 @@ const ArticleItemService = {
 
       return response;
     } catch (error) {
-      // TODO: error handling -> 에러 페이지 제작후 연결까지 구현
+      console.log(error);
+      return error;
+    }
+  },
+
+  async uploadImageFile(file) {
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const response = await axiosMultipartInstance.post(
+        `/forums/image`,
+        formData
+      );
+
+      return response;
+    } catch (error) {
+      console.log(error);
+      return error;
+    }
+  },
+
+  async postArticleItem(title, category, content) {
+    try {
+      const response = await axiosJsonInstance.post("/forums", {
+        title,
+        category,
+        content,
+      });
+
+      return response;
+    } catch (error) {
       console.log(error);
       return error;
     }
@@ -65,6 +99,7 @@ const ArticleItemService = {
 
 ArticleItemService.propTypes = {
   articleId: PropTypes.number,
+  file: PropTypes.object,
 };
 
 export default ArticleItemService;

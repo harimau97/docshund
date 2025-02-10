@@ -2,13 +2,13 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { format, isSameDay } from "date-fns";
 
-import ArticleItemService from "./services/articleItemService";
 import communityArticleStore from "../../store/communityStore/communityArticleStore";
+import ArticleItemService from "./services/articleItemService";
 import CommunityHeader from "./components/communityHeader";
 import ArticleFooter from "./components/articleFooter";
 import ReplyList from "./replyList";
-
 import RectBtn from "../../components/button/rectBtn";
+import ToastViewer from "../translate/components/toastViewer";
 
 const ArticleItem = () => {
   const { articleId } = useParams();
@@ -134,11 +134,11 @@ const ArticleItem = () => {
               </div>
             </div>
 
-            {/* TODO: 본문 이미지 구현 관련...? */}
             {/* 게시글 본문 */}
             <div className="border-b border-[#E1E1DF] pb-4 mb-4">
               <div className="min-h-[200px] whitespace-pre-wrap mb-6">
-                {articleData.content}
+                {/* TODO: Toast Viewr로 변경 */}
+                <ToastViewer content={articleData.content} />
               </div>
               <div className="flex justify-center items-center gap-4">
                 <RectBtn
