@@ -1,8 +1,11 @@
 import { useEffect, useState } from "react";
 import { fetchUserList } from "../admin/Hooks/adminGetService";
+import useUserManagerStore from "../../store/adminStore/userManagerStore";
 
 const ManageUser = () => {
   const [userList, setUserList] = useState([]);
+  const { addUserList, removeUserList, currentUserList } =
+    useUserManagerStore();
 
   const handleSearch = async (e) => {
     const searchKeyword = e.target.value;
@@ -21,17 +24,26 @@ const ManageUser = () => {
     }
   };
 
+  const processUserList = (userListContent) => {
+    userListContent.forEach((user) => {
+      currentUserList[user.user.userId] = user.user.email;
+    });
+  };
+
   useEffect(() => {
     const fetchUsers = async () => {
       try {
         const data = await fetchUserList();
         data.sort((a, b) => b.userInfo.reportCount - a.userInfo.reportCount);
         setUserList(data);
+        console.log(userList);
+        processUserList(data);
       } catch (error) {
         console.error("Error fetching users:", error);
       }
     };
     fetchUsers();
+    console.log(currentUserList);
   }, []);
 
   return (
