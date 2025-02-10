@@ -1,6 +1,6 @@
 package com.ssafy.docshund.domain.forums.service;
 
-import java.util.NoSuchElementException;
+import static com.ssafy.docshund.global.exception.GlobalErrorCode.RESOURCE_NOT_FOUND;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,9 +16,15 @@ import com.ssafy.docshund.domain.forums.dto.ArticleDto;
 import com.ssafy.docshund.domain.forums.dto.ArticleInfoDto;
 import com.ssafy.docshund.domain.forums.entity.Article;
 import com.ssafy.docshund.domain.forums.entity.Status;
+import com.ssafy.docshund.domain.forums.exception.ForumException;
+import com.ssafy.docshund.domain.forums.exception.ForumExceptionCode;
 import com.ssafy.docshund.domain.forums.repository.ArticleLikeRepository;
 import com.ssafy.docshund.domain.forums.repository.ArticleRepository;
 import com.ssafy.docshund.domain.users.entity.User;
+
+import com.ssafy.docshund.domain.users.exception.user.UserException;
+import com.ssafy.docshund.global.exception.GlobalErrorCode;
+import com.ssafy.docshund.global.exception.ResourceNotFoundException;
 import com.ssafy.docshund.global.util.user.UserUtil;
 
 import lombok.RequiredArgsConstructor;
@@ -46,18 +52,18 @@ public class ArticleServiceImpl implements ArticleService {
 		}
 
 		Document document = documentRepository.findByDocumentName(articleDto.getCategory())
-			.orElseThrow(() -> new NoSuchElementException("NOT EXISTS CATEGORY"));
+				.orElseThrow(() -> new ForumException(ForumExceptionCode.INVALID_CATEGORY));
 
 		Article savedArticle = articleRepository.save(
-			new Article(user, document, articleDto.getTitle(), articleDto.getContent()));
+				new Article(user, document, articleDto.getTitle(), articleDto.getContent()));
 
 		return new ArticleInfoDto(
-			savedArticle.getArticleId(), savedArticle.getDocument().getDocsId(),
-			savedArticle.getDocument().getPosition(),
-			savedArticle.getDocument().getDocumentName(), savedArticle.getTitle(), savedArticle.getContent(),
-			savedArticle.getCreatedAt(), savedArticle.getUpdatedAt(), 0, 0, 0,
-			savedArticle.getUser().getUserId(), savedArticle.getUser().getNickname(),
-			savedArticle.getUser().getProfileImage(), false
+				savedArticle.getArticleId(), savedArticle.getDocument().getDocsId(),
+				savedArticle.getDocument().getPosition(),
+				savedArticle.getDocument().getDocumentName(), savedArticle.getTitle(), savedArticle.getContent(),
+				savedArticle.getCreatedAt(), savedArticle.getUpdatedAt(), 0, 0, 0,
+				savedArticle.getUser().getUserId(), savedArticle.getUser().getNickname(),
+				savedArticle.getUser().getProfileImage(), false
 		);
 	}
 
@@ -66,11 +72,11 @@ public class ArticleServiceImpl implements ArticleService {
 	public void updateArticle(Integer articleId, ArticleDto articleDto) {
 
 		Article article = articleRepository.findById(articleId)
-			.orElseThrow(() -> new NoSuchElementException("NOT EXISTS ARTICLE"));
+				.orElseThrow(() -> new ResourceNotFoundException(RESOURCE_NOT_FOUND));
 
 		User user = userUtil.getUser();
 		if (user == null || !article.getUser().getUserId().equals(user.getUserId())) {
-			throw new AccessDeniedException("NO PERMISSION FOR THIS ARTICLE");
+			throw new UserException(GlobalErrorCode.INVALID_RESOURCE_OWNER);
 		}
 
 		if (articleDto.getTitle() != null) {
@@ -83,7 +89,7 @@ public class ArticleServiceImpl implements ArticleService {
 
 		if (articleDto.getCategory() != null) {
 			Document document = documentRepository.findByDocumentName(articleDto.getCategory())
-				.orElseThrow(() -> new NoSuchElementException("NOT EXISTS CATEGORY"));
+					.orElseThrow(() -> new ResourceNotFoundException(RESOURCE_NOT_FOUND));
 
 			article.modifyDocument(document);
 		}
@@ -91,13 +97,13 @@ public class ArticleServiceImpl implements ArticleService {
 
 	@Override
 	public Page<ArticleInfoDto> getArticles(String sort, Position filterPosition, String filterDocName,
-		String keyword, String searchType, Pageable pageable) {
+											String keyword, String searchType, Pageable pageable) {
 
 		User user = userUtil.getUser();
 		Long userId = (user != null) ? user.getUserId() : 0L;
 
 		return articleRepository.findAllArticles(sort, filterPosition, filterDocName, keyword, searchType, pageable,
-			userId);
+				userId);
 	}
 
 	@Override
@@ -114,7 +120,7 @@ public class ArticleServiceImpl implements ArticleService {
 
 		User user = userUtil.getUser();
 		if (user == null) {
-			throw new AccessDeniedException("NO PERMISSION TO UNLOGINED USER");
+			throw new UserException(GlobalErrorCode.INVALID_RESOURCE_OWNER);
 		}
 
 		return articleRepository.findArticlesLikedByUserId(user.getUserId(), pageable);
@@ -128,10 +134,8 @@ public class ArticleServiceImpl implements ArticleService {
 		Long userId = (user != null) ? user.getUserId() : 0L;
 
 		Article article = articleRepository.findById(articleId).orElseThrow(
-			() -> new NoSuchElementException("NOT EXISTS ARTICLE"));
-		log.info("조회수 증가 전    " + article.getViewCount());
+				() -> new ResourceNotFoundException(RESOURCE_NOT_FOUND));
 		article.increaseViewCount();
-		log.info("조회수 증가 후    " + article.getViewCount());
 
 		ArticleInfoDto articleInfo = articleRepository.findArticleById(articleId, userId);
 
@@ -143,11 +147,11 @@ public class ArticleServiceImpl implements ArticleService {
 	public void deleteArticle(Integer articleId) {
 
 		Article article = articleRepository.findById(articleId)
-			.orElseThrow(() -> new NoSuchElementException("NOT EXISTS ARTICLE"));
+				.orElseThrow(() -> new ResourceNotFoundException(RESOURCE_NOT_FOUND));
 
 		User user = userUtil.getUser();
 		if (user == null || !article.getUser().getUserId().equals(user.getUserId())) {
-			throw new AccessDeniedException("NO PERMISSION FOR THIS ARTICLE");
+			throw new UserException(GlobalErrorCode.INVALID_RESOURCE_OWNER);
 		}
 
 		article.modifyToDelete();
@@ -178,7 +182,7 @@ public class ArticleServiceImpl implements ArticleService {
 		}
 
 		Article article = articleRepository.findById(articleId)
-			.orElseThrow(() -> new RuntimeException("해당 글을 찾을 수 없습니다."));
+				.orElseThrow(() -> new ResourceNotFoundException(RESOURCE_NOT_FOUND));
 
 		article.modifyStatus(status);
 	}
