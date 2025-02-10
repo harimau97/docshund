@@ -64,7 +64,7 @@ const TranslateViewer = () => {
     const mouseY = e.clientY - rect.top;
 
     // 버튼 컨테이너의 높이 (두 버튼의 높이 + 간격)
-    const buttonContainerHeight = 100; // 대략적인 높이값
+    const buttonContainerHeight = -50; // 대략적인 높이값
 
     // y 위치 제한
     const limitedY = Math.min(
