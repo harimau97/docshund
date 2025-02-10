@@ -8,6 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.ssafy.docshund.domain.chats.entity.Chat;
 import com.ssafy.docshund.domain.chats.repository.ChatRepository;
+import com.ssafy.docshund.domain.docs.entity.Status;
 import com.ssafy.docshund.domain.docs.entity.TranslatedDocument;
 import com.ssafy.docshund.domain.docs.repository.TranslatedDocumentRepository;
 import com.ssafy.docshund.domain.forums.entity.Article;
@@ -136,7 +137,7 @@ public class ReportServiceImpl implements ReportService {
 			report.addTrnasId(reportRequestDto.getTransId());
 
 			if (translatedDocument.getReportCount() >= INVISIBLE_REPORT_COUNT) {
-				translatedDocument.modifyToInvisible();
+				translatedDocument.modifyStatus(Status.INVISIBLE);
 			}
 		}
 	}

@@ -54,7 +54,7 @@ public class Report extends BaseTimeEntity {
 	private Integer articleId;
 
 	@Column(name = "trans_id")
-	private Integer transId;
+	private Long transId;
 
 	@Column(name = "chat_id")
 	private Long chatId;
@@ -79,7 +79,7 @@ public class Report extends BaseTimeEntity {
 		this.articleId = articleId;
 	}
 
-	public void addTrnasId(Integer transId) {
+	public void addTrnasId(Long transId) {
 		this.transId = transId;
 	}
 
