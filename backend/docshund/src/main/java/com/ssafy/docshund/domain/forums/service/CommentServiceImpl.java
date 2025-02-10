@@ -6,15 +6,16 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import com.ssafy.docshund.domain.alerts.service.AlertsService;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.ssafy.docshund.domain.alerts.service.AlertsService;
 import com.ssafy.docshund.domain.forums.dto.CommentDto;
 import com.ssafy.docshund.domain.forums.dto.CommentInfoDto;
 import com.ssafy.docshund.domain.forums.entity.Article;
 import com.ssafy.docshund.domain.forums.entity.Comment;
+import com.ssafy.docshund.domain.forums.entity.Status;
 import com.ssafy.docshund.domain.forums.repository.ArticleRepository;
 import com.ssafy.docshund.domain.forums.repository.CommentRepository;
 import com.ssafy.docshund.domain.users.entity.User;
@@ -63,7 +64,7 @@ public class CommentServiceImpl implements CommentService {
 			.orElseThrow(() -> new NoSuchElementException("NOT EXISTS ARTICLE"));
 
 		User user = userUtil.getUser();
-		if(user == null) {
+		if (user == null) {
 			throw new AccessDeniedException("NO PERMISSION TO UNLOGINED USER");
 		}
 
@@ -91,7 +92,7 @@ public class CommentServiceImpl implements CommentService {
 			.orElseThrow(() -> new NoSuchElementException("NOT EXISTS COMMENT"));
 
 		User user = userUtil.getUser();
-		if(user == null) {
+		if (user == null) {
 			throw new AccessDeniedException("NO PERMISSION TO UNLOGINED USER");
 		}
 
@@ -99,8 +100,8 @@ public class CommentServiceImpl implements CommentService {
 			new Comment(parentComment, user, article, commentDto.getContent()));
 
 		// 실시간 알림 보내기
-		alertsService.sendCommentAlert(article, user);	// 게시글 작성자에게도 알림
-		alertsService.sendCommentReplyAlert(parentComment, user);	// 댓글 작성자에게도 알림
+		alertsService.sendCommentAlert(article, user);    // 게시글 작성자에게도 알림
+		alertsService.sendCommentReplyAlert(parentComment, user);    // 댓글 작성자에게도 알림
 
 		return new CommentInfoDto(savedComment.getArticle().getArticleId(), savedComment.getCommentId(),
 			savedComment.getContent(),
@@ -149,5 +150,19 @@ public class CommentServiceImpl implements CommentService {
 		}
 
 		comment.modifyToDelete();
+	}
+
+	@Override
+	@Transactional
+	public void modifyCommentStatus(Integer articleId, Status status) {
+		User user = userUtil.getUser();
+		if (!userUtil.isAdmin(user)) {
+			throw new RuntimeException("어드민이 아닙니다.");
+		}
+
+		Comment comment = commentRepository.findById(articleId)
+			.orElseThrow(() -> new RuntimeException("해당 댓글을 찾을 수 없습니다."));
+
+		comment.modifyStatus(status);
 	}
 }
