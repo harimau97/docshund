@@ -19,7 +19,7 @@ public enum DocsExceptionCode implements ExceptionCode {
 	ORIGIN_NOT_FOUND(NOT_FOUND, "D-C-006", "해당 문단을 찾을 수 없습니다."),
 	TRANSLATION_NOT_FOUND(NOT_FOUND, "D-C-007", "해당 번역을 찾을 수 없습니다."),
 	REQUIRED_IS_EMPTY(BAD_REQUEST, "D-C-008", "필수 요소는 비워둘 수 없습니다."),
-	TOO_MANY_REQUEST(BAD_REQUEST, "D-C-009", "요청이 너무 많습니다."),
+	TOO_MANY_REQUEST(TOO_MANY_REQUESTS, "D-C-009", "요청이 너무 많습니다."),
 	ILLEGAL_ARGUMENT(BAD_REQUEST, "D-C-010", "잘못된 인자거나 필수 인자가 누락되었습니다."),
 	PYTHON_ERROR(BAD_REQUEST, "D-C-011", "파이썬 서버와의 통신 중 오류가 발생했습니다.");
 
