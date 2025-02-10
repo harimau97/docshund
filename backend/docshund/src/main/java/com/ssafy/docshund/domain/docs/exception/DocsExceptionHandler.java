@@ -1,27 +1,28 @@
 package com.ssafy.docshund.domain.docs.exception;
 
-import com.ssafy.docshund.domain.users.exception.UserException;
-import com.ssafy.docshund.global.exception.ExceptionResponse;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+
+import com.ssafy.docshund.global.exception.ExceptionResponse;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @ControllerAdvice
 @RequiredArgsConstructor
 public class DocsExceptionHandler {
 
-    @ExceptionHandler(DocsException.class)
-    public ResponseEntity docsException(
-            DocsException exception
-    ) {
-        log.error("{}", exception.getMessage());
+	@ExceptionHandler(DocsException.class)
+	public ResponseEntity docsException(
+		DocsException exception
+	) {
+		log.error("{}", exception.getMessage());
 
-        return new ResponseEntity<>(
-                new ExceptionResponse(exception.getExceptionCode()),
-                exception.getExceptionCode().getHttpStatus()
-        );
-    }
+		return new ResponseEntity<>(
+			new ExceptionResponse(exception.getExceptionCode()),
+			exception.getExceptionCode().getHttpStatus()
+		);
+	}
 }
