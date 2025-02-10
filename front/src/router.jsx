@@ -5,7 +5,7 @@ import LandingPage from "./pages/landingPage.jsx";
 import ProtectedRoute from "./utils/protectedRoute.jsx";
 
 // 마이페이지 관련 페이지
-import MyPage from "./pages/myPage/MyPage.jsx";
+import MyPage from "./pages/myPage/myPage.jsx";
 import MyProfilePage from "./pages/myPage/pages/MyProfilePage.jsx";
 import ArchivePage from "./pages/myPage/pages/ArchivePage.jsx";
 import LikeArticlePage from "./pages/myPage/pages/archive/LikeArticlePage.jsx";
@@ -50,6 +50,9 @@ import ManageNotification from "./pages/admin/manageNotification.jsx";
 
 // error 페이지
 import ErrorPage from "./pages/errorPage.jsx";
+
+// 유어마이페이지
+import UserPage from "./pages/userPage.jsx";
 
 function AppRoutes() {
   return (
@@ -123,6 +126,8 @@ function AppRoutes() {
           <Route path="memo" element={<MemoPage />} />
           <Route path="inquiry" element={<InquiryPage />} />
         </Route>
+        {/* 유어마이페이지 */}
+        <Route path="/userPage/:userId" element={<UserPage />}></Route>
       </Route>
     </Routes>
   );

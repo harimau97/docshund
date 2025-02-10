@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import useAuthStore from "../store/authStore";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 
 const AuthService = () => {
   const navigate = useNavigate();
@@ -12,7 +12,7 @@ const AuthService = () => {
       loginWithGoogle();
     } catch (error) {
       console.error("Google 로그인 실패:", error);
-      alert("Google 로그인에 실패했습니다.");
+      toast.error("Google 로그인에 실패했습니다.");
     }
   };
 
@@ -21,7 +21,7 @@ const AuthService = () => {
       loginWithGithub();
     } catch (error) {
       console.error("GitHub 로그인 실패:", error);
-      alert("GitHub 로그인에 실패했습니다.");
+      toast.error("GitHub 로그인에 실패했습니다.");
     }
   };
 
