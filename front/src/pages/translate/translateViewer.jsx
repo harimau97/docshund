@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import {
   initDB,
   addData,
@@ -15,21 +15,21 @@ import * as motion from "motion/react-client";
 import TranslateEditor from "./translateEditor.jsx";
 import TranslateArchive from "./translateArchive.jsx";
 import ToastViewer from "./components/toastViewer.jsx";
-
+import ChatBotBtn from "../chatBot/chatBotBtn.jsx";
 import RectBtn from "../../components/button/rectBtn.jsx";
 
 //상태 import
-import useTestStore from "../../store/translateStore/testStore.jsx";
 import useModalStore from "../../store/translateStore/translateModalStore.jsx";
-
 import useEditorStore from "../../store/translateStore/editorStore.jsx";
 import useArchiveStore from "../../store/translateStore/archiveStore.jsx";
 
 //이미지 import
 import loadingGif from "../../assets/loading.gif";
 import { Trophy } from "lucide-react";
+import Korean from "../../assets/icon/korean.png";
 
 const TranslateViewer = () => {
+  const navigate = useNavigate();
   const { docsId } = useParams();
   const [docParts, setDocParts] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -66,12 +66,12 @@ const TranslateViewer = () => {
     const mouseY = e.clientY - rect.top;
 
     // 버튼 컨테이너의 높이 (두 버튼의 높이 + 간격)
-    const buttonContainerHeight = -50; // 대략적인 높이값
+    const buttonContainerHeight = 100; // 대략적인 높이값
 
     // y 위치 제한
     const limitedY = Math.min(
       Math.max(buttonContainerHeight / 2, mouseY),
-      rect.height - buttonContainerHeight / 2
+      rect.height - buttonContainerHeight / 5
     );
 
     setMousePositions((prev) => ({
@@ -225,6 +225,15 @@ const TranslateViewer = () => {
 
   return (
     <div className="h-[99%] min-w-[800px] w-[70%] absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 overflow-x-auto overflow-y-scroll p-6 flex flex-col z-[1000] max-w-screen-xl mx-auto">
+      <button
+        onClick={async () => {
+          navigate(`/translate/main/viewer/${docsId}/best`);
+        }}
+        className="fixed top-2 right-2 z-[1900] group rounded-full w-12 h-12 bg-gradient-to-r from-[#BC5B39] to-[#ff835a] flex justify-center items-center cursor-pointer shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 border-2 border-white"
+      >
+        <img className="w-7 h-6" src={Korean} alt="전체 번역 보기" />
+      </button>
+
       <div className="flex flex-col gap-2">
         {docParts.map((part, index) => (
           <div key={index} className="paragraph flex flex-row gap-4 relative">
