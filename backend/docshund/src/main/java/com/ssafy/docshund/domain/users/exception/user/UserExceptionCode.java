@@ -1,4 +1,4 @@
-package com.ssafy.docshund.domain.users.exception;
+package com.ssafy.docshund.domain.users.exception.user;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
@@ -15,7 +15,8 @@ import lombok.RequiredArgsConstructor;
 public enum UserExceptionCode implements ExceptionCode {
 
 	MEMBER_NOT_FOUND(NOT_FOUND, "M-C-001", "회원을 찾을 수 없습니다."),
-	MEMBER_DUPLICATE_ERROR(BAD_REQUEST, "M-C-002", "중복된 닉네임입니다.");
+	MEMBER_DUPLICATE_ERROR(BAD_REQUEST, "M-C-002", "중복된 닉네임입니다."),
+	NICKNAME_DUPLICATE_ERROR(HttpStatus.BAD_REQUEST, "M-C-003", "중복된 이메일입니다.");
 
 	private final HttpStatus httpStatus;
 	private final String code;
