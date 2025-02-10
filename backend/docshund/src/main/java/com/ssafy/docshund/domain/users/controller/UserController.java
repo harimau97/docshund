@@ -52,7 +52,6 @@ public class UserController {
 	public ResponseEntity<Page<UserAndInfoDto>> searchUsers(@RequestParam(required = false) String nickname,
 		@RequestParam(required = false) String email, @RequestParam(required = false) Hobby category,
 		Pageable pageable) {
-
 		User user = userUtil.getUser();
 
 		if (user == null || !userUtil.isAdmin(user)) {
@@ -74,8 +73,9 @@ public class UserController {
 	public ResponseEntity<UserProfileDto> getProfileUser(@PathVariable Long userId) {
 		UserProfileDto userProfile = userService.getUserProfile(userId);
 
-		if (userProfile == null)
+		if (userProfile == null) {
 			throw new AuthException(AUTH_MEMBER_NOT_FOUND);
+		}
 
 		return ResponseEntity.ok(userProfile);
 	}
@@ -96,7 +96,7 @@ public class UserController {
 
 	@PatchMapping("/{userId}/status")
 	public ResponseEntity<String> modifyUserStatus(@PathVariable Long userId,
-		@RequestBody UserStatusRequestDto userStatusRequestDto) {
+		@Valid @RequestBody UserStatusRequestDto userStatusRequestDto) {
 
 		userService.modifyUserStatus(userId, userStatusRequestDto);
 
