@@ -1,16 +1,14 @@
 package com.ssafy.docshund.domain.docs.controller;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ssafy.docshund.domain.docs.dto.DocumentDto;
+import com.ssafy.docshund.domain.docs.dto.OriginDocumentDto;
+import com.ssafy.docshund.domain.docs.dto.TranslatedDocumentDto;
+import com.ssafy.docshund.domain.docs.dto.UserTransDocumentDto;
+import com.ssafy.docshund.domain.docs.entity.Position;
+import com.ssafy.docshund.domain.docs.entity.Status;
+import com.ssafy.docshund.domain.docs.service.DocsService;
+import com.ssafy.docshund.global.util.user.UserUtil;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -22,15 +20,16 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ssafy.docshund.domain.docs.dto.DocumentDto;
-import com.ssafy.docshund.domain.docs.dto.OriginDocumentDto;
-import com.ssafy.docshund.domain.docs.dto.TranslatedDocumentDto;
-import com.ssafy.docshund.domain.docs.dto.UserTransDocumentDto;
-import com.ssafy.docshund.domain.docs.entity.Position;
-import com.ssafy.docshund.domain.docs.entity.Status;
-import com.ssafy.docshund.domain.docs.service.DocsService;
-import com.ssafy.docshund.global.util.user.UserUtil;
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -91,8 +90,7 @@ class DocsControllerTest {
 			"http://link.com", LocalDateTime.now(), List.of());
 
 		when(userUtil.getUser()).thenReturn(Mockito.mock(com.ssafy.docshund.domain.users.entity.User.class));
-		when(docsService.createDocument(any(DocumentDto.class),
-			any(com.ssafy.docshund.domain.users.entity.User.class))).thenReturn(responseDto);
+		when(docsService.createDocument(any(DocumentDto.class))).thenReturn(responseDto);
 
 		// when & then
 		mockMvc.perform(post("/api/v1/docshund/docs")
@@ -102,8 +100,7 @@ class DocsControllerTest {
 			.andExpect(jsonPath("$.docsId").value(1))
 			.andExpect(jsonPath("$.documentName").value("Spring Framework"));
 
-		verify(docsService, times(1)).createDocument(any(DocumentDto.class),
-			any(com.ssafy.docshund.domain.users.entity.User.class));
+		verify(docsService, times(1)).createDocument(any(DocumentDto.class));
 	}
 
 	// 문서 상세 조회 테스트
@@ -135,7 +132,7 @@ class DocsControllerTest {
 			Position.BACKEND, "Apache 2.0", "http://link.com", LocalDateTime.now(), List.of());
 
 		when(userUtil.getUser()).thenReturn(Mockito.mock(com.ssafy.docshund.domain.users.entity.User.class));
-		when(docsService.toggleLikes(1, userUtil.getUser())).thenReturn(document);
+		when(docsService.toggleLikes(1)).thenReturn(document);
 
 		// when & then
 		mockMvc.perform(post("/api/v1/docshund/docs/1/likes"))
@@ -143,7 +140,7 @@ class DocsControllerTest {
 			.andExpect(jsonPath("$.docsId").value(1))
 			.andExpect(jsonPath("$.documentName").value("Spring Framework"));
 
-		verify(docsService, times(1)).toggleLikes(1, userUtil.getUser());
+		verify(docsService, times(1)).toggleLikes(1);
 	}
 
 	// 특정 유저 관심 문서 조회 테스트
@@ -182,7 +179,7 @@ class DocsControllerTest {
 		);
 
 		when(userUtil.getUser()).thenReturn(Mockito.mock(com.ssafy.docshund.domain.users.entity.User.class));
-		when(docsService.createOriginDocuments(1, "문서 원본 내용입니다.", userUtil.getUser())).thenReturn(createdOrigins);
+		when(docsService.createOriginDocuments(1, "문서 원본 내용입니다.")).thenReturn(createdOrigins);
 
 		// when & then
 		mockMvc.perform(post("/api/v1/docshund/docs/1/origin")
@@ -194,7 +191,7 @@ class DocsControllerTest {
 			.andExpect(jsonPath("$[1].originId").value(2))
 			.andExpect(jsonPath("$[1].content").value("문단 2 내용"));
 
-		verify(docsService, times(1)).createOriginDocuments(1, "문서 원본 내용입니다.", userUtil.getUser());
+		verify(docsService, times(1)).createOriginDocuments(1, "문서 원본 내용입니다.");
 	}
 
 	// 원본 문서 전체 조회 테스트
@@ -335,7 +332,7 @@ class DocsControllerTest {
 			LocalDateTime.now(), LocalDateTime.now(), 0, List.of());
 
 		when(userUtil.getUser()).thenReturn(Mockito.mock(com.ssafy.docshund.domain.users.entity.User.class));
-		when(docsService.createTranslatedDocument(1, 1, userUtil.getUser(), "새 번역")).thenReturn(createdTrans);
+		when(docsService.createTranslatedDocument(1, 1, "새 번역")).thenReturn(createdTrans);
 
 		// when & then
 		mockMvc.perform(post("/api/v1/docshund/docs/1/trans/1")
@@ -344,7 +341,7 @@ class DocsControllerTest {
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.data.content").value("새 번역"));
 
-		verify(docsService, times(1)).createTranslatedDocument(1, 1, userUtil.getUser(), "새 번역");
+		verify(docsService, times(1)).createTranslatedDocument(1, 1, "새 번역");
 	}
 
 	// 번역 상세 조회 테스트
@@ -377,7 +374,7 @@ class DocsControllerTest {
 		);
 
 		when(userUtil.getUser()).thenReturn(Mockito.mock(com.ssafy.docshund.domain.users.entity.User.class));
-		when(docsService.updateTranslatedDocument(1, 1L, userUtil.getUser(), "수정된 번역 내용")).thenReturn(updatedTrans);
+		when(docsService.updateTranslatedDocument(1, 1L, "수정된 번역 내용")).thenReturn(updatedTrans);
 
 		// when & then
 		mockMvc.perform(patch("/api/v1/docshund/docs/1/trans/paragraph/1")
@@ -386,7 +383,7 @@ class DocsControllerTest {
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.data.content").value("수정된 번역 내용"));
 
-		verify(docsService, times(1)).updateTranslatedDocument(1, 1L, userUtil.getUser(), "수정된 번역 내용");
+		verify(docsService, times(1)).updateTranslatedDocument(1, 1L, "수정된 번역 내용");
 	}
 
 	// 번역 삭제 테스트
@@ -401,7 +398,7 @@ class DocsControllerTest {
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.message").value("Translation deleted successfully."));
 
-		verify(docsService, times(1)).deleteTranslatedDocument(1, 1L, userUtil.getUser());
+		verify(docsService, times(1)).deleteTranslatedDocument(1, 1L);
 	}
 
 	// 번역 좋아요 / 취소 테스트
@@ -410,7 +407,7 @@ class DocsControllerTest {
 	void postTransVotesTest() throws Exception {
 		// given
 		when(userUtil.getUser()).thenReturn(Mockito.mock(com.ssafy.docshund.domain.users.entity.User.class));
-		when(docsService.toggleVotes(1, 1L, userUtil.getUser())).thenReturn(true);
+		when(docsService.toggleVotes(1, 1L)).thenReturn(true);
 
 		// 좋아요 추가 테스트
 		mockMvc.perform(post("/api/v1/docshund/docs/1/trans/paragraph/1/votes"))
@@ -418,17 +415,17 @@ class DocsControllerTest {
 			.andExpect(jsonPath("$.message").value("Translation liked successfully."))
 			.andExpect(jsonPath("$.liked").value(true));
 
-		verify(docsService, times(1)).toggleVotes(1, 1L, userUtil.getUser());
+		verify(docsService, times(1)).toggleVotes(1, 1L);
 
 		// 좋아요 취소 테스트
-		when(docsService.toggleVotes(1, 1L, userUtil.getUser())).thenReturn(false);
+		when(docsService.toggleVotes(1, 1L)).thenReturn(false);
 
 		mockMvc.perform(post("/api/v1/docshund/docs/1/trans/paragraph/1/votes"))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.message").value("Translation unliked successfully."))
 			.andExpect(jsonPath("$.liked").value(false));
 
-		verify(docsService, times(2)).toggleVotes(1, 1L, userUtil.getUser());
+		verify(docsService, times(2)).toggleVotes(1, 1L);
 	}
 
 	// 특정 유저가 좋아한 번역 테스트
