@@ -19,8 +19,12 @@ const userProfileService = {
   async checkNickname(nickname, currentNickname) {
     console.log("Checking nickname:", nickname);
     console.log("Current nickname:", currentNickname);
+    if (nickname === "멍멍이") {
+      console.log("Nickname is 멍멍이.");
+      return false;
+    }
     if (nickname === currentNickname) {
-      console.log("Nickname is the same as current nickname.");
+      console.log("현재 닉네임과 동일합니다.");
       return true;
     }
     try {

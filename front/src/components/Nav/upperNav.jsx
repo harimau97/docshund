@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import RectBtn from "../button/rectBtn";
@@ -23,6 +23,8 @@ const UpperNav = () => {
   const setKeyword = communityArticleStore((state) => state.setKeyword);
   const setCategory = communityArticleStore((state) => state.setCategory);
 
+  const [profileImgUrl, setProfileImgUrl] = useState(profile?.profileImage);
+
   useEffect(() => {
     if (isAuthenticated() && token) {
       try {
@@ -35,6 +37,10 @@ const UpperNav = () => {
     }
   }, [isAuthenticated, token, fetchProfile]);
 
+  useEffect(() => {
+    setProfileImgUrl(profile?.profileImage);
+  }, [profile]);
+
   // 로그인 버튼 동작
   const handleLoginClick = () => {
     if (isAuthenticated()) {
@@ -43,8 +49,6 @@ const UpperNav = () => {
       openModal(); //로그인 모달 열기
     }
   };
-
-  const profileImgUrl = profile?.profileImage;
 
   // 링크 스타일
   const activeLink = "font-bold text-[clamp(16px,1.5vw,20px)] text-[#bc5b39]";

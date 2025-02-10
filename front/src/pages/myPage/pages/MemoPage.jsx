@@ -6,11 +6,14 @@ import modalStore from "../../../store/myPageStore/myPageModalStore";
 import useMemoStore from "../../../store/myPageStore/memoStore";
 import memoService from "../services/memoService";
 import ListPagination from "../../../components/pagination/listPagination";
+import ConfirmModal from "../../../components/alertModal/confirmModal";
+import useAlertStore from "../../../store/alertStore";
 
 const MemoPage = () => {
   const token = localStorage.getItem("token");
 
   const { isOpen, openId, openModal, closeModal, setOpenId } = modalStore();
+  const { isAlertOpen, toggleAlert } = useAlertStore();
   const {
     memos,
     setMemos,
@@ -24,6 +27,7 @@ const MemoPage = () => {
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const [currentData, setCurrentData] = useState([]);
+  const [memoToDelete, setMemoToDelete] = useState(null);
   const pageSize = 15;
 
   useEffect(() => {
@@ -102,14 +106,22 @@ const MemoPage = () => {
   };
 
   const handleDeleteMemo = async (memoId) => {
-    if (userId) {
+    setMemoToDelete(memoId);
+    toggleAlert();
+  };
+
+  const confirmDeleteMemo = async () => {
+    if (userId && memoToDelete) {
       try {
-        await memoService.deleteMemo(userId, memoId);
-        deleteMemo(memoId);
-        console.log("Deleted memo with ID:", memoId);
-        closeModal();
+        await memoService.deleteMemo(userId, memoToDelete);
+        deleteMemo(memoToDelete);
+        console.log("Deleted memo with ID:", memoToDelete);
       } catch (error) {
         console.error("Error deleting memo:", error);
+      } finally {
+        setMemoToDelete(null);
+        closeModal();
+        toggleAlert();
       }
     }
   };
@@ -139,7 +151,7 @@ const MemoPage = () => {
           onClick={() => handleOpenModal(null)}
           className="border-box bg-[#bc5b39] rounded-[12px] px-[20px] w-fit h-10 text-[#ffffff] hover:bg-[#C96442]"
         >
-          + 새 메모
+          + 새메모
         </button>
       </div>
       <MemoList
@@ -163,6 +175,13 @@ const MemoPage = () => {
         memoData={memos ? memos.find((memo) => memo.memoId === openId) : null}
         onDelete={openId ? handleDeleteMemo : null}
       />
+      {isAlertOpen && (
+        <ConfirmModal
+          message="정말로 메모를 삭제하시겠습니까?"
+          onConfirm={confirmDeleteMemo}
+          onCancel={toggleAlert}
+        />
+      )}
     </div>
   );
 };

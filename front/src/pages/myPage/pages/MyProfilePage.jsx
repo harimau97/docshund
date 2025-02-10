@@ -7,6 +7,8 @@ import useUserProfileStore from "../../../store/myPageStore/userProfileStore";
 import userProfileService from "../services/userProfileService";
 import ProfileCard from "./ProfileCard";
 import SettingsCard from "./SettingsCard";
+import ConfirmModal from "../../../components/alertModal/confirmModal";
+import useAlertStore from "../../../store/alertStore";
 
 const MyProfilePage = () => {
   const { profile, error, fetchProfile, updateProfile, deleteAccount } =
@@ -24,31 +26,40 @@ const MyProfilePage = () => {
   const [userId, setUserId] = useState(null);
   const [profileImageFile, setProfileImageFile] = useState(null);
   const { logout } = authService();
+  const { isAlertOpen, toggleAlert } = useAlertStore();
 
+  // 1. 토큰 디코딩 및 userId 설정
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
       const decodedToken = jwtDecode(token);
-      const userId = decodedToken.userId;
-      setUserId(userId);
+      setUserId(decodedToken.userId);
+    }
+  }, []);
+
+  // 2. userId가 설정되거나 편집 모드가 종료될 때 프로필 호출
+  useEffect(() => {
+    if (userId && !isEditing) {
       fetchProfile(userId);
     }
-  }, [fetchProfile]);
+  }, [userId, isEditing, fetchProfile]);
 
+  // 3. 프로필 변경 시 편집 중이 아닐 때만 로컬 상태 업데이트
   useEffect(() => {
-    if (profile) {
-      setEditedProfile((prev) => ({ ...prev, ...profile }));
+    if (profile && !isEditing) {
+      setEditedProfile({ ...profile });
       console.log("원본 카피완료", profile);
     }
-  }, [profile]);
+  }, [profile, isEditing]);
 
+  // 4. 에러 발생 시 토스트 표시
   useEffect(() => {
     if (error) {
       toast.error(`Error: ${error}`);
     }
   }, [error]);
 
-  // 편집 모드 시작 취소
+  // 편집 모드 시작 / 취소
   const handleEditClick = () => setIsEditing(true);
   const handleCancelClick = () => {
     setIsEditing(false);
@@ -57,7 +68,7 @@ const MyProfilePage = () => {
   };
 
   // 닉네임 중복 체크
-  const checkNickname = async () => {
+  const checkNickname = async (showSuccessToast = true) => {
     if (!editedProfile.nickname) {
       toast.warn("닉네임을 입력해주세요.");
       return false;
@@ -68,19 +79,21 @@ const MyProfilePage = () => {
         profile.nickname
       );
       if (isAvailable) {
-        toast.success("사용 가능한 닉네임입니다.");
+        if (showSuccessToast) {
+          toast.success("사용 가능한 닉네임입니다.");
+        }
         return true;
       } else {
         toast.error("사용할 수 없는 닉네임입니다.");
         return false;
       }
     } catch (error) {
-      toast.error("닉네임 중복 확인 중 오류가 발생했습니다.");
+      console.log("닉네임 중복 체크 중 오류 발생:", error);
       return false;
     }
   };
 
-  // 편집 모드 저장 (저장 후 페이지 리로딩 제거)
+  // 편집 모드 저장
   const handleSaveClick = async (e) => {
     e.preventDefault();
     if (
@@ -93,7 +106,7 @@ const MyProfilePage = () => {
       return;
     }
 
-    const isUnique = await checkNickname();
+    const isUnique = await checkNickname(false);
     if (!isUnique) return;
 
     const formData = new FormData();
@@ -103,17 +116,6 @@ const MyProfilePage = () => {
     );
     if (profileImageFile) {
       formData.append("file", profileImageFile);
-    }
-
-    // FormData 내용 확인 (디버깅용)
-    for (let [key, value] of formData.entries()) {
-      if (key === "profile") {
-        value.text().then((text) => {
-          console.log(`${key}:`, JSON.parse(text));
-        });
-      } else {
-        console.log(`${key}: ${value}`);
-      }
     }
 
     try {
@@ -126,7 +128,7 @@ const MyProfilePage = () => {
     }
   };
 
-  // 이미지 변경 처리
+  // 이미지 변경 처리 (최대 1MB)
   const MAX_FILE_SIZE = 1 * 1024 * 1024;
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -149,56 +151,26 @@ const MyProfilePage = () => {
     reader.readAsDataURL(file);
   };
 
-  // toastify를 이용한 계정 탈퇴 확인창
-  const confirmDeleteAccount = () => {
-    return new Promise((resolve) => {
-      toast(
-        ({ closeToast }) => (
-          <div>
-            <p>정말로 계정을 탈퇴하시겠습니까?</p>
-            <div className="flex justify-end space-x-2 mt-2">
-              <button
-                onClick={() => {
-                  resolve(true);
-                  closeToast();
-                }}
-                className="bg-red-500 text-white px-3 py-1 rounded text-xs"
-              >
-                예
-              </button>
-              <button
-                onClick={() => {
-                  resolve(false);
-                  closeToast();
-                }}
-                className="bg-gray-300 text-black px-3 py-1 rounded text-xs"
-              >
-                아니요
-              </button>
-            </div>
-          </div>
-        ),
-        { autoClose: false }
-      );
-    });
-  };
-
   // 계정 탈퇴 처리
   const handleDeleteAccount = async () => {
-    const confirmed = await confirmDeleteAccount();
-    if (confirmed) {
-      try {
-        const success = await deleteAccount(userId);
-        if (success) {
-          toast.success("계정이 성공적으로 탈퇴되었습니다.");
-          logout();
-        } else {
-          toast.error("계정 탈퇴 중 오류가 발생했습니다.");
-        }
-      } catch (error) {
+    toggleAlert();
+  };
+
+  const confirmDeleteAccount = async () => {
+    try {
+      const success = await deleteAccount(userId);
+      if (success) {
+        toast.success("계정이 성공적으로 탈퇴되었습니다.");
+        toggleAlert();
+        logout();
+      } else {
         toast.error("계정 탈퇴 중 오류가 발생했습니다.");
-        console.error("계정 탈퇴 실패", error);
+        toggleAlert();
       }
+    } catch (error) {
+      toast.error("계정 탈퇴 중 오류가 발생했습니다.");
+      console.error("계정 탈퇴 실패", error);
+      toggleAlert();
     }
   };
 
@@ -270,6 +242,13 @@ const MyProfilePage = () => {
           <ChevronRight />
         </button>
       </div>
+      {isAlertOpen && (
+        <ConfirmModal
+          message="정말로 계정을 탈퇴하시겠습니까?"
+          onConfirm={confirmDeleteAccount}
+          onCancel={toggleAlert}
+        />
+      )}
     </div>
   );
 };
