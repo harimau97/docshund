@@ -82,114 +82,116 @@ const ChatBotBtn = () => {
   }, [messages]);
 
   return (
-    <div className="fixed z-[1900] top-1 left-1">
-      <div
-        onClick={toggleChatBot}
-        className="rounded-full w-12 h-12 bg-gradient-to-r from-[#BC5B39] to-[#ff835a] flex justify-center items-center cursor-pointer shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 border-2 border-white"
-      >
-        <Bot className="h-8 w-8 text-white group-hover:rotate-12 transition-transform duration-300" />
-      </div>
-
-      <AnimatePresence>
-        {isChatBotVisible && (
-          <motion.div
-            key="chatbot-modal"
-            initial={{ opacity: 0, y: -1000 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -1000 }}
-            transition={{
-              ease: "easeInOut",
-              duration: 0.5,
-            }}
-            className=" w-[400px] h-[600px] bg-white rounded-xl shadow-lg border border-gray-200 z-[1900] flex flex-col translate-x-13 -translate-y-13"
+    <div>
+      {localStorage.getItem("token") && (
+        <div className="fixed z-[1900] top-1 left-1">
+          <div
+            onClick={toggleChatBot}
+            className="rounded-full w-12 h-12 bg-gradient-to-r from-[#BC5B39] to-[#ff835a] flex justify-center items-center cursor-pointer shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 border-2 border-white"
           >
-            {/* 챗봇 헤더 */}
-            <div className="flex items-center p-4 border-b border-gray-200 bg-[#C96442] rounded-t-xl w-full">
-              <Bot className="h-8 w-8 text-white" />
-              <div className="flex items-center justify-between w-full">
-                <div className="ml-3 text-white">
-                  <h3 className="font-semibold">DocshunD 번역봇</h3>
-                </div>
-                <button
-                  className="cursor-pointer"
-                  onClick={() => handleClose()}
-                >
-                  <X className="h-8 w-8 flex left-0 text-white" />
-                </button>
-              </div>
-            </div>
+            <Bot className="h-8 w-8 text-white group-hover:rotate-12 transition-transform duration-300" />
+          </div>
 
-            {/* 메시지 영역 */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-4">
-              {messages.map((message, index) => (
-                <div
-                  key={index}
-                  className={`flex ${
-                    message.isUser ? "justify-end" : "justify-start"
-                  }`}
-                >
-                  <div
-                    className={`max-w-[70%] p-3 rounded-lg ${
-                      message.isUser
-                        ? "bg-red-900 text-white rounded-br-none"
-                        : "bg-gray-100 text-gray-800 rounded-bl-none"
-                    }`}
-                  >
-                    <p className="text-sm">{message.text}</p>
-                    <p className="text-xs mt-1 opacity-70">
-                      {message.timestamp}
-                    </p>
-                  </div>
-                </div>
-              ))}
-              {loading && (
-                <div className="flex justify-start">
-                  <div className="bg-gray-100 p-3 rounded-lg rounded-bl-none">
-                    <div className="flex space-x-2">
-                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                      <div
-                        className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
-                        style={{ animationDelay: "0.2s" }}
-                      ></div>
-                      <div
-                        className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
-                        style={{ animationDelay: "0.4s" }}
-                      ></div>
+          <AnimatePresence>
+            {isChatBotVisible && (
+              <motion.div
+                key="chatbot-modal"
+                initial={{ opacity: 0, y: -1000 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -1000 }}
+                transition={{
+                  ease: "easeInOut",
+                  duration: 0.5,
+                }}
+                className=" w-[400px] h-[600px] bg-white rounded-xl shadow-lg border border-gray-200 z-[1900] flex flex-col translate-x-13 -translate-y-13"
+              >
+                {/* 챗봇 헤더 */}
+                <div className="flex items-center p-4 border-b border-gray-200 bg-[#C96442] rounded-t-xl w-full">
+                  <Bot className="h-8 w-8 text-white" />
+                  <div className="flex items-center justify-between w-full">
+                    <div className="ml-3 text-white">
+                      <h3 className="font-semibold">DocshunD 번역봇</h3>
                     </div>
+                    <button
+                      className="cursor-pointer"
+                      onClick={() => handleClose()}
+                    >
+                      <X className="h-8 w-8 flex left-0 text-white" />
+                    </button>
                   </div>
                 </div>
-              )}
-              <div ref={messagesEndRef} />
-            </div>
 
-            {/* 입력 영역 */}
-            <form
-              onSubmit={handleSubmit}
-              className="p-4 border-t border-gray-200"
-            >
-              <div className="flex space-x-2">
-                <input
-                  type="text"
-                  value={inputMessage}
-                  onChange={(e) => setInputMessage(e.target.value)}
-                  placeholder="메시지를 입력하세요..."
-                  className="flex-1 px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:border-[#C96442]"
-                />
-                <button
-                  type="submit"
-                  className="p-2 bg-[#C96442] text-white rounded-full hover: cursor-pointer transition-colors"
-                  disabled={loading}
+                {/* 메시지 영역 */}
+                <div className="flex-1 overflow-y-auto p-4 space-y-4">
+                  {messages.map((message, index) => (
+                    <div
+                      key={index}
+                      className={`flex ${
+                        message.isUser ? "justify-end" : "justify-start"
+                      }`}
+                    >
+                      <div
+                        className={`max-w-[70%] p-3 rounded-lg ${
+                          message.isUser
+                            ? "bg-red-900 text-white rounded-br-none"
+                            : "bg-gray-100 text-gray-800 rounded-bl-none"
+                        }`}
+                      >
+                        <p className="text-sm">{message.text}</p>
+                        <p className="text-xs mt-1 opacity-70">
+                          {message.timestamp}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                  {loading && (
+                    <div className="flex justify-start">
+                      <div className="bg-gray-100 p-3 rounded-lg rounded-bl-none">
+                        <div className="flex space-x-2">
+                          <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+                          <div
+                            className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
+                            style={{ animationDelay: "0.2s" }}
+                          ></div>
+                          <div
+                            className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
+                            style={{ animationDelay: "0.4s" }}
+                          ></div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  <div ref={messagesEndRef} />
+                </div>
+
+                {/* 입력 영역 */}
+                <form
+                  onSubmit={handleSubmit}
+                  className="p-4 border-t border-gray-200"
                 >
-                  <Send />
-                </button>
-              </div>
-            </form>
-          </motion.div>
-        )}
-      </AnimatePresence>
+                  <div className="flex space-x-2">
+                    <input
+                      type="text"
+                      value={inputMessage}
+                      onChange={(e) => setInputMessage(e.target.value)}
+                      placeholder="메시지를 입력하세요..."
+                      className="flex-1 px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:border-[#C96442]"
+                    />
+                    <button
+                      type="submit"
+                      className="p-2 bg-[#C96442] text-white rounded-full hover: cursor-pointer transition-colors"
+                      disabled={loading}
+                    >
+                      <Send />
+                    </button>
+                  </div>
+                </form>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      )}
     </div>
-    //   )}
-    // </div>
   );
 };
 export default ChatBotBtn;

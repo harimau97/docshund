@@ -1,7 +1,6 @@
 import { Outlet, useNavigate, useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import ChatBotBtn from "../chatBot/chatBotBtn.jsx";
-import "react-contexify/dist/ReactContexify.css";
 import AlertModal from "../../components/alertModal/alertModal.jsx";
 import useAlertStore from "../../store/alertStore.jsx";
 import warning from "../../assets/icon/warning.png";
