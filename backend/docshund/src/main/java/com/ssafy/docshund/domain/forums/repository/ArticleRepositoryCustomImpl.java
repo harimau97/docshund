@@ -286,7 +286,7 @@ public class ArticleRepositoryCustomImpl implements ArticleRepositoryCustom {
 	private OrderSpecifier<?> getSortOrder(QArticle article, QArticleLike articleLike, String sort) {
 		if ("likes".equals(sort)) {
 			return articleLike.alikeId.countDistinct().desc();
-		} else if ("highView".equals(sort)) {
+		} else if ("views".equals(sort)) {
 			return article.viewCount.desc();
 		} else {
 			return article.createdAt.desc();
