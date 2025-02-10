@@ -15,6 +15,34 @@ const userProfileService = {
     }
   },
 
+  // 닉네임 중복 체크
+  async checkNickname(nickname, currentNickname) {
+    console.log("Checking nickname:", nickname);
+    console.log("Current nickname:", currentNickname);
+    if (nickname === "멍멍이") {
+      console.log("Nickname is 멍멍이.");
+      return false;
+    }
+    if (nickname === currentNickname) {
+      console.log("현재 닉네임과 동일합니다.");
+      return true;
+    }
+    try {
+      const response = await axiosJsonInstance.get(
+        `/users/profile?nickname=${encodeURIComponent(nickname)}`
+      );
+      console.log("Nickname check response:", response.data);
+      if (response.data === "사용 가능한 닉네임입니다.") {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (error) {
+      console.error("닉네임 중복 체크 중 오류 발생:", error);
+      return false;
+    }
+  },
+
   // 프로필 업데이트
   async updateProfile(userId, formData) {
     try {

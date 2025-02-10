@@ -1,18 +1,20 @@
+import { useEffect, useState } from "react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
 import RectBtn from "../button/rectBtn";
+import useUserProfileStore from "../../store/myPageStore/userProfileStore";
 import useModalStore from "../../store/modalStore";
 import authService from "../../services/authService";
 import logo from "../../assets/logo.png";
 import notification from "../../assets/icon/notification32.png";
-import SampleProfileImg from "../../assets/sample_profile_image.png";
 
 import communityArticleStore from "../../store/communityStore/communityArticleStore";
-import { set } from "date-fns";
 
 const UpperNav = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { isAuthenticated, logout } = authService();
+  const { token, isAuthenticated, logout } = authService();
+  const { profile, fetchProfile } = useUserProfileStore();
   const { openModal } = useModalStore();
 
   // 게시글 작성 페이지로 이동 시 페이지 초기화
@@ -20,6 +22,24 @@ const UpperNav = () => {
   const setSortType = communityArticleStore((state) => state.setSortType);
   const setKeyword = communityArticleStore((state) => state.setKeyword);
   const setCategory = communityArticleStore((state) => state.setCategory);
+
+  const [profileImgUrl, setProfileImgUrl] = useState(profile?.profileImage);
+
+  useEffect(() => {
+    if (isAuthenticated() && token) {
+      try {
+        const decoded = jwtDecode(token);
+        const userId = decoded.userId;
+        fetchProfile(userId);
+      } catch (error) {
+        console.error("토큰 디코딩에 실패했습니다.", error);
+      }
+    }
+  }, [isAuthenticated, token, fetchProfile]);
+
+  useEffect(() => {
+    setProfileImgUrl(profile?.profileImage);
+  }, [profile]);
 
   // 로그인 버튼 동작
   const handleLoginClick = () => {
@@ -108,11 +128,11 @@ const UpperNav = () => {
             text={isAuthenticated() ? "로그아웃" : "로그인"}
           />
 
-          {isAuthenticated() && (
+          {isAuthenticated() && profileImgUrl && (
             <img
               onClick={() => navigate("/myPage/profile")}
-              className="w-[clamp(40px,4vw,64px)] h-auto cursor-pointer"
-              src={SampleProfileImg}
+              className="w-[clamp(40px,4vw,64px)] border-1 border-[#c5afa7] shadow-sm rounded-full h-auto cursor-pointer"
+              src={profileImgUrl}
               alt="프로필 이미지"
             />
           )}

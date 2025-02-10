@@ -1,8 +1,8 @@
 const TermsPage = () => {
   return (
     <div className="flex justify-center w-full">
-      <main className="flex-1 p-8 max-w-[1280px]">
-        <div className="flex justify-between mt-5 mb-5">
+      <main className="flex-1 px-12 py-8 max-w-[1280px]">
+        <div className="flex justify-between mt-1 mb-5">
           <h1 className="pl-4 font-bold text-2xl">이용약관</h1>
         </div>
         <div className="bg-white rounded-xl border border-[#E1E1DF]">
@@ -74,7 +74,7 @@ const TermsPage = () => {
                   <li>
                     회사는 다음과 같은 사유가 발생할 경우 회원의 서비스 이용을
                     제한할 수 있습니다.
-                    <ul>
+                    <ul className="list-disc list-inside">
                       <li>타인의 계정을 도용하거나 허위 정보를 입력한 경우</li>
                       <li>
                         부적절한 닉네임을 사용한 경우 (욕설, 혐오 표현, 광고성
@@ -116,9 +116,9 @@ const TermsPage = () => {
                     </ul>
                   </li>
                   <li>
-                    회원이 업로드하는 콘텐츠(번역, 게시글, 댓글 등)는 다음과
-                    같은 사항을 준수해야 합니다.
-                    <ul>
+                    회원이 업로드하는 콘텐츠(번역, 게시글, 댓글, 채팅 등)는
+                    다음과 같은 사항을 준수해야 합니다.
+                    <ul className="list-disc list-inside">
                       <li>
                         비속어, 욕설, 혐오 표현, 성희롱, 차별적인 발언을
                         포함하지 않아야 합니다.
@@ -173,8 +173,10 @@ const TermsPage = () => {
                   </li>
                   <li>
                     신고 대상이 될 수 있는 항목은 다음과 같습니다.
-                    <ul>
-                      <li>욕설, 비방, 혐오 표현이 포함된 게시글/댓글/번역</li>
+                    <ul className="list-disc list-inside">
+                      <li>
+                        욕설, 비방, 혐오 표현이 포함된 게시글/댓글/번역/채팅
+                      </li>
                       <li>저작권을 침해한 콘텐츠</li>
                       <li>광고, 스팸, 피싱 링크 포함 콘텐츠</li>
                       <li>기타 부적절한 콘텐츠</li>
@@ -198,13 +200,13 @@ const TermsPage = () => {
                     즉시 계정 정보가 삭제됩니다.
                   </li>
                   <li>
-                    다만, 회원이 작성한 번역본, 게시글, 댓글은 공익적인 목적을
-                    위해 삭제되지 않을 수 있습니다.
+                    다만, 회원이 작성한 번역본, 게시글, 댓글, 채팅은 공익적인
+                    목적을 위해 삭제되지 않을 수 있습니다.
                   </li>
                   <li>
                     회사는 다음과 같은 사유로 인해 서비스 운영을 중단할 수
                     있습니다.
-                    <ul>
+                    <ul className="list-disc list-inside">
                       <li>저작권 문제 또는 라이센스 변경</li>
                       <li>기술적 문제 또는 운영상의 어려움</li>
                       <li>기타 불가항력적인 사유</li>
