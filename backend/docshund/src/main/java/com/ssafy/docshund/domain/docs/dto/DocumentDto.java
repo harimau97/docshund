@@ -14,17 +14,17 @@ import jakarta.validation.constraints.Size;
 
 public record DocumentDto(
 	Integer docsId,
-	@NotBlank(message = "문서 대분류는 비워두거나 공백일 수 없습니다") @Size(max = 50, message = "문서 대분류는 50자 이내로 작성해야합니다.")
+	@NotBlank(message = "문서 대분류는 비워두거나 공백일 수 없습니다") @Size(max = 30, message = "문서 대분류는 30자 이내로 작성해야합니다.")
 	String documentCategory,
-	@NotBlank(message = "문서명은 비워두거나 공백일 수 없습니다") @Size(max = 50, message = "문서명은 50자 이내로 작성해야합니다.")
+	@NotBlank(message = "문서명은 비워두거나 공백일 수 없습니다") @Size(max = 30, message = "문서명은 30자 이내로 작성해야합니다.")
 	String documentName,
 	String documentLogo,
-	@NotNull @Size(max = 30, message = "문서 버전은 30자 이내로 작성해야합니다.")
+	@NotNull @Size(max = 20, message = "문서 버전은 20자 이내로 작성해야합니다.")
 	String documentVersion,
 	@Min(0)
 	Integer viewCount,
 	Integer likeCount,  // Join을 통해 받아올 예정
-	@NotNull @ValidEnum(enumClass = Position.class, message = "position은 'FRONTEND', 'BACKEND', 'DBSQL' 중 하나여야합니다.")
+	@NotBlank @ValidEnum(enumClass = Position.class, message = "position은 'FRONTEND', 'BACKEND', 'DBSQL' 중 하나여야합니다.")
 	Position position,
 	@NotBlank(message = "라이센스는 비워두거나 공백일 수 없습니다") @Size(max = 20, message = "라이센스는 20자 이내로 작성해야합니다.")
 	String license,

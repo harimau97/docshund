@@ -4,9 +4,12 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
+import com.ssafy.docshund.domain.alerts.exception.AlertsException;
+import com.ssafy.docshund.domain.alerts.exception.AlertsExceptionCode;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
@@ -35,13 +38,23 @@ public class AlertsServiceImpl implements AlertsService {
 	private final UserUtil userUtil;
 
 	// 알림 전체 조회
+	@SuppressWarnings("checkstyle:WhitespaceAround")
 	@Override
 	public List<AlertOutputDto> getAllAlerts(Long userId) {
 		User currentUser = userUtil.getUser();
+		if (currentUser == null) {
+			throw new AlertsException(AlertsExceptionCode.USER_NOT_AUTHORIZED);
+		}
+		if (!Objects.equals(currentUser.getUserId(), userId)){
+			throw new AlertsException(AlertsExceptionCode.NOT_YOUR_ALERT);
+		}
 		if (!currentUser.getUserId().equals(userId) && !userUtil.isAdmin(currentUser)) {
-			throw new SecurityException("관리자 외에는 본인의 알림만 조회할 수 있습니다.");
+			throw new AlertsException(AlertsExceptionCode.NOT_YOUR_ALERT);
 		}
 		List<Alert> alerts = alertRepository.findByUserUserId(userId);
+		if (alerts.isEmpty()) {
+			throw new AlertsException(AlertsExceptionCode.ALERT_NOT_FOUND);
+		}
 		return alerts.stream().map(this::convertToOutputDto).collect(Collectors.toList());
 	}
 
@@ -49,10 +62,10 @@ public class AlertsServiceImpl implements AlertsService {
 	@Override
 	public AlertOutputDto getAlert(Long alertId) {
 		Alert alert = alertRepository.findById(alertId)
-			.orElseThrow(() -> new IllegalArgumentException("알림을 찾을 수 없습니다."));
+			.orElseThrow(() -> new AlertsException(AlertsExceptionCode.ALERT_NOT_FOUND));
 		User currentUser = userUtil.getUser();
 		if (!currentUser.equals(alert.getUser()) && !userUtil.isAdmin(currentUser)) {
-			throw new SecurityException("관리자 외에는 본인의 알림만 조회할 수 있습니다.");
+			throw new AlertsException(AlertsExceptionCode.NOT_YOUR_ALERT);
 		}
 		return convertToOutputDto(alert);
 	}
@@ -63,6 +76,13 @@ public class AlertsServiceImpl implements AlertsService {
 	@Override
 	@Transactional
 	public SseEmitter subscribe(Long userId) {
+		if (emitters.containsKey(userId)) {
+			throw new IllegalArgumentException("이미 연결된 SSE가 있습니다.");
+		}
+		if (!userUtil.getUser().getUserId().equals(userId)) {
+			throw new AlertsException(AlertsExceptionCode.NOT_YOUR_ALERT);
+		}
+
 		SseEmitter emitter = new SseEmitter(10 * 60 * 1000L);    // 10분 적용
 		emitters.put(userId, emitter);
 		emitter.onCompletion(() -> emitters.remove(userId));
@@ -162,10 +182,14 @@ public class AlertsServiceImpl implements AlertsService {
 	@Override
 	@Transactional
 	public void deleteAlert(Long alertId) {
+		User user = userUtil.getUser();
+		if (user == null) {
+			throw new AlertsException(AlertsExceptionCode.USER_NOT_AUTHORIZED);
+		}
 		Alert alert = alertRepository.findById(alertId)
-			.orElseThrow(() -> new IllegalArgumentException("알림을 찾을 수 없습니다."));
+			.orElseThrow(() -> new AlertsException(AlertsExceptionCode.ALERT_NOT_FOUND));
 		if (!alert.getUser().getUserId().equals(userUtil.getUser().getUserId())) {
-			throw new IllegalArgumentException("본인의 알림만 삭제할 수 있습니다.");
+			throw new AlertsException(AlertsExceptionCode.NOT_YOUR_ALERT);
 		}
 		alertRepository.delete(alert);
 
@@ -176,6 +200,9 @@ public class AlertsServiceImpl implements AlertsService {
 	@Transactional
 	public void deleteAlerts() {
 		User user = userUtil.getUser();
+		if (user == null) {
+			throw new AlertsException(AlertsExceptionCode.USER_NOT_AUTHORIZED);
+		}
 		alertRepository.deleteAllByUser(user);
 	}
 
@@ -183,13 +210,17 @@ public class AlertsServiceImpl implements AlertsService {
 	@Override
 	@Transactional
 	public void readAlert(Long alertId) {
+		User user = userUtil.getUser();
+		if (user == null) {
+			throw new AlertsException(AlertsExceptionCode.USER_NOT_AUTHORIZED);
+		}
 		Alert alert = alertRepository.findById(alertId)
-			.orElseThrow(() -> new IllegalArgumentException("알림을 찾을 수 없습니다."));
+			.orElseThrow(() -> new AlertsException(AlertsExceptionCode.ALERT_NOT_FOUND));
 		if (alert.getCheckedAt() != null) {
-			throw new IllegalArgumentException("이미 읽은 알림입니다.");
+			throw new AlertsException(AlertsExceptionCode.ALREADY_REQUESTED);
 		}
 		if (!alert.getUser().getUserId().equals(userUtil.getUser().getUserId())) {
-			throw new IllegalArgumentException("본인의 알림만 읽을 수 있습니다.");
+			throw new AlertsException(AlertsExceptionCode.NOT_YOUR_ALERT);
 		}
 		alert.setCheckedAt(LocalDateTime.now()); // 읽은 시간을 현재로 지정 후 저장
 		alertRepository.save(alert);
@@ -200,6 +231,9 @@ public class AlertsServiceImpl implements AlertsService {
 	@Transactional
 	public void readAlerts() {
 		User user = userUtil.getUser();
+		if (user == null) {
+			throw new AlertsException(AlertsExceptionCode.USER_NOT_AUTHORIZED);
+		}
 		List<Alert> alerts = alertRepository.findByUserUserId(user.getUserId());
 		for (Alert alert : alerts) {
 			if (alert.getCheckedAt() == null) {

@@ -47,8 +47,7 @@ public class DocsController {
 	// 문서 정보(Document) 등록
 	@PostMapping("")
 	public ResponseEntity<DocumentDto> postDocs(@RequestBody DocumentDto documentDto) {
-		User user = userUtil.getUser();
-		DocumentDto createdDocument = docsService.createDocument(documentDto, user);
+		DocumentDto createdDocument = docsService.createDocument(documentDto);
 		return ResponseEntity.ok(createdDocument);
 	}
 
@@ -62,8 +61,7 @@ public class DocsController {
 	// 관심 문서 등록 및 해제
 	@PostMapping("/{docsId}/likes")
 	public ResponseEntity<DocumentDto> toggleLikes(@PathVariable Integer docsId) {
-		User user = userUtil.getUser();
-		DocumentDto document = docsService.toggleLikes(docsId, user);
+		DocumentDto document = docsService.toggleLikes(docsId);
 		return ResponseEntity.ok(document);
 	}
 
@@ -72,9 +70,6 @@ public class DocsController {
 	public ResponseEntity<List<DocumentDto>> getLikes(
 		@RequestParam(required = false) Long userId
 	) {
-		if (userId == null) {
-			throw new IllegalArgumentException("User not found");
-		}
 		List<DocumentDto> documents = docsService.getLikesDocument(userId);
 		return ResponseEntity.ok(documents);
 	}
@@ -85,8 +80,7 @@ public class DocsController {
 		@PathVariable Integer docsId,
 		@RequestParam String content
 	) {
-		User user = userUtil.getUser();
-		List<OriginDocumentDto> createdDocs = docsService.createOriginDocuments(docsId, content, user);
+		List<OriginDocumentDto> createdDocs = docsService.createOriginDocuments(docsId, content);
 		return ResponseEntity.ok(createdDocs);
 	}
 
@@ -145,15 +139,8 @@ public class DocsController {
 	public ResponseEntity<List<UserTransDocumentDto>> getTransDocs(
 		@RequestParam(required = false) Long userId
 	) {
-		List<UserTransDocumentDto> translatedDocuments;
-
-		if (userId == null) {
-			// 유저 아이디가 없을 시 에러 반환
-			throw new IllegalArgumentException("User not found");
-		} else {
-			// 해당 유저의 번역본 조희
-			translatedDocuments = docsService.getUserTransDocument(userId);
-		}
+		// 해당 유저의 번역본 조희
+		List<UserTransDocumentDto> translatedDocuments = docsService.getUserTransDocument(userId);
 
 		return ResponseEntity.ok().body(translatedDocuments);
 	}
@@ -165,17 +152,13 @@ public class DocsController {
 		@PathVariable Integer originId,
 		@RequestBody Map<String, String> requestBody
 	) {
-		User user = userUtil.getUser();
-		if (user == null) {
-			throw new IllegalArgumentException("User not found");
-		}
 
 		String content = requestBody.get("content");
 		if (content == null || content.trim().isEmpty()) {
 			return ResponseEntity.badRequest().body("Content cannot be empty.");
 		}
 
-		TranslatedDocumentDto createdTrans = docsService.createTranslatedDocument(docsId, originId, user, content);
+		TranslatedDocumentDto createdTrans = docsService.createTranslatedDocument(docsId, originId, content);
 		return ResponseEntity.ok().body(Map.of("message", "Translation created successfully.", "data", createdTrans));
 	}
 
@@ -196,17 +179,12 @@ public class DocsController {
 		@PathVariable Long transId,
 		@RequestBody Map<String, String> requestBody
 	) {
-		User user = userUtil.getUser();
-		if (user == null) {
-			throw new IllegalArgumentException("User not found");
-		}
-
 		String content = requestBody.get("content");
 		if (content == null || content.trim().isEmpty()) {
 			return ResponseEntity.badRequest().body("Edited content cannot be empty.");
 		}
 
-		TranslatedDocumentDto editedTrans = docsService.updateTranslatedDocument(docsId, transId, user, content);
+		TranslatedDocumentDto editedTrans = docsService.updateTranslatedDocument(docsId, transId, content);
 		return ResponseEntity.ok().body(Map.of("message", "Translation updated successfully.", "data", editedTrans));
 	}
 
@@ -216,12 +194,7 @@ public class DocsController {
 		@PathVariable Integer docsId,
 		@PathVariable Long transId
 	) {
-		User user = userUtil.getUser();
-		if (user == null) {
-			throw new IllegalArgumentException("User not found");
-		}
-
-		docsService.deleteTranslatedDocument(docsId, transId, user);
+		docsService.deleteTranslatedDocument(docsId, transId);
 		return ResponseEntity.ok().body(Map.of("message", "Translation deleted successfully."));
 	}
 
@@ -231,12 +204,7 @@ public class DocsController {
 		@PathVariable Integer docsId,
 		@PathVariable Long transId
 	) {
-		User user = userUtil.getUser();
-		if (user == null) {
-			throw new IllegalArgumentException("User not found");
-		}
-
-		boolean isLiked = docsService.toggleVotes(docsId, transId, user);
+		boolean isLiked = docsService.toggleVotes(docsId, transId);
 		return ResponseEntity.ok().body(Map.of(
 			"message", isLiked ? "Translation liked successfully." : "Translation unliked successfully.",
 			"liked", isLiked
@@ -248,15 +216,7 @@ public class DocsController {
 	public ResponseEntity<?> getTransVotes(
 		@RequestParam Long userId
 	) {
-		List<UserTransDocumentDto> likedTrans;
-
-		if (userId == null) {
-			// 유저 아이디가 없을 시 에러 반환
-			throw new IllegalArgumentException("User not found");
-		} else {
-			// 해당 유저가 좋아한 번역본 목록 조회
-			likedTrans = docsService.getUserLikedTrans(userId);
-		}
+		List<UserTransDocumentDto> likedTrans = docsService.getUserLikedTrans(userId);
 
 		return ResponseEntity.ok().body(likedTrans);
 	}

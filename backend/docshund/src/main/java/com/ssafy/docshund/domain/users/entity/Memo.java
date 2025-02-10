@@ -28,7 +28,7 @@ public class Memo extends BaseTimeEntityWithUpdatedAt {
 	@JoinColumn(name = "user_id", nullable = false)
 	private User user;
 
-	@Column(name = "title", nullable = false, length = 100)
+	@Column(name = "title", nullable = false, length = 150)
 	private String title;
 
 	@Column(name = "content", nullable = false, columnDefinition = "TEXT")
