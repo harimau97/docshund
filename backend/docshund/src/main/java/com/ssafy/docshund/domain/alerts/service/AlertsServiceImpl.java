@@ -1,22 +1,10 @@
 package com.ssafy.docshund.domain.alerts.service;
 
-import java.io.IOException;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
-
-import com.ssafy.docshund.domain.alerts.exception.AlertsException;
-import com.ssafy.docshund.domain.alerts.exception.AlertsExceptionCode;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
-
 import com.ssafy.docshund.domain.alerts.dto.AlertOutputDto;
 import com.ssafy.docshund.domain.alerts.dto.Category;
 import com.ssafy.docshund.domain.alerts.entity.Alert;
+import com.ssafy.docshund.domain.alerts.exception.AlertsException;
+import com.ssafy.docshund.domain.alerts.exception.AlertsExceptionCode;
 import com.ssafy.docshund.domain.alerts.repository.AlertRepository;
 import com.ssafy.docshund.domain.docs.entity.TranslatedDocument;
 import com.ssafy.docshund.domain.forums.entity.Article;
@@ -24,8 +12,18 @@ import com.ssafy.docshund.domain.forums.entity.Comment;
 import com.ssafy.docshund.domain.supports.entity.Inquiry;
 import com.ssafy.docshund.domain.users.entity.User;
 import com.ssafy.docshund.global.util.user.UserUtil;
-
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
+
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -77,12 +75,9 @@ public class AlertsServiceImpl implements AlertsService {
 	@Transactional
 	public SseEmitter subscribe(Long userId) {
 		if (emitters.containsKey(userId)) {
-			throw new IllegalArgumentException("이미 연결된 SSE가 있습니다.");
+			emitters.remove(userId);
+			sendToClient(userId, "이미 연결된 SSE가 있습니다. 연결 해제 후 재연결합니다.");
 		}
-		if (!userUtil.getUser().getUserId().equals(userId)) {
-			throw new AlertsException(AlertsExceptionCode.NOT_YOUR_ALERT);
-		}
-
 		SseEmitter emitter = new SseEmitter(10 * 60 * 1000L);    // 10분 적용
 		emitters.put(userId, emitter);
 		emitter.onCompletion(() -> emitters.remove(userId));
