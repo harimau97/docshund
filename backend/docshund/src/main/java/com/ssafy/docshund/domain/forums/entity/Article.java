@@ -83,6 +83,10 @@ public class Article extends BaseTimeEntityWithUpdatedAt {
 		this.status = Status.INVISIBLE;
 	}
 
+	public void modifyStatus(Status status) {
+		this.status = status;
+	}
+
 	public void increaseViewCount() {
 		this.viewCount++;
 	}
