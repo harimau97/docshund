@@ -10,9 +10,13 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "memo")
+@Getter
+@NoArgsConstructor
 public class Memo extends BaseTimeEntityWithUpdatedAt {
 
 	@Id
@@ -24,10 +28,20 @@ public class Memo extends BaseTimeEntityWithUpdatedAt {
 	@JoinColumn(name = "user_id", nullable = false)
 	private User user;
 
-	@Column(name = "title", nullable = false)
+	@Column(name = "title", nullable = false, length = 150)
 	private String title;
 
-	@Column(name = "content", nullable = false)
+	@Column(name = "content", nullable = false, columnDefinition = "TEXT")
 	private String content;
 
+	public Memo(User user, String title, String content) {
+		this.user = user;
+		this.title = title;
+		this.content = content;
+	}
+
+	public void modifyMemo(String title, String content) {
+		this.title = title;
+		this.content = content;
+	}
 }

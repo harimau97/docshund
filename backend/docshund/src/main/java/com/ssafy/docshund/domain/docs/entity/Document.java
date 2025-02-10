@@ -25,23 +25,23 @@ public class Document extends BaseTimeEntity {
 	@Column(name = "docs_id")
 	private Integer docsId;
 
-	@Column(name = "document_category", nullable = false)
+	@Column(name = "document_category", nullable = false, length = 90)
 	private String documentCategory;
 
-	@Column(name = "document_name", nullable = false)
+	@Column(name = "document_name", nullable = false, length = 90)
 	private String documentName;
 
-	@Column(name = "license", nullable = false)
+	@Column(name = "license", nullable = false, length = 60)
 	private String license;
 
 	@Column(name = "document_link", nullable = false)
 	private String documentLink;
 
-	@Column(name = "view_count", nullable = false)
+	@Column(name = "view_count", nullable = false, columnDefinition = "INT DEFAULT 0")
 	@Setter
 	private Integer viewCount;
 
-	@Column(name = "document_version", nullable = false)
+	@Column(name = "document_version", nullable = false, length = 60)
 	private String documentVersion;
 
 	@Column(name = "document_logo")

@@ -1,9 +1,10 @@
 package com.ssafy.docshund.domain.docs.controller;
 
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -25,6 +26,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssafy.docshund.domain.docs.dto.DocumentDto;
 import com.ssafy.docshund.domain.docs.dto.OriginDocumentDto;
 import com.ssafy.docshund.domain.docs.dto.TranslatedDocumentDto;
+import com.ssafy.docshund.domain.docs.dto.UserTransDocumentDto;
 import com.ssafy.docshund.domain.docs.entity.Position;
 import com.ssafy.docshund.domain.docs.entity.Status;
 import com.ssafy.docshund.domain.docs.service.DocsService;
@@ -307,8 +309,9 @@ class DocsControllerTest {
 	@DisplayName("특정 유저의 번역 조회 API 테스트")
 	void getUserTransDocsTest() throws Exception {
 		// given
-		List<TranslatedDocumentDto> userTranslatedDocs = List.of(
-			new TranslatedDocumentDto(1L, 1, 100L, "유저 번역 내용", 0, Status.VISIBLE, LocalDateTime.now(),
+		List<UserTransDocumentDto> userTranslatedDocs = List.of(
+			new UserTransDocumentDto(1L, 1, 1, "유저 번역 내용",
+				0, 100L, "번역 내용", 0, Status.VISIBLE, LocalDateTime.now(),
 				LocalDateTime.now(), 3, List.of(1L))
 		);
 
@@ -353,7 +356,7 @@ class DocsControllerTest {
 			1L, 1, 100L, "번역 상세 내용", 0, Status.VISIBLE, LocalDateTime.now(), LocalDateTime.now(), 5, List.of(1L, 2L)
 		);
 
-		when(docsService.getTranslatedDocumentDetail(1, 1)).thenReturn(transDocument);
+		when(docsService.getTranslatedDocumentDetail(1, 1L)).thenReturn(transDocument);
 
 		// when & then
 		mockMvc.perform(get("/api/v1/docshund/docs/1/trans/paragraph/1"))
@@ -361,7 +364,7 @@ class DocsControllerTest {
 			.andExpect(jsonPath("$.transId").value(1))
 			.andExpect(jsonPath("$.content").value("번역 상세 내용"));
 
-		verify(docsService, times(1)).getTranslatedDocumentDetail(1, 1);
+		verify(docsService, times(1)).getTranslatedDocumentDetail(1, 1L);
 	}
 
 	// 번역 수정 테스트
@@ -374,7 +377,7 @@ class DocsControllerTest {
 		);
 
 		when(userUtil.getUser()).thenReturn(Mockito.mock(com.ssafy.docshund.domain.users.entity.User.class));
-		when(docsService.updateTranslatedDocument(1, 1, userUtil.getUser(), "수정된 번역 내용")).thenReturn(updatedTrans);
+		when(docsService.updateTranslatedDocument(1, 1L, userUtil.getUser(), "수정된 번역 내용")).thenReturn(updatedTrans);
 
 		// when & then
 		mockMvc.perform(patch("/api/v1/docshund/docs/1/trans/paragraph/1")
@@ -383,7 +386,7 @@ class DocsControllerTest {
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.data.content").value("수정된 번역 내용"));
 
-		verify(docsService, times(1)).updateTranslatedDocument(1, 1, userUtil.getUser(), "수정된 번역 내용");
+		verify(docsService, times(1)).updateTranslatedDocument(1, 1L, userUtil.getUser(), "수정된 번역 내용");
 	}
 
 	// 번역 삭제 테스트
@@ -398,7 +401,7 @@ class DocsControllerTest {
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.message").value("Translation deleted successfully."));
 
-		verify(docsService, times(1)).deleteTranslatedDocument(1, 1, userUtil.getUser());
+		verify(docsService, times(1)).deleteTranslatedDocument(1, 1L, userUtil.getUser());
 	}
 
 	// 번역 좋아요 / 취소 테스트
@@ -407,7 +410,7 @@ class DocsControllerTest {
 	void postTransVotesTest() throws Exception {
 		// given
 		when(userUtil.getUser()).thenReturn(Mockito.mock(com.ssafy.docshund.domain.users.entity.User.class));
-		when(docsService.toggleVotes(1, 1, userUtil.getUser())).thenReturn(true);
+		when(docsService.toggleVotes(1, 1L, userUtil.getUser())).thenReturn(true);
 
 		// 좋아요 추가 테스트
 		mockMvc.perform(post("/api/v1/docshund/docs/1/trans/paragraph/1/votes"))
@@ -415,17 +418,17 @@ class DocsControllerTest {
 			.andExpect(jsonPath("$.message").value("Translation liked successfully."))
 			.andExpect(jsonPath("$.liked").value(true));
 
-		verify(docsService, times(1)).toggleVotes(1, 1, userUtil.getUser());
+		verify(docsService, times(1)).toggleVotes(1, 1L, userUtil.getUser());
 
 		// 좋아요 취소 테스트
-		when(docsService.toggleVotes(1, 1, userUtil.getUser())).thenReturn(false);
+		when(docsService.toggleVotes(1, 1L, userUtil.getUser())).thenReturn(false);
 
 		mockMvc.perform(post("/api/v1/docshund/docs/1/trans/paragraph/1/votes"))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.message").value("Translation unliked successfully."))
 			.andExpect(jsonPath("$.liked").value(false));
 
-		verify(docsService, times(2)).toggleVotes(1, 1, userUtil.getUser());
+		verify(docsService, times(2)).toggleVotes(1, 1L, userUtil.getUser());
 	}
 
 	// 특정 유저가 좋아한 번역 테스트
@@ -433,10 +436,10 @@ class DocsControllerTest {
 	@DisplayName("특정 유저가 좋아한 번역 목록 조회 API 테스트")
 	void getUserLikedTransTest() throws Exception {
 		// given
-		List<TranslatedDocumentDto> likedTrans = List.of(
-			new TranslatedDocumentDto(1L, 1, 100L, "좋아요한 번역 1", 0, Status.VISIBLE, LocalDateTime.now(),
+		List<UserTransDocumentDto> likedTrans = List.of(
+			new UserTransDocumentDto(1L, 1, 1, "문서1", 1, 2L, "좋아요한 번역 1", 0, Status.VISIBLE, LocalDateTime.now(),
 				LocalDateTime.now(), 5, List.of(1L, 2L)),
-			new TranslatedDocumentDto(2L, 1, 101L, "좋아요한 번역 2", 0, Status.VISIBLE, LocalDateTime.now(),
+			new UserTransDocumentDto(2L, 2, 2, "문서2", 3, 3L, "좋아요한 번역 2", 0, Status.VISIBLE, LocalDateTime.now(),
 				LocalDateTime.now(), 8, List.of(3L))
 		);
 
