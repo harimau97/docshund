@@ -67,6 +67,10 @@ public class Chat extends BaseTimeEntity {
 		this.reportCount--;
 	}
 
+	public void modifyStatus(Status status) {
+		this.status = status;
+	}
+
 	public void resetReportCount() {
 		this.reportCount = 0;
 		this.status = Status.VISIBLE;
