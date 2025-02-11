@@ -1,12 +1,12 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import PropTypes from "prop-types";
-import { Editor } from "@toast-ui/react-editor";
 import { motion, AnimatePresence } from "framer-motion";
 import "@toast-ui/editor/dist/toastui-editor.css";
 import back from "../../../assets/icon/goBack.png";
+import EditorContent from "../../translate/components/editorContent";
+import useEditorStore from "../../../store/translateStore/editorStore";
 
-const MAX_TITLE_BYTES = 150;
-const getByteLength = (str) => new Blob([str]).size;
+const MAX_TITLE_LENGTH = 50;
 
 const EditorModal = ({
   title,
@@ -18,34 +18,34 @@ const EditorModal = ({
   onDelete,
 }) => {
   const [formData, setFormData] = useState({ title: "" });
-  const editorRef = useRef();
+  const { setCurrentUserText } = useEditorStore();
 
   useEffect(() => {
     if (isOpen) {
       console.log("Opening EditorModal with memoData:", memoData);
       if (memoData) {
         setFormData({ title: memoData.title || "" });
-        editorRef.current?.getInstance().setMarkdown(memoData.content || "");
+        setCurrentUserText(memoData.content || "");
       } else {
         setFormData({ title: "" });
-        editorRef.current?.getInstance().setMarkdown("");
+        setCurrentUserText("");
       }
     } else {
       setFormData({ title: "" });
-      editorRef.current?.getInstance().setMarkdown("");
+      setCurrentUserText("");
     }
-  }, [isOpen, memoData]);
+  }, [isOpen, memoData, setCurrentUserText]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    if (name === "title" && getByteLength(value) <= MAX_TITLE_BYTES) {
+    if (name === "title" && value.length <= MAX_TITLE_LENGTH) {
       setFormData({ ...formData, [name]: value });
     }
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const editorContent = editorRef.current.getInstance().getMarkdown();
+    const editorContent = useEditorStore.getState().currentUserText;
     const submitData = { ...formData, content: editorContent };
     if (memoData && memoData.memoId) {
       onSubmit(memoData.memoId, submitData);
@@ -103,14 +103,11 @@ const EditorModal = ({
                   required
                 />
                 <p className="text-xs text-gray-500 mt-1 mr-2 text-right">
-                  {getByteLength(formData.title)} / {MAX_TITLE_BYTES} byte
+                  {formData.title.length} / {MAX_TITLE_LENGTH}
                 </p>
               </div>
-              <Editor
-                ref={editorRef}
-                height="100%"
-                initialValue={memoData?.content || " "}
-              />
+              <EditorContent initialTextContent={memoData?.content || ""} />
+
               <div className="flex justify-end space-x-3">
                 {memoData && (
                   <button
