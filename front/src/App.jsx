@@ -1,8 +1,11 @@
 import "./App.css";
 import AppRouter from "./router.jsx";
 import { toast } from "react-toastify";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
+import { axiosJsonInstance } from "./utils/axiosInstance.jsx";
+import UseSSE from "./hooks/useSSE.jsx";
 
 //네비게이션 바
 import Footer from "./components/footer/footer.jsx";
@@ -31,13 +34,51 @@ function App() {
   const pathname = location.pathname;
   const isTranslateViewerPage = pathname.includes("/translate/main/viewer");
   const isAdminPage = pathname.includes("/admin");
+  const [token, setToken] = useState("");
+
   const { isChatVisible, toggleChat } = ChatStore();
+  const { setNotifications } = notificationModalStore();
 
   useEffect(() => {
+    if (token === "") {
+      setToken(localStorage.getItem("token"));
+    }
+
+    // 로그인 성공 시, 기존에 밀려있던 알림을 불러옴
+    const fetchNotifications = async (token) => {
+      try {
+        const response = await axiosJsonInstance(
+          `http://i12a703.p.ssafy.io:8081/api/v1/docshund/alerts?userId=${
+            jwtDecode(token).userId
+          }` // 유저 ID로 알림 불러오기
+        );
+
+        if (!response.status === 200) {
+          window.alert("알림을 불러오는 중 오류가 발생했습니다.");
+          window.location.reload();
+        }
+
+        const data = response.data;
+
+        setNotifications(data);
+      } catch (err) {
+        toast.error(err.message);
+      }
+    };
+
     if (location.search.includes("token")) {
       toast.success("로그인에 성공했습니다!");
+      setToken(location.search.split("=")[1]);
     }
+
+    // 로그인 or 로그인 상태의 접속시 알림 불러오기
+    fetchNotifications(token ? token : localStorage.getItem("token"));
   }, [location]);
+
+  // 유저 ID가 없으면 알림을 불러올 수 없음
+  // 유저 ID로 SSE 연결
+  // TODO: SSE 테스트
+  // UseSSE(token ? jwtDecode(token).userId : null);
 
   return (
     <div className="flex flex-col min-h-screen min-w-[768px] overflow-hidden">

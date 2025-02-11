@@ -2,25 +2,24 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 import LikeArticleService from "../../services/likeArticleService";
-import communityArticleStore from "../../../../store/communityStore/communityArticleStore";
+import LikeArticleStore from "../../../../store/myPageStore/likeArticleStore";
+import MyArticleStore from "../../../../store/myPageStore/myArticleStore";
 import ListRender from "../../../../components/pagination/listRender";
 import like from "../../../../assets/icon/heartFilled24.png";
 import likeCancel from "../../../../assets/icon/heartEmpty24.png";
 
 const LikeArticlePage = () => {
   // store에서 데이터를 가져오기 위해 store의 상태 정의
-  const likeArticles = communityArticleStore((state) => state.likeArticles);
-  const totalPages = communityArticleStore((state) => state.totalPages);
-  const currentPage = communityArticleStore((state) => state.currentPage);
+  const likeArticles = LikeArticleStore((state) => state.likeArticles);
+  const totalPages = LikeArticleStore((state) => state.totalPages);
+  const currentPage = LikeArticleStore((state) => state.currentPage);
 
   // set(메소드) 정의
-  const setLikeArticles = communityArticleStore(
-    (state) => state.setLikeArticles
-  );
-  const setTotalPages = communityArticleStore((state) => state.setTotalPages);
-  const setCurrentPage = communityArticleStore((state) => state.setCurrentPage);
-  const setLoading = communityArticleStore((state) => state.setLoading);
-  const setError = communityArticleStore((state) => state.setError);
+  const setLikeArticles = LikeArticleStore((state) => state.setLikeArticles);
+  const setTotalPages = LikeArticleStore((state) => state.setTotalPages);
+  const setCurrentPage = LikeArticleStore((state) => state.setCurrentPage);
+  const setLoading = LikeArticleStore((state) => state.setLoading);
+  const setError = LikeArticleStore((state) => state.setError);
 
   const [itemsPerPage, setItmesPerPage] = useState(15); // 페이지당 보여줄 게시글 수
 
@@ -37,8 +36,10 @@ const LikeArticlePage = () => {
           itemsPerPage
         ); // articleListService.fetchArticles 함수를 호출하여 데이터를 가져옴
 
+        console.log(data);
+
         // 데이터가 비어있지 않다면
-        if (!data.empty && data.content.length > 0) {
+        if (data.content.length > 0) {
           setLikeArticles(data.content); // 게시글 목록 설정 TODO: data.content가 왜 바인딩 안되는지 확인
           setTotalPages(data.totalPages); // 전체 페이지 수
           setCurrentPage(data.pageable.pageNumber); // 현재 페이지
