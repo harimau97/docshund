@@ -1,5 +1,8 @@
 package com.ssafy.docshund.global.util.jwt;
 
+import static com.ssafy.docshund.domain.users.exception.auth.AuthExceptionCode.EXPIRED_TOKEN;
+import static com.ssafy.docshund.domain.users.exception.auth.AuthExceptionCode.INVALID_TOKEN;
+
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
@@ -29,7 +32,9 @@ public class JwtFilter extends OncePerRequestFilter {
 	private final UserRepository userRepository;
 	private final AntPathMatcher pathMatcher = new AntPathMatcher();
 
-	private static final List<String> NO_CHECK_URLS = Arrays.asList("/ws/**");
+	private static final List<String> NO_CHECK_URLS = Arrays.asList(
+		"/ws/**"
+	);
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
@@ -44,19 +49,20 @@ public class JwtFilter extends OncePerRequestFilter {
 		}
 
 		String authorizationHeader = request.getHeader("Authorization");
+		log.info("Authorization Header:  " + authorizationHeader);
 
-		log.info("Authorization Header: " + authorizationHeader);
 		if (jwtUtil.isValidAuthorization(authorizationHeader)) {
-			filterChain.doFilter(request, response);
+			log.info("INVALID TOKEN: 잘못된 토큰");
+			request.setAttribute("exception", INVALID_TOKEN.getCode());
+			response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid token");  // ✅ sendError() 추가
 			return;
 		}
-		
-		String token = authorizationHeader.substring(7);
 
+		String token = authorizationHeader.substring(7);
 		if (jwtUtil.isExpired(token)) {
-			log.info("Token expired");
-			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-			filterChain.doFilter(request, response);
+			log.info("EXPIRED TOKEN: 토큰 만료");
+			request.setAttribute("exception", EXPIRED_TOKEN.getCode());
+			response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token expired");  // ✅ sendError() 추가
 			return;
 		}
 

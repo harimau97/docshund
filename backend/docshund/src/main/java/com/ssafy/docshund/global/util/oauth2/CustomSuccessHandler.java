@@ -1,20 +1,18 @@
 package com.ssafy.docshund.global.util.oauth2;
 
-import java.io.IOException;
-
+import com.ssafy.docshund.domain.alerts.service.AlertsService;
+import com.ssafy.docshund.domain.users.dto.auth.CustomOAuth2User;
+import com.ssafy.docshund.global.util.jwt.JwtUtil;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
-import com.ssafy.docshund.domain.alerts.service.AlertsService;
-import com.ssafy.docshund.domain.users.dto.auth.CustomOAuth2User;
-import com.ssafy.docshund.global.util.jwt.JwtUtil;
-
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.io.IOException;
 
 @Slf4j
 @Component
@@ -22,7 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
 	private final JwtUtil jwtUtil;
-	private static final long TOKEN_EXPIRATION = 60L * 60L * 24L * 30L;
+	private static final long TOKEN_EXPIRATION = 60L * 10L;
 
 	private final AlertsService alertsService;
 
@@ -35,7 +33,6 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 		String personalId = userDetails.getPersonalId();
 		Long userId = userDetails.getUserId();
 		log.info("받아온 userId: {}", userId);
-		alertsService.subscribe(userId);
 
 		String role = authentication.getAuthorities().stream()
 			.findFirst()

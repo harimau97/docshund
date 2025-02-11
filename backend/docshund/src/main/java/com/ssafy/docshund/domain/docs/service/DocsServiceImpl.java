@@ -6,14 +6,8 @@ import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
-import com.ssafy.docshund.domain.docs.exception.DocsException;
-import com.ssafy.docshund.domain.docs.exception.DocsExceptionCode;
-import com.ssafy.docshund.domain.docs.exception.DocsExceptionHandler;
-import com.ssafy.docshund.domain.users.repository.UserRepository;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,6 +24,8 @@ import com.ssafy.docshund.domain.docs.entity.DocumentLike;
 import com.ssafy.docshund.domain.docs.entity.OriginDocument;
 import com.ssafy.docshund.domain.docs.entity.Status;
 import com.ssafy.docshund.domain.docs.entity.TranslatedDocument;
+import com.ssafy.docshund.domain.docs.exception.DocsException;
+import com.ssafy.docshund.domain.docs.exception.DocsExceptionCode;
 import com.ssafy.docshund.domain.docs.repository.CustomDocumentRepository;
 import com.ssafy.docshund.domain.docs.repository.DocumentLikeRepository;
 import com.ssafy.docshund.domain.docs.repository.DocumentRepository;
@@ -37,10 +33,11 @@ import com.ssafy.docshund.domain.docs.repository.OriginDocumentRepository;
 import com.ssafy.docshund.domain.docs.repository.TranslatedDocumentLikeRepository;
 import com.ssafy.docshund.domain.docs.repository.TranslatedDocumentRepository;
 import com.ssafy.docshund.domain.users.entity.User;
+import com.ssafy.docshund.domain.users.repository.UserRepository;
 import com.ssafy.docshund.global.util.user.UserUtil;
 
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
@@ -58,7 +55,6 @@ public class DocsServiceImpl implements DocsService {
 	private final ObjectMapper objectMapper = new ObjectMapper();
 	private final UserUtil userUtil;
 	private final UserRepository userRepository;
-
 
 	// 문서 목록 조회 후 좋아요와 함께 추출하는 메서드
 	private List<DocumentDto> getDocumentsWithLikes(List<Document> documents) {
@@ -126,28 +122,28 @@ public class DocsServiceImpl implements DocsService {
 		List<Long> transIds = userLikedTrans.stream().map(TranslatedDocument::getTransId).toList();
 
 		Map<Long, List<Long>> likeUsersMap = translatedDocumentLikeRepository.findLikedUserIdsByDocumentIds(transIds)
-				.stream()
-				.collect(Collectors.groupingBy(
-						result -> (Long)result[0], // transId
-						Collectors.mapping(result -> (Long)result[1], Collectors.toList()) // 좋아요한 userId 리스트로 매핑
-				));
+			.stream()
+			.collect(Collectors.groupingBy(
+				result -> (Long)result[0], // transId
+				Collectors.mapping(result -> (Long)result[1], Collectors.toList()) // 좋아요한 userId 리스트로 매핑
+			));
 
 		return userLikedTrans.stream().map(transDoc -> {
 			List<Long> likeUserIds = likeUsersMap.getOrDefault(transDoc.getTransId(), List.of());
 			return new UserTransDocumentDto(
-					transDoc.getTransId(),
-					transDoc.getOriginDocument().getOriginId(),
-					transDoc.getOriginDocument().getDocument().getDocsId(),
-					transDoc.getOriginDocument().getDocument().getDocumentName(),
-					transDoc.getOriginDocument().getPOrder(),
-					transDoc.getUser().getUserId(),
-					transDoc.getContent(),
-					transDoc.getReportCount(),
-					transDoc.getStatus(),
-					transDoc.getCreatedAt(),
-					transDoc.getUpdatedAt(),
-					likeUserIds.size(),
-					likeUserIds
+				transDoc.getTransId(),
+				transDoc.getOriginDocument().getOriginId(),
+				transDoc.getOriginDocument().getDocument().getDocsId(),
+				transDoc.getOriginDocument().getDocument().getDocumentName(),
+				transDoc.getOriginDocument().getPOrder(),
+				transDoc.getUser().getUserId(),
+				transDoc.getContent(),
+				transDoc.getReportCount(),
+				transDoc.getStatus(),
+				transDoc.getCreatedAt(),
+				transDoc.getUpdatedAt(),
+				likeUserIds.size(),
+				likeUserIds
 			);
 		}).toList();
 	}
@@ -179,7 +175,7 @@ public class DocsServiceImpl implements DocsService {
 
 		// 문서가 존재하지 않으면 예외처리
 		Document document = documentRepository.findById(docsId)
-			.orElseThrow(() -> new EntityNotFoundException("Document not found with id: " + docsId));
+			.orElseThrow(() -> new DocsException(DocsExceptionCode.DOCS_NOT_FOUND));
 
 		// 조회수 증가
 		document.setViewCount(document.getViewCount() + 1);
@@ -280,7 +276,7 @@ public class DocsServiceImpl implements DocsService {
 			throw new DocsException(DocsExceptionCode.ILLEGAL_ARGUMENT);
 		}
 		userRepository.findById(userId)
-				.orElseThrow(() -> new DocsException(DocsExceptionCode.USER_NOT_FOUND));
+			.orElseThrow(() -> new DocsException(DocsExceptionCode.USER_NOT_FOUND));
 
 		List<Document> documents = customDocumentRepository.findLikedDocumentByUserId(userId);
 
@@ -329,7 +325,7 @@ public class DocsServiceImpl implements DocsService {
 			throw new DocsException(DocsExceptionCode.NO_PERMISSION);
 		}
 		// 내용이 없을 시 예외 처리
-		if (content == null || content.trim().isEmpty()) {
+		if (content.isBlank()) {
 			throw new DocsException(DocsExceptionCode.REQUIRED_IS_EMPTY);
 		}
 
@@ -337,10 +333,16 @@ public class DocsServiceImpl implements DocsService {
 
 		try {
 
-			String scriptPath = "src/main/resources/python/divide_by_tags.py";
-			ProcessBuilder processBuilder = new ProcessBuilder("python", scriptPath);
+			log.info("scriptPath Finding");
+			String scriptPath = "/usr/src/app/python/divide_by_tags.py"; // ✅ Docker에서 Python 파일이 있는 경로
+
+			log.info("new ProcessBuilder create");
+			ProcessBuilder processBuilder = new ProcessBuilder("python3.9", scriptPath);
+
+			log.info("put processBuilder");
 			processBuilder.environment().put("PYTHONIOENCODING", "UTF-8");
 
+			log.info("Python script starting");
 			Process process = processBuilder.start();
 			log.info("[Service] Python script started...");
 
@@ -372,7 +374,7 @@ public class DocsServiceImpl implements DocsService {
 				}
 			}
 			if (!errorBuilder.isEmpty()) {
-                log.info("[Service] Python Script Error: {}", errorBuilder.toString());
+				log.info("[Service] Python Script Error: {}", errorBuilder.toString());
 			}
 
 			process.waitFor();
@@ -418,7 +420,7 @@ public class DocsServiceImpl implements DocsService {
 		}
 
 		List<TranslatedDocument> translatedDocuments = translatedDocumentRepository
-				.findByOriginDocument_Document_DocsIdAndStatus(docsId, Status.VISIBLE);
+			.findByOriginDocument_Document_DocsIdAndStatus(docsId, Status.VISIBLE);
 
 		return getTranslatedDocumentsWithLikes(translatedDocuments);
 
@@ -497,7 +499,8 @@ public class DocsServiceImpl implements DocsService {
 	// 번역 작성하기
 	@Override
 	@Transactional
-	public TranslatedDocumentDto createTranslatedDocument(Integer docsId, Integer originId, String content) {
+	public TranslatedDocumentDto createTranslatedDocument(Integer docsId, Integer originId,
+		TranslatedDocumentDto translatedDocumentDto) {
 		User user = userUtil.getUser();
 
 		if (user == null) {
@@ -506,7 +509,7 @@ public class DocsServiceImpl implements DocsService {
 		if (docsId == null || originId == null) {
 			throw new DocsException(DocsExceptionCode.REQUIRED_IS_EMPTY);
 		}
-		if (content == null || content.trim().isEmpty()) {
+		if (translatedDocumentDto.content().isBlank()) {
 			throw new DocsException(DocsExceptionCode.REQUIRED_IS_EMPTY);
 		}
 		if (!documentRepository.existsById(docsId)) {
@@ -518,8 +521,8 @@ public class DocsServiceImpl implements DocsService {
 			.orElseThrow(() -> new DocsException(DocsExceptionCode.ORIGIN_NOT_FOUND));
 
 		// 번역 문서 생성
-		TranslatedDocument translatedDocument = new TranslatedDocument(originDocument, user, content, 0,
-			Status.VISIBLE);
+		TranslatedDocument translatedDocument = new TranslatedDocument(originDocument, user,
+			translatedDocumentDto.content(), 0, Status.VISIBLE);
 		translatedDocumentRepository.save(translatedDocument);
 
 		return TranslatedDocumentDto.fromEntity(translatedDocument, 0, List.of());
@@ -529,7 +532,7 @@ public class DocsServiceImpl implements DocsService {
 	@Transactional(readOnly = true)
 	@Override
 	public List<UserTransDocumentDto> getUserTransDocument(Long userId) {
-		
+
 		// 유저 id가 null 인 경우, 유저가 존재하지 않는 경우 예외 처리
 		if (userId == null) {
 			throw new DocsException(DocsExceptionCode.ILLEGAL_ARGUMENT);
@@ -539,7 +542,7 @@ public class DocsServiceImpl implements DocsService {
 		}
 
 		List<TranslatedDocument> userTransDocuments = translatedDocumentRepository
-				.findByUser_UserIdAndStatus(userId, Status.VISIBLE);
+			.findByUser_UserIdAndStatus(userId, Status.VISIBLE);
 
 		// 번역 문서 ID 목록 추출
 		return getUserTransDocumentDtos(userTransDocuments);
@@ -568,7 +571,7 @@ public class DocsServiceImpl implements DocsService {
 		}
 
 		// 좋아요한 유저 목록 가져오기
-		List<Long> likeUserIds = translatedDocumentLikeRepository.findLikedUserIdsByTransId(Long.valueOf(transId));
+		List<Long> likeUserIds = translatedDocumentLikeRepository.findLikedUserIdsByTransId(transId);
 
 		return new TranslatedDocumentDto(
 			translatedDocument.getTransId(),
@@ -587,7 +590,8 @@ public class DocsServiceImpl implements DocsService {
 	// 번역 수정하기
 	@Override
 	@Transactional
-	public TranslatedDocumentDto updateTranslatedDocument(Integer docsId, Long transId, String content) {
+	public TranslatedDocumentDto updateTranslatedDocument(Integer docsId, Long transId,
+		TranslatedDocumentDto translatedDocumentDto) {
 		// 유저 조회
 		User user = userUtil.getUser();
 		if (user == null) {
@@ -596,7 +600,7 @@ public class DocsServiceImpl implements DocsService {
 		if (docsId == null || transId == null) {
 			throw new DocsException(DocsExceptionCode.ILLEGAL_ARGUMENT);
 		}
-		if (content == null || content.trim().isEmpty()) {
+		if (translatedDocumentDto.content().isBlank()) {
 			throw new DocsException(DocsExceptionCode.REQUIRED_IS_EMPTY);
 		}
 
@@ -615,7 +619,7 @@ public class DocsServiceImpl implements DocsService {
 		}
 
 		// 내용 업데이트 후 저장
-		translatedDocument.updateContent(content);
+		translatedDocument.updateContent(translatedDocumentDto.content());
 
 		// 좋아요한 유저 목록 가져오기
 		List<Long> likeUserIds = translatedDocumentLikeRepository.findLikedUserIdsByTransId(transId);
@@ -677,11 +681,11 @@ public class DocsServiceImpl implements DocsService {
 		}
 
 		boolean hasVoted = translatedDocumentLikeRepository
-				.existsByTranslatedDocument_TransIdAndUser_UserId(transId, user.getUserId());
+			.existsByTranslatedDocument_TransIdAndUser_UserId(transId, user.getUserId());
 
 		if (hasVoted) {
 			translatedDocumentLikeRepository
-					.deleteByTranslatedDocument_TransIdAndUser_UserId(transId, user.getUserId());
+				.deleteByTranslatedDocument_TransIdAndUser_UserId(transId, user.getUserId());
 		} else {
 			translatedDocumentLikeRepository.addVote(translatedDocument, user);
 			alertsService.sendTranslationVoteAlert(translatedDocument, user);
