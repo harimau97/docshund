@@ -1,5 +1,8 @@
 package com.ssafy.docshund.global.util.jwt;
 
+import static com.ssafy.docshund.domain.users.exception.auth.AuthExceptionCode.EXPIRED_TOKEN;
+import static com.ssafy.docshund.domain.users.exception.auth.AuthExceptionCode.INVALID_TOKEN;
+
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
@@ -49,14 +52,19 @@ public class JwtFilter extends OncePerRequestFilter {
 		log.info("Authorization Header:  " + authorizationHeader);
 
 		if (jwtUtil.isValidAuthorization(authorizationHeader)) {
-			log.info("INVALID TOKEN: 잘못된 토큰");
+			request.setAttribute("exception", INVALID_TOKEN.getCode());  // ✅ 예외 설정
+			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 			filterChain.doFilter(request, response);
 			return;
 		}
 
 		String token = authorizationHeader.substring(7);
+
 		if (jwtUtil.isExpired(token)) {
-			log.info("EXPIRED TOKEN: 토큰 만료");
+			log.info("Token expired");
+			request.setAttribute("exception", EXPIRED_TOKEN.getCode());  // ✅ 예외 설정
+			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+			response.sendRedirect("localhost:5173/");
 			filterChain.doFilter(request, response);
 			return;
 		}

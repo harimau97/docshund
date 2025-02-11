@@ -1,7 +1,6 @@
 package com.ssafy.docshund.global.util.jwt;
 
-import static com.ssafy.docshund.domain.users.exception.auth.AuthExceptionCode.EXPIRED_TOKEN;
-import static com.ssafy.docshund.domain.users.exception.auth.AuthExceptionCode.INVALID_TOKEN;
+import static com.ssafy.docshund.domain.users.exception.auth.AuthExceptionCode.*;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -25,17 +24,27 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 	public void commence(HttpServletRequest request, HttpServletResponse response,
 		AuthenticationException authException) throws IOException, ServletException {
 		String exception = (String)request.getAttribute("exception");
-		log.info("JwtAuthenticationEntryPoint - exception 값: " + exception);  // ✅ 로그 추가
 
 		if (exception == null) {
-			log.info("잘못된 요청 (exception 값이 없음)");
-			setResponse(response, INVALID_TOKEN);
+			log.info("잘못된 요청");
+			setResponse(response, EXPIRED_TOKEN);
+			return;
+		}
+
+		if (exception.equals(REQUEST_TOKEN_NOT_FOUND.getCode())) {
+			log.info("AccessToken이 없음");
+			setResponse(response, REQUEST_TOKEN_NOT_FOUND);
+			return;
+		}
+
+		if (exception.equals(AUTH_MEMBER_NOT_FOUND.getCode())) {
+			setResponse(response, AUTH_MEMBER_NOT_FOUND);
 			return;
 		}
 
 		if (exception.equals(EXPIRED_TOKEN.getCode())) {
-			log.info("토큰 만료됨");
-			setResponse(response, INVALID_TOKEN);
+			log.info("토큰 만료됨, http://localhost:5173로 리다이렉트");
+			response.sendRedirect("http://localhost:5173"); // ✅ 만료된 토큰이면 리다이렉트
 			return;
 		}
 
