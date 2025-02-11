@@ -27,7 +27,7 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
 		if (exception == null) {
 			log.info("잘못된 요청");
-			setResponse(response, EXPIRED_TOKEN);
+			setResponse(response, BAD_REQUEST_EXCEPTION);
 			return;
 		}
 

@@ -15,7 +15,6 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.ssafy.docshund.domain.users.repository.UserRepository;
 import com.ssafy.docshund.domain.users.service.UserAuthServiceImpl;
-import com.ssafy.docshund.global.util.jwt.JwtAuthenticationEntryPoint;
 import com.ssafy.docshund.global.util.jwt.JwtFilter;
 import com.ssafy.docshund.global.util.jwt.JwtUtil;
 import com.ssafy.docshund.global.util.oauth2.CustomSuccessHandler;
@@ -27,7 +26,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-	private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+	// private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 	private final CustomSuccessHandler customSuccessHandler;
 	private final UserAuthServiceImpl userAuthServiceImpl;
 	private final JwtUtil jwtUtil;
