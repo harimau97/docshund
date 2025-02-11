@@ -30,10 +30,7 @@ const UpperNav = () => {
   const { toggleModal, isOpen } = notificationModalStore();
 
   // 게시글 작성 페이지로 이동 시 페이지 초기화
-  const setCurrentPage = communityArticleStore((state) => state.setCurrentPage);
-  const setSortType = communityArticleStore((state) => state.setSortType);
-  const setKeyword = communityArticleStore((state) => state.setKeyword);
-  const setCategory = communityArticleStore((state) => state.setCategory);
+  const { clearArticles } = communityArticleStore();
 
   const [profileImgUrl, setProfileImgUrl] = useState(profile?.profileImage);
 
@@ -118,10 +115,7 @@ const UpperNav = () => {
           </div>
           <div
             onClick={() => {
-              setCurrentPage(0);
-              setSortType("latest");
-              setKeyword("");
-              setCategory("");
+              clearArticles();
               navigate("/community");
             }}
             className={`cursor-pointer ${
