@@ -12,6 +12,9 @@ const ReplyTextarea = ({ reCommentFlag, commentId }) => {
 
   // store에서 데이터를 가져오기 위해 정의
   const setIsReplied = communityArticleStore((state) => state.setIsReplied);
+  const setCommentCount = communityArticleStore(
+    (state) => state.setCommentCount
+  );
 
   // 댓글 작성
   const handleSubmit = async () => {

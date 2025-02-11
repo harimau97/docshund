@@ -29,9 +29,8 @@ const ArticleItemService = {
   async deleteArticleItem(articleId) {
     try {
       const response = await axiosJsonInstance.delete(`forums/${articleId}`);
-      const data = response.data;
 
-      return data;
+      return response;
     } catch (error) {
       // TODO: error handling -> 에러 페이지 제작후 연결까지 구현
       console.log(error);

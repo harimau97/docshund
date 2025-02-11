@@ -53,8 +53,22 @@ const ReplyItem = ({ reCommentFlag, setReCommentFlag }) => {
             setReplyList(data); // 댓글 리스트 데이터를 state에 저장
           }
 
+          let tmpReplyCount = 0; // INFO: 댓글 전체 개수(대댓글 포함)을 저장하기 위한 임시 변수
+
+          data.map((item) => {
+            // 대댓글이 있는 경우 대댓글의 개수 만큼 댓글 개수 증가
+            if (item.replies?.length > 0) {
+              tmpReplyCount += item.replies.length; // 대댓글 개수
+            }
+
+            tmpReplyCount++; // 원댓글 개수
+          });
+
+          console.log("replyData -> ", data);
+          console.log("tmpReplyCount ->", tmpReplyCount);
+
+          setCommentCount(tmpReplyCount); // 전체 댓글 개수를 state에 저장
           setArticleId(articleId); // articleId를 state에 저장
-          setCommentCount(data.length); // 댓글 개수를 state에 저장
         }
       } catch (error) {
         setError(error);

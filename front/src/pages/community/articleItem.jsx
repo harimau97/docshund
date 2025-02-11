@@ -21,7 +21,6 @@ const ArticleItem = () => {
   const articles = communityArticleStore((state) => state.articles);
   const articleData = communityArticleStore((state) => state.articleItems);
   const likeCount = communityArticleStore((state) => state.likeCount);
-  const commentCount = communityArticleStore((state) => state.commentCount);
 
   // store의 메소드를 가져오기 위해 정의
   const setArticleId = communityArticleStore((state) => state.setArticleId);
@@ -99,6 +98,11 @@ const ArticleItem = () => {
                     onClick={async () => {
                       const response =
                         await ArticleItemService.deleteArticleItem(articleId);
+
+                      if (response.status == 204) {
+                        window.alert("게시글이 삭제되었습니다.");
+                        navigate("/community");
+                      }
                     }}
                   >
                     삭제
@@ -152,26 +156,28 @@ const ArticleItem = () => {
                 <ToastViewer content={articleData.content} />
               </div>
               <div className="flex justify-center items-center gap-4">
-                <RectBtn
-                  onClick={async () => {
-                    // 좋아요 api 날리기
-                    const response = await ArticleItemService.likeArticleItem(
-                      articleId
-                    );
+                {token ? (
+                  <RectBtn
+                    onClick={async () => {
+                      // 좋아요 api 날리기
+                      const response = await ArticleItemService.likeArticleItem(
+                        articleId
+                      );
 
-                    const status = response.status;
+                      const status = response.status;
 
-                    // status가 204이면 좋아요 성공
-                    if (status == 204) {
-                      setIsLiked(!isLiked); // 좋아요 상태 변경
-                      setLikeCount(isLiked ? likeCount - 1 : likeCount + 1); // 좋아요 상태에 따라 수 변경
-                    } else {
-                      window.alert("좋아요에 실패했습니다.");
-                    }
-                  }}
-                  text={`${likeCount}`} // 출력할 좋아요 수
-                  className="px-4 py-2 text-base"
-                ></RectBtn>
+                      // status가 204이면 좋아요 성공
+                      if (status == 204) {
+                        setIsLiked(!isLiked); // 좋아요 상태 변경
+                        setLikeCount(isLiked ? likeCount - 1 : likeCount + 1); // 좋아요 상태에 따라 수 변경
+                      } else {
+                        window.alert("좋아요에 실패했습니다.");
+                      }
+                    }}
+                    text={`${likeCount}`} // 출력할 좋아요 수
+                    className="px-4 py-2 text-base"
+                  ></RectBtn>
+                ) : null}
               </div>
             </div>
 
@@ -180,7 +186,8 @@ const ArticleItem = () => {
           </div>
         </div>
         {/* 댓글 리스트 */}
-        <ReplyList replyCount={commentCount} />
+        <ReplyList replyCount={articleData.commentCount} />
+        {console.log("articleItem-> ", articleData.commentCount)}
       </main>
     </div>
   );
