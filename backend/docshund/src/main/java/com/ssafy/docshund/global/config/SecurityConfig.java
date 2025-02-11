@@ -43,7 +43,17 @@ public class SecurityConfig {
 				.userService(userAuthServiceImpl))
 			.successHandler(customSuccessHandler));
 		http.authorizeHttpRequests((auth) -> auth
-			.anyRequest().permitAll());
+			.requestMatchers(
+				"/api/v1/docshund/docs",
+				"/api/v1/docshund/docs/*/origin",
+				"/api/v1/docshund/docs/*/trans",
+				"/api/v1/docshund/forums",
+				"/api/v1/docshund/forums/*",
+				"/api/v1/docshund/forums/*/comments",
+				"/api/v1/docshund/supports/notice",
+				"/api/v1/docshund/supports/notice/*"
+			).permitAll()
+			.anyRequest().authenticated());
 		http.sessionManagement((session) -> session
 			.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
