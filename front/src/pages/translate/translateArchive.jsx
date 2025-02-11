@@ -218,6 +218,7 @@ const TranslateArchive = () => {
                             <button
                               onClick={(e) => {
                                 e.stopPropagation();
+                                console.log(trans);
                                 useReportStore.setState({
                                   originContent: trans.content,
                                   reportedUser: trans.userId,

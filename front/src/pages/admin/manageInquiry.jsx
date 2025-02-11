@@ -1,19 +1,19 @@
 import { useNavigate } from "react-router-dom";
+import { fetchInquiryList } from "../../pages/admin/Hooks/adminGetService";
 import modalStore from "../../store/myPageStore/myPageModalStore";
 import inquiryStore from "../../store/myPageStore/inquiryStore";
 import InquiryModal from "../myPage/components/InquiryModal";
 import ListRender from "../../components/pagination/listRender";
-import InquiryService from "../../services/helpDeskServices/inquiryService";
+import InquiryService from "../../pages/myPage/services/inquiryService";
 
 import { useEffect, useState } from "react";
-import { jwtDecode } from "jwt-decode";
 import { format, isSameDay } from "date-fns";
 import { ChevronUp, ChevronDown } from "lucide-react";
 
 const ManageInquiry = () => {
   const navigate = useNavigate();
 
-  const token = localStorage.getItem("token");
+  const [inquiryList, setInquiryList] = useState([]);
 
   // inquiryStore에서 inquiries와 setInquiries를 가져온다.
   const inquiries = inquiryStore((state) => state.inquiries);
@@ -33,13 +33,9 @@ const ManageInquiry = () => {
 
   useEffect(() => {
     setLoading(true);
-
     // inquiries 데이터를 가져오는 함수
     const fetchInquiries = async () => {
       try {
-        // 토큰이 존재하면 userId 추출
-
-        // inquiryService의 fetchInquiries 함수를 호출한다.
         const data = await InquiryService.fetchInquiries(
           currentPage,
           itemsPerPage,
@@ -62,7 +58,7 @@ const ManageInquiry = () => {
 
     // fetchInquiries 함수를 호출한다.
     fetchInquiries();
-  }, [currentPage, itemsPerPage, token]);
+  }, [currentPage, itemsPerPage]);
 
   useEffect(() => {
     return () => {
