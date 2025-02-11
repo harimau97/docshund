@@ -1,18 +1,20 @@
 package com.ssafy.docshund.global.util.oauth2;
 
-import com.ssafy.docshund.domain.alerts.service.AlertsService;
-import com.ssafy.docshund.domain.users.dto.auth.CustomOAuth2User;
-import com.ssafy.docshund.global.util.jwt.JwtUtil;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.io.IOException;
+
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
+import com.ssafy.docshund.domain.alerts.service.AlertsService;
+import com.ssafy.docshund.domain.users.dto.auth.CustomOAuth2User;
+import com.ssafy.docshund.global.util.jwt.JwtUtil;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
@@ -20,7 +22,7 @@ import java.io.IOException;
 public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
 	private final JwtUtil jwtUtil;
-	private static final long TOKEN_EXPIRATION = 60L * 10L;
+	private static final long TOKEN_EXPIRATION = 60L * 60L * 24L * 30L;
 
 	private final AlertsService alertsService;
 

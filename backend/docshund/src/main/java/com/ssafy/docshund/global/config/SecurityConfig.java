@@ -58,8 +58,8 @@ public class SecurityConfig {
 				).permitAll()
 				.anyRequest().authenticated())
 			.sessionManagement(session -> session
-				.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-			.exceptionHandling(ex -> ex.authenticationEntryPoint(jwtAuthenticationEntryPoint));
+				.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+		// .exceptionHandling(ex -> ex.authenticationEntryPoint(jwtAuthenticationEntryPoint));
 
 		return http.build();
 	}
