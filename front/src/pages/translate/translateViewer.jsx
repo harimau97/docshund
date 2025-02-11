@@ -304,7 +304,6 @@ const TranslateViewer = () => {
               } else {
                 setBestTrans("");
               }
-              toggleDocpart(part.id);
             }}
             className="paragraph flex flex-row gap-4 relative"
           >
@@ -383,8 +382,8 @@ const TranslateViewer = () => {
           </div>
         )}
       </div>
-      <TranslateEditor className="z-auto" />
-      <TranslateArchive className="z-auto" />
+      {createPortal(<TranslateEditor />, document.body)}
+      {createPortal(<TranslateArchive />, document.body)}
 
       {/* Menu를 Portal로 document.body에 렌더링하고 z-index를 높게 지정 */}
       {createPortal(

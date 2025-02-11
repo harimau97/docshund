@@ -1,12 +1,22 @@
-import React, { useState } from "react";
+import { useState } from "react";
+import PropTypes from "prop-types";
+import { registDocumentContent } from "../Hooks/adminPostService";
+import { toast } from "react-toastify";
+import { motion, AnimatePresence } from "framer-motion";
 
-const RegistDocsContent = ({ docsId, open, onClose, onSubmit }) => {
+const RegistDocsContent = ({ docsId, open, onClose }) => {
   const [content, setContent] = useState("");
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(docsId, content);
-    const documentOriginData = content;
-    onSubmit(docsId, documentOriginData);
+    const originDocumentData = content;
+    console.log("원본 내용입니다. : ", originDocumentData.toString());
+    const status = await registDocumentContent(docsId, originDocumentData);
+    if (status === 200) {
+      toast.success("문서 원본 업로드 성공");
+      onClose();
+    } else {
+      toast.error("문서 원본 업로드 실패");
+    }
   };
 
   if (!open) return null;
@@ -24,12 +34,7 @@ const RegistDocsContent = ({ docsId, open, onClose, onSubmit }) => {
           </button>
         </div>
 
-        <form
-          onSubmit={(e) => {
-            handleSubmit();
-          }}
-          className="space-y-4"
-        >
+        <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <textarea
               value={content}
@@ -62,6 +67,12 @@ const RegistDocsContent = ({ docsId, open, onClose, onSubmit }) => {
       </div>
     </div>
   );
+};
+
+RegistDocsContent.propTypes = {
+  docsId: PropTypes.number.isRequired,
+  open: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
 };
 
 export default RegistDocsContent;

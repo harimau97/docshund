@@ -1,7 +1,9 @@
-import React, { useState } from "react";
+import { useState } from "react";
+import PropTypes from "prop-types";
 import { registDocument } from "../Hooks/adminPostService";
+import { toast } from "react-toastify";
 
-const RegistDocs = ({ open, onClose, onSubmit }) => {
+const RegistDocs = ({ open, onClose }) => {
   const [formData, setFormData] = useState({
     documentName: "",
     documentCategory: "",
@@ -21,7 +23,7 @@ const RegistDocs = ({ open, onClose, onSubmit }) => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const documentData = {
       documentCategory: formData.documentCategory,
@@ -32,8 +34,13 @@ const RegistDocs = ({ open, onClose, onSubmit }) => {
       license: formData.license,
       position: formData.position,
     };
-    registDocument(documentData);
-    onClose();
+    const data = await registDocument(documentData);
+    if (data.docsId !== null && data.docsId !== undefined) {
+      toast.success("문서 등록 성공");
+      onClose();
+    } else {
+      toast.error("문서 등록 실패");
+    }
   };
 
   if (!open) return null;
@@ -169,6 +176,11 @@ const RegistDocs = ({ open, onClose, onSubmit }) => {
       </div>
     </div>
   );
+};
+
+RegistDocs.propTypes = {
+  open: PropTypes.bool,
+  onClose: PropTypes.func,
 };
 
 export default RegistDocs;

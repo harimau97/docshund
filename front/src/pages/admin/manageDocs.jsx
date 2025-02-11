@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { fetchDocsList } from "../translate/hooks/translateGetService";
 import {
   registDocument,
@@ -6,6 +6,7 @@ import {
 } from "./Hooks/adminPostService";
 import RegistDocs from "./components/registDocs";
 import RegistDocsContent from "./components/registDocsContent";
+import useModalStore from "../../store/modalStore";
 
 const ManageDocs = () => {
   const [currentDocsId, setCurrentDocsId] = useState(null);
@@ -52,13 +53,11 @@ const ManageDocs = () => {
       <RegistDocs
         open={openRegistDocs}
         onClose={() => setOpenRegistDocs(false)}
-        onSubmit={registDocument()}
       />
       <RegistDocsContent
         docsId={currentDocsId}
         open={openRegistDocsContent}
         onClose={() => setOpenRegistDocsContent(false)}
-        onSubmit={registDocumentContent()}
       />
       {/* Header */}
       <div className="flex justify-between items-center mb-8">
