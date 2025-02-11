@@ -4,14 +4,15 @@
   --font-family-sans: "Inter", sans-serif;
 }
 ::-webkit-scrollbar {
-  width: 12px; /* 세로축 스크롤바 폭 너비 */
+  width: 8px; /* 세로축 스크롤바 폭 너비 */
   height: 20px; /* 가로축 스크롤바 폭 너비 */
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #bc5b39; /* 스크롤바 막대 색상 */
-  border: 2px solid #9b6a2f; /* 스크롤바 막대 테두리 설정  */
+  background: rgba(228, 220, 212, 1); /* 스크롤바 막대 색상 */
+  border: 0px solid #9b6a2f; /* 스크롤바 막대 테두리 설정  */
   border-radius: 12px 12px 12px 12px;
+  cursor: pointer;
 }
 
 ::-webkit-scrollbar-thumb:hover {
