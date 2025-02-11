@@ -21,12 +21,10 @@ const ArticleList = () => {
   const setArticles = communityArticleStore((state) => state.setArticles);
   const setTotalPages = communityArticleStore((state) => state.setTotalPages);
   const setCurrentPage = communityArticleStore((state) => state.setCurrentPage);
-  const setCategory = communityArticleStore((state) => state.setCategory);
   const setLoading = communityArticleStore((state) => state.setLoading);
   const setError = communityArticleStore((state) => state.setError);
 
-  // const [isLoggedIn] = useState(true); // 임시로 로그인 상태 true로 설정. TODO: 로그인 상태 확인 로직 추가 필요
-  const [itemsPerPage, setItmesPerPage] = useState(15); // 페이지당 보여줄 게시글 수
+  const [itemsPerPage, setItmesPerPage] = useState(10); // 페이지당 보여줄 게시글 수
 
   const [sortType, setSortBy] = useState("latest"); // 정렬 기준
   const [keyword, setKeyword] = useState(""); // 검색어

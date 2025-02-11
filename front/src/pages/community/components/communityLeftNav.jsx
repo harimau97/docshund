@@ -13,12 +13,15 @@ import { ChevronDown, ChevronUp, Layout } from "lucide-react";
 const CommunityLeftNav = () => {
   // docsList를 가져옴
   const docsList = docsStore((state) => state.docsList);
+  const setDocsList = docsStore((state) => state.setDocsList);
 
   // 대분류 목록과 소분류 목록을 가져옴
-  const positions = docsCategoryStore((state) => state.positions);
+  const positions = docsCategoryStore((state) => state.positions); // 대분류 목록
   const setPositions = docsCategoryStore((state) => state.setPositions);
-  const category = communityArticleStore((state) => state.category);
+  const category = communityArticleStore((state) => state.category); // 소분류 카테고리(단일)
   const setCategory = communityArticleStore((state) => state.setCategory);
+  const documentNames = docsCategoryStore((state) => state.documentNames); // 소분류 목록
+  const setDocumentNames = docsCategoryStore((state) => state.setDocumentNames);
 
   // 대분류와 소분류 목록을 저장할 Map
   const [positionMap, setPositionMap] = useState(new Map());
@@ -56,7 +59,14 @@ const CommunityLeftNav = () => {
   useEffect(() => {
     async function asyncFetchDocsList() {
       try {
-        await fetchDocsList(false); // setState까지 처리함
+        // store에 docsList가 저장돼있지 않으면
+        if (docsList.length === 0) {
+          const response = await fetchDocsList(); // docsList 호출
+          // response가 있으면
+          if (response) {
+            setDocsList(response); // store에 저장
+          }
+        }
       } catch (error) {
         console.log(error);
       }
@@ -69,6 +79,8 @@ const CommunityLeftNav = () => {
     try {
       if (docsList.length > 0) {
         const newPositionMap = new Map();
+
+        // 대분류와 소분류 목록을 Map에 추가
         docsList.forEach((docs) => {
           if (docs.position && docs.documentName) {
             if (!newPositionMap.has(docs.position)) {
@@ -83,19 +95,24 @@ const CommunityLeftNav = () => {
         const newPositions = Array.from(newPositionMap.keys());
         setPositions(newPositions);
 
+        // 섹션 토글 초기화
         const initialExpanded = {};
         newPositions.forEach((position) => {
           initialExpanded[position] = true;
         });
         setExpandedSections(initialExpanded);
 
+        // navData 초기화
         const initialNavData = {};
         newPositions.forEach((position) => {
           initialNavData[position] = Array.from(
             newPositionMap.get(position) || new Set()
           );
         });
+
+        // 초기화된 데이터를 state에 저장
         setNavData(initialNavData);
+        setDocumentNames(initialNavData);
       }
     } catch (error) {
       console.log(error);
@@ -103,13 +120,14 @@ const CommunityLeftNav = () => {
   }, [docsList, setPositions]); // 필요한 의존성만 추가
 
   return (
-    <div className="w-[240px] min-h-screen bg-[#F8F8F7]">
+    <div className="w-auto min-h-screen bg-[#F8F8F7] mr-4">
       <nav className="p-4">
+        {/* navData에 있는 각 entry들 조회 */}
         {Object.entries(navData).map(([section, items]) => (
           <div key={section} className="mb-2">
             <button
               onClick={() => toggleSection(section)}
-              className="w-full flex items-center justify-between p-2 bg-[#bc5b39] text-white rounded cursor-pointer"
+              className="w-full flex items-center justify-between p-2 ml-2 bg-[#bc5b39] text-white rounded cursor-pointer"
             >
               <div className="flex items-center gap-2">
                 <Layout size={18} />
@@ -135,7 +153,7 @@ const CommunityLeftNav = () => {
                       setCategory(item);
                     }}
                   >
-                    {/* TODO: 문서 이름 누르면 api 호출 */}
+                    {/* TODO: 게시글 상세 페이지에서 카테고리 누르면 카테고리에 해당하는 articleList로 */}
                     {item}
                   </li>
                 ))}

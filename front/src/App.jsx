@@ -13,9 +13,9 @@ import LeftNav from "./components/Nav/leftNav.jsx";
 import Modal from "react-modal";
 import LoginModal from "./components/LoginModal.jsx";
 import ToastModal from "./components/alertModal/toastModal.jsx";
+import notificationModalStore from "./store/notificationModalStore.jsx";
 
 //챗봇
-import ChatBotBtn from "./pages/chatBot/chatBotBtn.jsx";
 import ChatBotStore from "./store/chatBotStore.jsx";
 
 //문서채팅
@@ -31,7 +31,6 @@ function App() {
   const pathname = location.pathname;
   const isTranslateViewerPage = pathname.includes("/translate/main/viewer");
   const isAdminPage = pathname.includes("/admin");
-  const { isChatBotVisible, toggleChatBot } = ChatBotStore();
   const { isChatVisible, toggleChat } = ChatStore();
 
   useEffect(() => {
@@ -64,7 +63,7 @@ function App() {
           )}
         </div>
       ) : null}
-      <ChatBotBtn />
+
       {isChatVisible && <Chat />}
       {isTranslateViewerPage || isAdminPage ? null : <Footer />}
       <LoginModal />

@@ -1,5 +1,13 @@
 import { axiosJsonInstance } from "../../../utils/axiosInstance";
 import PropTypes from "prop-types";
+
+import TmpBestData from "../../../store/translateStore/tmpBestData";
+import TmpTranslateData from "../../../store/translateStore/tmpTranslateData";
+import TmpDocsList from "../../../store/translateStore/tmpDocsList";
+import useArchiveStore from "../../../store/translateStore/archiveStore";
+import useDocsStore from "../../../store/translateStore/docsStore";
+import useEditorStore from "../../../store/translateStore/editorStore";
+
 // import DocsStore from "../../../store/translateStore/docsStore";
 const baseUrl = "http://i12a703.p.ssafy.io:8081/api/v1/docshund/docs";
 
@@ -26,16 +34,15 @@ export const fetchDocsList = async () => {
 };
 
 // 영어 원문 조회
-export const fetchTranslateData = async (docsId, test) => {
+export const fetchTranslateData = async (docsId, originId) => {
   try {
-    console.log(docsId, test);
-    if (!test) {
-      const response = await axiosJsonInstance.get(
-        `${baseUrl}/${docsId}/origin`
-      );
-      const data = response.data;
-      return data;
-    }
+    console.log(docsId, originId);
+
+    const response = await axiosJsonInstance.get(
+      `${baseUrl}/${docsId}/origin?originId=${originId}`
+    );
+    const data = response.data;
+    return data;
   } catch (error) {
     console.log(error);
     return null;

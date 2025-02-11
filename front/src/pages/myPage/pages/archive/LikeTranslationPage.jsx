@@ -11,8 +11,10 @@ import LikeTranslationService from "../../services/likeTranslationService";
 const LikeTranslationPage = () => {
   const token = localStorage.getItem("token");
 
-  const translations = TranslationStore((state) => state.translations);
-  const setTranslations = TranslationStore((state) => state.setTranslations);
+  const likeTranslations = TranslationStore((state) => state.likeTranslations);
+  const setLikeTranslations = TranslationStore(
+    (state) => state.setLikeTranslations
+  );
   const setLoading = TranslationStore((state) => state.setLoading);
   const setError = TranslationStore((state) => state.setError);
 
@@ -33,7 +35,7 @@ const LikeTranslationPage = () => {
           const data = await LikeTranslationService.fetchTranslations(userId);
 
           if (data.length > 0) {
-            setTranslations(data);
+            setLikeTranslations(data);
           }
         }
       } catch (error) {
@@ -47,15 +49,18 @@ const LikeTranslationPage = () => {
 
   // 페이지네이션 관련 상태들을 하나의 useEffect로 통합
   useEffect(() => {
-    if (translations.length > 0) {
+    if (likeTranslations.length > 0) {
       const startIndex = currentPage * itemsPerPage;
-      const endIndex = Math.min(startIndex + itemsPerPage, translations.length);
-      const newTotalPages = Math.ceil(translations.length / itemsPerPage);
+      const endIndex = Math.min(
+        startIndex + itemsPerPage,
+        likeTranslations.length
+      );
+      const newTotalPages = Math.ceil(likeTranslations.length / itemsPerPage);
 
       setTotalPages(newTotalPages);
-      setCurrentData(translations.slice(startIndex, endIndex));
+      setCurrentData(likeTranslations.slice(startIndex, endIndex));
     }
-  }, [translations, currentPage, itemsPerPage]);
+  }, [likeTranslations, currentPage, itemsPerPage]);
 
   const renderTranslation = (item) => (
     <div className="flex justify-between text-lg px-3">
