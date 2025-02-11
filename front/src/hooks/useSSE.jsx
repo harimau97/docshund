@@ -68,6 +68,7 @@ const UseSSE = (userId) => {
           console.error("SSE 연결 오류:", error);
           setIsConnected(false);
 
+          // NOTE: 현재 재연결 로직은 비활성화 <- 필요 시 주석 해제
           // // INFO: 재연결 로직
           // if (retryCount < MAX_RETRY_ATTEMPTS) {
           //   const retryDelay = Math.min(
