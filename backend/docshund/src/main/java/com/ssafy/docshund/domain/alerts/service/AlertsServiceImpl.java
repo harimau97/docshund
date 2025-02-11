@@ -72,7 +72,6 @@ public class AlertsServiceImpl implements AlertsService {
 	 ☆ SSE 연결 관련 로직 ☆
 	 */
 	@Override
-	@Transactional
 	public SseEmitter subscribe(Long userId) {
 		if (emitters.containsKey(userId)) {
 			emitters.remove(userId);
