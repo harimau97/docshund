@@ -315,7 +315,7 @@ public class DocsServiceImpl implements DocsService {
 			throw new DocsException(DocsExceptionCode.NO_PERMISSION);
 		}
 		// 내용이 없을 시 예외 처리
-		if (content == null || content.trim().isEmpty()) {
+		if (content.isBlank()) {
 			throw new DocsException(DocsExceptionCode.REQUIRED_IS_EMPTY);
 		}
 
@@ -492,7 +492,7 @@ public class DocsServiceImpl implements DocsService {
 		if (docsId == null || originId == null) {
 			throw new DocsException(DocsExceptionCode.REQUIRED_IS_EMPTY);
 		}
-		if (translatedDocumentDto.content() == null || translatedDocumentDto.content().trim().isEmpty()) {
+		if (translatedDocumentDto.content().isBlank()) {
 			throw new DocsException(DocsExceptionCode.REQUIRED_IS_EMPTY);
 		}
 		if (!documentRepository.existsById(docsId)) {
@@ -582,7 +582,7 @@ public class DocsServiceImpl implements DocsService {
 		if (docsId == null || transId == null) {
 			throw new DocsException(DocsExceptionCode.ILLEGAL_ARGUMENT);
 		}
-		if (translatedDocumentDto.content() == null || translatedDocumentDto.content().trim().isEmpty()) {
+		if (translatedDocumentDto.content().isBlank()) {
 			throw new DocsException(DocsExceptionCode.REQUIRED_IS_EMPTY);
 		}
 
