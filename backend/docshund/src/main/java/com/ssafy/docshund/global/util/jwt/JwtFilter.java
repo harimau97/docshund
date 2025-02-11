@@ -46,7 +46,7 @@ public class JwtFilter extends OncePerRequestFilter {
 		}
 
 		String authorizationHeader = request.getHeader("Authorization");
-		log.info("Authorization Header:  " + authorizationHeader);
+		log.info("Authorization Header: " + authorizationHeader);
 
 		if (jwtUtil.isValidAuthorization(authorizationHeader)) {
 			filterChain.doFilter(request, response);
@@ -54,10 +54,10 @@ public class JwtFilter extends OncePerRequestFilter {
 		}
 
 		String token = authorizationHeader.substring(7);
-
 		if (jwtUtil.isExpired(token)) {
 			log.info("Token expired");
 			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+			response.sendRedirect("localhost:5173/");
 			filterChain.doFilter(request, response);
 			return;
 		}

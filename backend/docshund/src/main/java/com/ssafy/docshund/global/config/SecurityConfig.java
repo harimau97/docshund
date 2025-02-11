@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.oauth2.client.web.HttpSessionOAuth2AuthorizationRequestRepository;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
@@ -40,8 +41,13 @@ public class SecurityConfig {
 			.httpBasic(basic -> basic.disable())
 			.addFilterBefore(new JwtFilter(jwtUtil, userRepository), UsernamePasswordAuthenticationFilter.class)
 			.oauth2Login(oauth2 -> oauth2
+				.authorizationEndpoint(endpoint -> endpoint
+					.baseUri("/oauth2/authorization")
+					.authorizationRequestRepository(new HttpSessionOAuth2AuthorizationRequestRepository()) // 👈 추가
+				)
 				.userInfoEndpoint(userInfo -> userInfo.userService(userAuthServiceImpl))
-				.successHandler(customSuccessHandler)) // ✅ OAuth2 로그인 정상 작동
+				.successHandler(customSuccessHandler)
+			)
 			.authorizeHttpRequests(auth -> auth
 				.requestMatchers("/login").denyAll()  // 🚫 기본 로그인 경로 차단
 				.requestMatchers("/oauth2/**", "/login/oauth2/**").permitAll() // ✅ OAuth2 로그인만 허용
