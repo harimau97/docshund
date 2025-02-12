@@ -57,7 +57,7 @@ const ArticleItem = () => {
           setIsInitialLoad(false);
         }
 
-        console.log("fetchArticleitems -> ", articleItems);
+        console.log("fetchArticleitems -> ", data);
       } catch (error) {
         setError(error);
       } finally {

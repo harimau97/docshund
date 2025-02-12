@@ -38,7 +38,7 @@ const ArticleItemService = {
     }
   },
 
-  // 게시글 좋아요/좋아요취소소 요청 함수
+  // 게시글 좋아요/좋아요취소 요청 함수
   async likeArticleItem(articleId) {
     try {
       const response = await axiosJsonInstance.post(

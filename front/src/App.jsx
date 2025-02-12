@@ -17,6 +17,7 @@ import Modal from "react-modal";
 import LoginModal from "./components/LoginModal.jsx";
 import ToastModal from "./components/alertModal/toastModal.jsx";
 import notificationModalStore from "./store/notificationModalStore.jsx";
+import NotificationService from "./services/notificationService.jsx";
 
 //챗봇
 import ChatBotStore from "./store/chatBotStore.jsx";
@@ -40,40 +41,30 @@ function App() {
   const { setNotifications } = notificationModalStore();
 
   useEffect(() => {
-    if (token === "") {
+    console.log("토큰 세팅 실행");
+
+    if (token === "" && localStorage.getItem("token")) {
       setToken(localStorage.getItem("token"));
     }
-
-    // 로그인 성공 시, 기존에 밀려있던 알림을 불러옴
-    const fetchNotifications = async (token) => {
-      try {
-        const response = await axiosJsonInstance(
-          `http://i12a703.p.ssafy.io:8081/api/v1/docshund/alerts?userId=${
-            jwtDecode(token).userId
-          }` // 유저 ID로 알림 불러오기
-        );
-
-        if (!response.status === 200) {
-          window.alert("알림을 불러오는 중 오류가 발생했습니다.");
-          window.location.reload();
-        }
-
-        const data = response.data;
-
-        setNotifications(data);
-      } catch (err) {
-        toast.error(err.message);
-      }
-    };
 
     if (location.search.includes("token")) {
       toast.success("로그인에 성공했습니다!");
       setToken(location.search.split("=")[1]);
     }
+  }, []);
 
-    // 로그인 or 로그인 상태의 접속시 알림 불러오기
-    fetchNotifications(token ? token : localStorage.getItem("token"));
-  }, [location]);
+  useEffect(() => {
+    // NOTE: 로그인 성공 시, 기존에 밀려있던 알림을 불러옴
+
+    if (token) {
+      // 로그인 or 로그인 상태의 접속시 알림 불러오기
+      const data = NotificationService.fetchNotifications();
+
+      if (data) {
+        setNotifications(data);
+      }
+    }
+  }, [token, location]);
 
   // 유저 ID가 없으면 알림을 불러올 수 없음
   // 유저 ID로 SSE 연결

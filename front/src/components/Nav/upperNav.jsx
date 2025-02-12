@@ -141,17 +141,22 @@ const UpperNav = () => {
         <div className="flex items-center gap-4">
           {isAuthenticated() && (
             <div className="relative">
+              {/* INFO: 알림 아이콘 */}
               <img
                 className="w-[clamp(20px,2.1vw,32px)] h-auto cursor-pointer"
                 src={notification}
                 alt="알림 아이콘"
                 onClick={() => toggleModal()}
               />
-              {isOpen && (
-                <div className="absolute left-1/2 -translate-x-1/2 top-[calc(100%+2.2rem)] z-[1000]">
-                  <NotificationModal />
-                </div>
-              )}
+              <div
+                className={`absolute left-1/2 -translate-x-1/2 top-[calc(100%+1.8rem)] z-[1000] transition-all duration-300 transform ${
+                  isOpen
+                    ? "opacity-100 translate-y-0"
+                    : "opacity-0 -translate-y-2 pointer-events-none"
+                }`}
+              >
+                <NotificationModal />
+              </div>
             </div>
           )}
 

@@ -23,7 +23,7 @@ const ReplyTextarea = ({ reCommentFlag, commentId }) => {
     if (!replyContent.trim()) {
       alert("댓글을 입력해주세요.");
       return;
-    } else if (replyContent.length > 10000) {
+    } else if (replyContent.length > 5000) {
       alert("댓글은 10,000자 이하로 입력해주세요.");
       return;
     }
@@ -46,6 +46,7 @@ const ReplyTextarea = ({ reCommentFlag, commentId }) => {
     }
 
     setReplyContent(""); // 제출 후 입력창 초기화
+    setContentLength(0); // 제출 후 글자 수 초기화
 
     // 제출 후 댓글 리스트 리렌더링
     setIsReplied((prev) => !prev);
@@ -66,10 +67,10 @@ const ReplyTextarea = ({ reCommentFlag, commentId }) => {
         <div className="flex justify-between items-center">
           <span
             className={`text-sm ${
-              contentLength > 10000 ? "text-red-500" : "text-gray-500"
+              contentLength > 5000 ? "text-red-500" : "text-gray-500"
             }`}
           >
-            {contentLength.toLocaleString()} / 10,000자
+            {contentLength.toLocaleString()} / 5,000자
           </span>
           <RectBtn
             onClick={handleSubmit}

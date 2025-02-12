@@ -61,7 +61,11 @@ const ReplyItem = ({ reCommentFlag, setReCommentFlag }) => {
               tmpReplyCount += item.replies.length; // 대댓글 개수
             }
 
-            tmpReplyCount++; // 원댓글 개수
+            // 삭제된 댓글이 아닐 경우 원댓글 개수 증가
+            // INFO: 대댓글이 있는 상태에서 삭제된 원댓글은 userId가 없음
+            if (item.userId) {
+              tmpReplyCount++; // 원댓글 개수
+            }
           });
 
           console.log("replyData -> ", data);
