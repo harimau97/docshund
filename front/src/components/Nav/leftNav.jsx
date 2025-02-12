@@ -25,8 +25,12 @@ import navToggle2 from "../../assets/icon/navToggle2.png";
 //
 
 const LeftNav = () => {
-  const token = localStorage.getItem("token");
-  const userId = jwtDecode(token).id;
+  let userId = 0;
+
+  if (localStorage.getItem("token")) {
+    const token = localStorage.getItem("token");
+    userId = jwtDecode(token).userId;
+  }
 
   const { docsId } = useParams();
   const [isMenuOpen, setIsMenuOpen] = useState(false);

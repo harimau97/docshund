@@ -14,8 +14,11 @@ import ReportModal from "../report.jsx";
 import useReportStore from "../../store/reportStore.jsx";
 
 const TranslateArchive = () => {
-  const decodedToken = jwtDecode(localStorage.getItem("token"));
-  const userId = decodedToken.userId;
+  let userId = 0;
+  if (localStorage.getItem("token")) {
+    const token = localStorage.getItem("token");
+    userId = jwtDecode(token).userId;
+  }
 
   const [transStates, setTransStates] = useState({});
   const [status, setStatus] = useState(0);

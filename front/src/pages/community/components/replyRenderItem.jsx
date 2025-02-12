@@ -2,6 +2,8 @@ import { useState } from "react";
 import Proptypes from "prop-types";
 import { jwtDecode } from "jwt-decode";
 
+import ReportModal from "../../report";
+import useReportStore from "../../../store/reportStore";
 import communityArticleStore from "../../../store/communityStore/communityArticleStore";
 import ReplyTextarea from "./replyTextarea";
 import ReplyItemService from "../services/replyItemService";
@@ -19,6 +21,26 @@ const ReplyRenderItem = ({
   const replyId = communityArticleStore((state) => state.replyId);
 
   const setReplyId = communityArticleStore((state) => state.setReplyId);
+  const setCommentCount = communityArticleStore(
+    (state) => state.setCommentCount
+  );
+
+  const handleReport = (data) => {
+    //TEST
+    console.log("data", data);
+
+    useReportStore.setState({
+      originContent: data.content,
+      reportedUser: data.userId,
+      commentId: data.commentId,
+      articleId: data.articleId,
+      transId: null,
+      chatId: null,
+    });
+
+    useReportStore.openReport();
+    useReportStore.toggleReport();
+  };
 
   // TODO: 댓글 레이아웃 다듬기
   return (
@@ -68,7 +90,10 @@ const ReplyRenderItem = ({
 
             {token
               ? jwtDecode(token)?.userId != item.userId && (
-                  <button className="hover:text-gray-700 cursor-pointer">
+                  <button
+                    className="hover:text-gray-700 cursor-pointer"
+                    onClick={() => handleReport(item)}
+                  >
                     신고
                   </button>
                 )
