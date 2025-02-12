@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { format, isSameDay } from "date-fns";
 import { jwtDecode } from "jwt-decode";
+import { ThumbsUp } from "lucide-react";
 
 import communityArticleStore from "../../store/communityStore/communityArticleStore";
 import useReportStore from "../../store/reportStore";
@@ -228,7 +229,12 @@ const ArticleItem = () => {
                         window.alert("좋아요에 실패했습니다.");
                       }
                     }}
-                    text={`${likeCount}`} // 출력할 좋아요 수
+                    text={
+                      <div className="flex items-center gap-2">
+                        <ThumbsUp className="w-4 h-4" />
+                        {likeCount}
+                      </div>
+                    } // 출력할 좋아요 수
                     className="px-4 py-2 text-base"
                   ></RectBtn>
                 ) : null}

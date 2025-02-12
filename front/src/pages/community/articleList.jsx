@@ -34,7 +34,7 @@ const ArticleList = () => {
   // 정렬 옵션
   const sortOptions = [
     { value: "latest", label: "최신순" },
-    { value: "likes", label: "좋아요 순" },
+    { value: "likes", label: "좋아요순" },
     { value: "views", label: "조회수순" },
   ];
 

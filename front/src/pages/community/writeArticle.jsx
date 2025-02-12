@@ -251,7 +251,7 @@ const WriteArticle = () => {
               <div className="flex justify-center">
                 <button
                   type="submit"
-                  className="py-2 px-8 bg-[#bc5b39] text-white rounded-md shadow-sm hover:bg-[#C96442]"
+                  className="py-2 px-8 bg-[#bc5b39] text-white rounded-md shadow-sm hover:bg-[#C96442] cursor-pointer"
                 >
                   작성완료
                 </button>
