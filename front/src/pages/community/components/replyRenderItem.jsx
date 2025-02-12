@@ -2,8 +2,8 @@ import { useState } from "react";
 import Proptypes from "prop-types";
 import { jwtDecode } from "jwt-decode";
 
-import ReportModal from "../../pages/report";
-import useReportStore from "../../store/reportStore";
+import ReportModal from "../../report";
+import useReportStore from "../../../store/reportStore";
 import communityArticleStore from "../../../store/communityStore/communityArticleStore";
 import ReplyTextarea from "./replyTextarea";
 import ReplyItemService from "../services/replyItemService";
