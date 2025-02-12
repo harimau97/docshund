@@ -29,8 +29,13 @@ const TranslateEditor = () => {
     toggleArchive,
   } = useModalStore();
 
-  const { clearDocsPart, clearBestTrans, clearTempSave, clearSubmitData } =
-    useEditorStore();
+  const {
+    clearDocsPart,
+    clearBestTrans,
+    submitData,
+    clearTempSave,
+    clearSubmitData,
+  } = useEditorStore();
 
   //에디터 내용 변경 상태
   const { setTempSave, setSubmitData } = useEditorStore();
@@ -101,6 +106,15 @@ const TranslateEditor = () => {
                     />
                     <RectBtn
                       onClick={async () => {
+                        if (
+                          currentUserText === "" ||
+                          currentUserText === null ||
+                          currentUserText.trim() === "" ||
+                          currentUserText.trim() === undefined
+                        ) {
+                          toast.error("내용을 입력해주세요.");
+                          return;
+                        }
                         setSubmitData(currentUserText);
                         const status = await handleSubmit(
                           docsId,

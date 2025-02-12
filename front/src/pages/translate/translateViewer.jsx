@@ -75,35 +75,6 @@ const TranslateViewer = () => {
     useModalStore();
 
   // 우클릭 또는 버튼 클릭 시 UI 상태 토글
-  const toggleButton = (partId, e) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    const mouseY = e.clientY - rect.top;
-    // 버튼 컨테이너의 높이 (대략적인 높이값)
-    const buttonContainerHeight = 100;
-    // y 위치 제한 (컨테이너 내부에서 적절한 위치 조정)
-    const limitedY = Math.min(
-      Math.max(buttonContainerHeight / 2, mouseY),
-      rect.height - buttonContainerHeight / 5
-    );
-
-    setMousePositions((prev) => ({
-      ...prev,
-      [partId]: {
-        x: e.clientX - rect.left,
-        y: limitedY,
-      },
-    }));
-
-    setButtonStates((prev) => ({
-      ...Object.keys(prev).reduce((acc, key) => {
-        if (key !== partId) {
-          acc[key] = false;
-        }
-        return acc;
-      }, {}),
-      [partId]: !prev[partId],
-    }));
-  };
 
   const toggleDocpart = (partId) => {
     setDocpartStates((prev) => ({
@@ -266,8 +237,6 @@ const TranslateViewer = () => {
     toggleArchive();
   };
 
-  //우클릭 스타일 변경
-
   return (
     <div className="h-[99%] min-w-[800px] bg-white absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 overflow-x-auto overflow-y-scroll p-6 flex flex-col z-[1000] max-w-screen-xl mx-auto shadow-xl">
       <button
@@ -314,9 +283,7 @@ const TranslateViewer = () => {
             <div
               onClick={async (e) => {
                 e.stopPropagation();
-                if (localStorage.getItem("token")) {
-                  toggleButton(part.id, e);
-                }
+
                 const tmpTransList = await fetchBestTranslate(
                   part.docsId,
                   "best"
@@ -336,7 +303,7 @@ const TranslateViewer = () => {
                 }
                 toggleDocpart(part.id);
               }}
-              className="flex flex-col w-full p-1 rounded-sm text-[#424242] hover:shadow-lg hover:border hover:border-gray-200 cursor-pointer"
+              className="flex flex-col w-full h-fit p-1 rounded-sm text-[#424242] hover:shadow-lg hover:border hover:border-gray-200 cursor-pointer"
             >
               <div
                 ref={(element) => {
@@ -352,7 +319,6 @@ const TranslateViewer = () => {
                     }, 50);
                   }
                 }}
-                style={{ height: heightStates[part.id] }}
               >
                 {!docpartStates[part.id] ? (
                   <ToastViewer content={part.content} />
@@ -364,9 +330,13 @@ const TranslateViewer = () => {
                         <Trophy className="w-6 h-6 text-yellow-500" />
                       </div>
                     )}
-                    <ToastViewer
-                      content={`<span style="background-color: #fbebd2">${bestTrans}</span>`}
-                    />
+                    {bestTrans === "" ? (
+                      <ToastViewer content={bestTrans} />
+                    ) : (
+                      <ToastViewer
+                        content={`<span style="background-color: #fbebd2">${bestTrans}</span>`}
+                      />
+                    )}
                   </div>
                 )}
               </div>
