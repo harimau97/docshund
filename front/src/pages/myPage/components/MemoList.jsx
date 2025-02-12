@@ -28,7 +28,6 @@ MemoList.propTypes = {
   memos: PropTypes.array.isRequired,
   onEditMemo: PropTypes.func.isRequired,
   onDeleteMemo: PropTypes.func.isRequired,
-  isLoading: PropTypes.bool.isRequired,
   hasFetched: PropTypes.bool.isRequired,
 };
 
