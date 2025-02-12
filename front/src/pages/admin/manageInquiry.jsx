@@ -1,10 +1,7 @@
 import { useState, useEffect, useRef } from "react";
-import {
-  fetchInquiryList,
-  fetchUserList,
-} from "../admin/Hooks/adminGetService";
+import { fetchInquiryList, fetchUserList } from "./services/adminGetService";
 
-import { respondInquiry } from "../admin/Hooks/adminPostService";
+import { respondInquiry } from "./services/adminPostService";
 
 import { Download } from "lucide-react";
 import useUserManagerStore from "../../store/adminStore/userManagerStore";
@@ -42,17 +39,6 @@ const ManageInquiry = () => {
     }
   };
 
-  // const handleInquiryStatus = async (inquiryId) => {
-  //   const response = await withdrawReport(inquiryId);
-  //   if (response === 200) {
-  //     toast.success("신고 철회 완료");
-  //   } else {
-  //     toast.error("공개 처리 실패");
-  //   }
-  //   const data = await fetchReportList();
-  //   setReportList(data);
-  // };
-
   const processUserList = (userListContent) => {
     userListContent.forEach((user) => {
       currentUserList[user.userId] = user.nickname;
@@ -71,6 +57,16 @@ const ManageInquiry = () => {
     }));
   };
 
+  const handleRespond = async (inquiryId) => {
+    const data = await respondInquiry(inquiryId, answer);
+    console.log(data);
+    if (data.status === 200) {
+      toast.success("작성 완료");
+    } else {
+      toast.error("작성 실패");
+    }
+  };
+
   useEffect(() => {
     const fetchUsers = async () => {
       try {
@@ -86,8 +82,12 @@ const ManageInquiry = () => {
     const fetchInquiryData = async () => {
       try {
         const data = await fetchInquiryList();
-        setInquiryList(data);
-        inquiryListData.current = data;
+        const processedData = await data.sort(
+          (a, b) => b.inquiryCreatedAt - a.inquiryCreatedAt
+        );
+        console.log(processedData);
+        setInquiryList(processedData);
+        inquiryListData.current = processedData;
         console.log(data);
       } catch (error) {
         console.error("Error fetching inquiry:", error);
@@ -187,7 +187,7 @@ const ManageInquiry = () => {
                     }}
                     className="hover:bg-gray-50 transition-colors duration-150 cursor-pointer"
                   >
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 overflow-hidden col-span-2">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 overflow-hidden text-ellipsis max-w-[300px]">
                       {inquiry.inquiryTitle}
                     </td>
                     <td className="flex gap-1 px-6 py-4 whitespace-nowrap text-sm text-gray-900">
@@ -248,20 +248,33 @@ const ManageInquiry = () => {
                               답변 작성
                             </div>
                             <div className="bg-gray-50 rounded-lg p-3">
-                              <textarea
-                                className="w-full"
-                                onChange={(e) => setAnswer(e.target.value)}
-                                name=""
-                                id=""
-                              ></textarea>
-                              <button
-                                onClick={() => {
-                                  respondInquiry(inquiry.inquiryId, answer);
-                                }}
-                                className="cursor-pointer"
-                              >
-                                작성 완료
-                              </button>
+                              {inquiry.answerCreatedAt ? (
+                                <textarea
+                                  className="w-full p-2"
+                                  onChange={(e) => setAnswer(e.target.value)}
+                                  value={inquiry.answerContent}
+                                  name=""
+                                  id=""
+                                ></textarea>
+                              ) : (
+                                <textarea
+                                  className="w-full p-2"
+                                  onChange={(e) => setAnswer(e.target.value)}
+                                  placeholder="답변을 입력해주세요."
+                                  name=""
+                                  id=""
+                                ></textarea>
+                              )}
+                              {!inquiry.answerCreatedAt && (
+                                <button
+                                  onClick={() => {
+                                    handleRespond(inquiry.inquiryId, answer);
+                                  }}
+                                  className="cursor-pointer text-white bg-[#3b5998] hover:bg-[#3b5998]/90 focus:ring-4 focus:outline-none focus:ring-[#3b5998]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-[#3b5998]/55 me-2 mb-2"
+                                >
+                                  작성 완료
+                                </button>
+                              )}
                             </div>
                           </div>
                         </div>

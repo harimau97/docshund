@@ -1,8 +1,8 @@
 import Modal from "react-modal";
 import { useState } from "react";
 import * as motion from "motion/react-client";
-import { fetchBestTranslate } from "./hooks/translateGetService";
-import { registTranslate } from "./hooks/translatePostService";
+import { fetchBestTranslate } from "./services/translateGetService";
+import { registTranslate } from "./services/translatePostService";
 import { AnimatePresence } from "motion/react";
 import { toast } from "react-toastify";
 import TextContent from "./components/textContent";
@@ -15,7 +15,7 @@ import useEditorStore from "../../store/translateStore/editorStore";
 //
 
 const TranslateEditor = () => {
-  const { docsPart, bestTrans, docsId, originId, currentUserText } =
+  const { docsPart, bestTrans, docsId, originId, porder, currentUserText } =
     useEditorStore();
   const [isVisible, setIsVisible] = useState(false);
 
@@ -90,7 +90,7 @@ const TranslateEditor = () => {
                       />
                     </svg>
                     <span className="text-base font-semibold text-slate-700">
-                      {originId} 번째 문단
+                      {porder} 번째 문단
                     </span>
                     <span className="text-sm text-slate-600">번역 중</span>
                   </div>

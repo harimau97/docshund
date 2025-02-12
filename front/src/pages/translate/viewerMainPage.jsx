@@ -18,7 +18,6 @@ const ViewerMainPage = () => {
   return (
     <div
       onContextMenu={(e) => {
-        show(e);
         e.preventDefault();
       }}
       className="min-w-[768px] flex"

@@ -1,11 +1,30 @@
 import { useState } from "react";
 import PropTypes from "prop-types";
-import { registDocumentContent } from "../Hooks/adminPostService";
+import { registDocumentContent } from "../services/adminPostService";
 import { toast } from "react-toastify";
 import { motion, AnimatePresence } from "framer-motion";
 
 const RegistDocsContent = ({ docsId, open, onClose }) => {
   const [content, setContent] = useState("");
+  const [file, setFile] = useState(null);
+
+  const handleFileChange = (e) => {
+    const selectedFile = e.target.files[0];
+
+    if (selectedFile) {
+      if (selectedFile.size > 5 * 1024 * 1024) {
+        // 5MB 제한
+        toast.info("파일 크기는 최대 5MB까지 업로드 가능합니다.");
+        return;
+      }
+      setFile(selectedFile);
+    }
+  };
+
+  const handleFileCancel = () => {
+    setFile(null);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const originDocumentData = content;
@@ -35,13 +54,23 @@ const RegistDocsContent = ({ docsId, open, onClose }) => {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
+          {/* <div>
             <textarea
               value={content}
               onChange={(e) => setContent(e.target.value)}
               placeholder="여기에 문서 내용을 붙여넣으세요..."
               className="w-full h-96 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 resize-none"
             />
+          </div> */}
+          <div className="relative">
+            <input
+              type="file"
+              onChange={handleFileChange}
+              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+            />
+            <div className="py-2 px-4 bg-[#bc5b39] text-white rounded-md shadow-sm text-center cursor-pointer hover:bg-[#C96442] text-sm">
+              파일 선택
+            </div>
           </div>
 
           <div className="flex justify-end space-x-2">

@@ -109,6 +109,9 @@ function AppRoutes() {
         }
       />
 
+      {/* 유어마이페이지 */}
+      <Route path="/userPage/:userId" element={<UserPage />}></Route>
+
       {/* 비로그인 접근 불가 */}
       <Route element={<ProtectedRoute isAdminRoute={false} />}>
         {/* 마이페이지 관련 주소 */}
@@ -128,8 +131,6 @@ function AppRoutes() {
           <Route path="memo" element={<MemoPage />} />
           <Route path="inquiry" element={<InquiryPage />} />
         </Route>
-        {/* 유어마이페이지 */}
-        <Route path="/userPage/:userId" element={<UserPage />}></Route>
       </Route>
     </Routes>
   );

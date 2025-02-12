@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
-import { FaPlus } from "react-icons/fa6";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate, useParams } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
 import EditorModal from "../../pages/myPage/components/EditorModal.jsx";
 import RoundCornerBtn from "../button/roundCornerBtn.jsx";
-import { fetchDocsList } from "../../pages/translate/hooks/translateGetService.jsx";
+import MemoService from "../../pages/myPage/services/memoService.jsx";
+import { fetchDocsList } from "../../pages/translate/services/translateGetService.jsx";
 
 // 상태 import
 import useDocsStore from "../../store/translateStore/docsStore.jsx";
@@ -12,8 +13,6 @@ import modalStore from "../../store/myPageStore/myPageModalStore.jsx";
 
 //이미지 주소 import
 import Logo from "../../assets/logo.png";
-import menuDown from "../../assets/icon/menu-down.png";
-import menuUp from "../../assets/icon/menu-up.png";
 import {
   Bell,
   ScrollText,
@@ -26,9 +25,13 @@ import navToggle2 from "../../assets/icon/navToggle2.png";
 //
 
 const LeftNav = () => {
+  const token = localStorage.getItem("token");
+  const userId = jwtDecode(token).id;
+
+  const { docsId } = useParams();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [docs, setDocs] = useState([]);
-  const [memos, setMemo] = useState([]);
+  const [memos, setMemos] = useState([]);
   const [isNavOpen, setIsNavOpen] = useState(false);
   const [btnToggled, setBtnToggled] = useState(
     "absolute top-15 -right-6 transform"
@@ -56,12 +59,21 @@ const LeftNav = () => {
     closeModal();
   };
 
+  const handleMemoList = async () => {
+    try {
+      const data = await MemoService.fetchMemos(userId);
+      if (data) {
+        setMemos(data.reverse());
+      } else {
+        setMemos([]);
+      }
+    } catch (error) {
+      console.error("Error fetching memos:", error);
+    }
+  };
+
   //문서 목록 관련 상태
   const { docsList } = useDocsStore();
-
-  useEffect(() => {
-    fetchDocsList(true);
-  }, [docsList]);
 
   function toggleNav() {
     if (isNavOpen === true) {
@@ -166,7 +178,9 @@ const LeftNav = () => {
                     key={index}
                     className="py-2.5 flex justify-between items-center border-b border-[#E0DED9] hover:bg-[#F5F4F0] transition-colors duration-200"
                   >
-                    <span className="text-[#7E7C77]">{memo}</span>
+                    <span className="text-[#7E7C77]">{memo.title}</span>
+                    <span className="text-[#7E7C77]">{memo.createdAt}</span>
+                    <span className="text-[#7E7C77]">{memo.content}</span>
                     <button className="text-[#7E7C77] hover:text-[#4A4A4A] underline cursor-pointer text-sm transition-colors duration-200">
                       보기
                     </button>

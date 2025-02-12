@@ -1,6 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
-import { fetchReportList, fetchUserList } from "../admin/Hooks/adminGetService";
-import { withdrawReport } from "../admin/Hooks/adminPostService";
+import {
+  fetchReportList,
+  fetchUserList,
+} from "../admin/services/adminGetService";
+import { withdrawReport } from "../admin/services/adminPostService";
 import { MoveRight, Download } from "lucide-react";
 import useUserManagerStore from "../../store/adminStore/userManagerStore";
 import ToastViewer from "../../pages/translate/components/toastViewer";
@@ -187,7 +190,7 @@ const ManageReport = () => {
                       {report.category}
                     </td>
                     <td className="flex gap-1 px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {currentUserList[report.user.userId]} <MoveRight />{" "}
+                      {currentUserList[report.userId]} <MoveRight />{" "}
                       {currentUserList[report.reportedUser]}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">

@@ -1,12 +1,13 @@
 import { useState, useEffect } from "react";
-import { fetchDocsList } from "../translate/hooks/translateGetService";
+import { fetchDocsList } from "../translate/services/translateGetService";
 import {
   registDocument,
   registDocumentContent,
-} from "./Hooks/adminPostService";
+} from "./services/adminPostService";
 import RegistDocs from "./components/registDocs";
 import RegistDocsContent from "./components/registDocsContent";
 import useModalStore from "../../store/modalStore";
+import { toast } from "react-toastify";
 
 const ManageDocs = () => {
   const [currentDocsId, setCurrentDocsId] = useState(null);
@@ -17,6 +18,8 @@ const ManageDocs = () => {
   //등록 관련 모달 상태관리
   const [openRegistDocs, setOpenRegistDocs] = useState(false);
   const [openRegistDocsContent, setOpenRegistDocsContent] = useState(false);
+
+  const [file, setFile] = useState(null);
 
   useEffect(() => {
     const fetchAdminDocs = async () => {
@@ -48,6 +51,40 @@ const ManageDocs = () => {
     );
   };
 
+  const handleFileChange = async (e, docsId) => {
+    const selectedFile = e.target.files[0];
+    console.log("Selected File:", selectedFile);
+
+    if (selectedFile) {
+      if (selectedFile.size > 5 * 1024 * 1024) {
+        toast.error("파일 크기는 최대 5MB까지 업로드 가능합니다.");
+        return;
+      }
+
+      // FormData 생성 및 파일 추가
+      const formData = new FormData();
+      formData.append("file", selectedFile);
+
+      try {
+        // 파일 업로드
+        const result = await registDocumentContent(docsId, formData);
+        console.log("Upload result:", result);
+
+        if (result && result !== 400) {
+          toast.success("파일이 성공적으로 업로드되었습니다.");
+          fetchAdminDocs();
+        }
+      } catch (error) {
+        console.error("파일 업로드 중 오류 발생:", error);
+        toast.error("파일 업로드에 실패했습니다.");
+      }
+    }
+  };
+
+  const handleFileCancel = () => {
+    setFile(null);
+  };
+
   return (
     <div className="p-6 max-w-[1200px] mx-auto">
       <RegistDocs
@@ -64,9 +101,9 @@ const ManageDocs = () => {
         <h1 className="text-2xl font-bold text-gray-800">문서관리</h1>
         <h2>* 삭제하실 문서를 선택 후 삭제 버튼을 눌러주세요.</h2>
         <div className="flex gap-2">
-          <button className="cursor-pointer px-2 py-2 bg-[#ff2121] text-white rounded-lg hover:bg-[#a34e31] transition-colors duration-200">
+          {/* <button className="cursor-pointer px-2 py-2 bg-[#ff2121] text-white rounded-lg hover:bg-[#a34e31] transition-colors duration-200">
             - 문서삭제
-          </button>
+          </button> */}
           <button
             onClick={() => setOpenRegistDocs(true)}
             className="cursor-pointer px-2 py-2 bg-[#bc5b39] text-white rounded-lg hover:bg-[#a34e31] transition-colors duration-200"
@@ -148,16 +185,18 @@ const ManageDocs = () => {
                     {adminDocs.likeCount}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    <button
-                      onClick={() => {
-                        setOpenRegistDocsContent(true);
-                        console.log(adminDocs.docsId);
-                        setCurrentDocsId(adminDocs.docsId);
-                      }}
-                      className="cursor-pointer px-2 py-2 bg-[#bc5b39] text-white rounded-lg hover:bg-[#a34e31] transition-colors duration-200"
-                    >
-                      원본업로드
-                    </button>
+                    <div className="relative">
+                      <input
+                        type="file"
+                        id="file"
+                        name="file"
+                        onChange={(e) => handleFileChange(e, adminDocs.docsId)}
+                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                      />
+                      <div className="py-2 px-4 bg-[#bc5b39] text-white rounded-md shadow-sm text-center cursor-pointer hover:bg-[#C96442] text-sm">
+                        파일 선택
+                      </div>
+                    </div>
                   </td>
                 </tr>
               ))}

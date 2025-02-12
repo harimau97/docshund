@@ -1,6 +1,6 @@
 import { useState } from "react";
 import PropTypes from "prop-types";
-import { registDocument } from "../Hooks/adminPostService";
+import { registDocument } from "../services/adminPostService";
 import { toast } from "react-toastify";
 
 const RegistDocs = ({ open, onClose }) => {

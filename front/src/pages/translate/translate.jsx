@@ -2,8 +2,8 @@ import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import useDocsStore from "../../store/translateStore/docsStore";
-import { fetchDocsList } from "./hooks/translateGetService";
-import { likeDocs } from "./hooks/translatePostService";
+import { fetchDocsList } from "./services/translateGetService";
+import { likeDocs } from "./services/translatePostService";
 import { motion } from "framer-motion";
 
 const TransLatePage = () => {
@@ -33,6 +33,7 @@ const TransLatePage = () => {
       const tmpDocsList = await fetchDocsList();
       setDocsList(tmpDocsList);
       setBestDocsList(tmpDocsList);
+      console.log("tmpDocsList", tmpDocsList);
     };
     fetchData();
   }, []);
@@ -175,6 +176,10 @@ const TransLatePage = () => {
                   <button
                     onClick={() => {
                       navigate(`/translate/main/viewer/${docs.docsId}`);
+                      console.log("docs", docs.documentName);
+                      useDocsStore.setState({
+                        documentName: docs.documentName,
+                      });
                     }}
                     className="cursor-pointer mt-4 px-6 py-2 bg-[rgba(188,91,57,1)] text-white rounded-lg hover:bg-[rgba(188,91,57,0.8)] transition-colors duration-200 font-medium"
                   >

@@ -209,18 +209,6 @@ const ReportModal = () => {
                     <option value="OTHER">기타</option>
                   </select>
                 </div>
-                {/* <div className="mb-6">
-                  <label className="block text-lg font-medium text-black mb-2">
-                    원본
-                  </label>
-                  <textarea
-                    type="text"
-                    value={originContent}
-                    readOnly={true}
-                    className="mt-1 block w-full py-2 px-3 border rounded-md shadow-sm focus:outline-none focus:ring-[#bc5b39] focus:border-[#bc5b39] sm:text-sm"
-                    style={{ height: "150px" }}
-                  />
-                </div> */}
 
                 <div className="mb-6">
                   <label className="block text-lg font-medium text-black mb-2">

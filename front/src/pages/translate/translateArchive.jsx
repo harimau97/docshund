@@ -1,10 +1,9 @@
 import { useState, useEffect } from "react";
-import { fetchBestTranslate } from "./hooks/translateGetService.jsx";
-import { likeTranslate } from "./hooks/translatePostService.jsx";
+import { fetchBestTranslate } from "./services/translateGetService.jsx";
+import { likeTranslate } from "./services/translatePostService.jsx";
 import { jwtDecode } from "jwt-decode";
 import * as motion from "motion/react-client";
 import { AnimatePresence } from "motion/react";
-import Modal from "react-modal";
 import useModalStore from "../../store/translateStore/translateModalStore.jsx";
 import GoBack from "../../assets/icon/goBack.png";
 import useEditorStore from "../../store/translateStore/editorStore.jsx";
@@ -24,6 +23,7 @@ const TranslateArchive = () => {
   const {
     docsId,
     originId,
+    porder,
     clearDocsPart,
     clearBestTrans,
     clearTempSave,
@@ -148,7 +148,7 @@ const TranslateArchive = () => {
                     }}
                   />
                   <span className="flex-1 text-center">
-                    {originId}번째 문단 번역 기록
+                    {porder}번째 문단 번역 기록
                   </span>
                   <div className="w-[40px]"></div>
                 </div>
