@@ -119,8 +119,8 @@ const TranslateArchive = () => {
       const tmpTransList = await fetchBestTranslate(docsId, "");
       console.log(docsId, "번역 전체", tmpTransList);
       setTransList(tmpTransList);
+      await generateUserList(tmpTransList);
       changeOrderBy("like", tmpTransList);
-      generateUserList(tmpTransList);
     };
 
     setStatus(0);
