@@ -27,9 +27,16 @@ const UserPage = () => {
 
   const [currentPage, setCurrentPage] = useState(0);
   const [itemsPerPage] = useState(5);
-  const [totalPages, setTotalPages] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
   const [currentData, setCurrentData] = useState([]);
   const [activeTab, setActiveTab] = useState("userTrans");
+
+  const defaultProfile = {
+    profileImage: "",
+    nickname: "",
+    hobby: "",
+    introduce: "",
+  };
 
   const tabs = [
     { id: "userTrans", label: "번역본", path: "/translate/viewer" },
@@ -52,7 +59,7 @@ const UserPage = () => {
           userId
         );
 
-        setArticles(articlesData || []);
+        setArticles(articlesData.content || []);
         setComments(commentsData || []);
         setTranslations(translationsData || []);
       } catch (error) {
@@ -134,7 +141,10 @@ const UserPage = () => {
   return (
     <div className="w-full px-12 py-5 max-w-screen-xl mx-auto">
       <h1 className="text-2xl font-bold mt-4 mb-5 pl-4">프로필</h1>
-      <ProfileCard isEditing={false} editedProfile={userProfile} />
+      <ProfileCard
+        isEditing={false}
+        editedProfile={userProfile || defaultProfile}
+      />
       <div className="flex justify-between mt-5 mb-5">
         <h1 className="font-bold text-2xl pl-4">활동 내역</h1>
       </div>
