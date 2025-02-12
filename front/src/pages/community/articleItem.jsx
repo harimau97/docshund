@@ -111,7 +111,7 @@ const ArticleItem = () => {
 
   return (
     <div className="flex justify-center w-full">
-      <main className="flex-1 p-8 max-w-[1280px]">
+      <main className="flex-1 p-4 max-w-[1280px]">
         {/* header */}
         <CommunityHeader />
         {/* main content - bg-white와 rounded 스타일을 상위 div에 적용 */}
@@ -127,7 +127,7 @@ const ArticleItem = () => {
                 </h1>
                 <div className="flex gap-2 text-sm text-gray-500 flex-shrink-0">
                   <button
-                    className="hover:text-gray-700 cursor-pointer"
+                    className="text-[#7d7c77] underline hover:text-gray-700 cursor-pointer"
                     onClick={() => {
                       // 수정 페이지로 이동
                       navigate(`/community/modify/${articleId}`);
@@ -137,7 +137,7 @@ const ArticleItem = () => {
                   </button>
                   <span>|</span>
                   <button
-                    className="hover:text-gray-700 cursor-pointer"
+                    className="text-[#7d7c77] underline hover:text-gray-700 cursor-pointer"
                     onClick={async () => {
                       const response =
                         await ArticleItemService.deleteArticleItem(articleId);
@@ -157,7 +157,7 @@ const ArticleItem = () => {
                         <div className="flex gap-2 text-sm text-gray-500">
                           <span>|</span>
                           <button
-                            className="hover:text-gray-700 cursor-pointer"
+                            className="text-[#7d7c77] underline hover:text-gray-700 cursor-pointer"
                             onClick={() => {
                               handleReport(articleItems);
                             }}
