@@ -81,7 +81,7 @@ const ReportModal = () => {
     try {
       // 문의 제출 API 호출
       await ReportService.submitReport(formData);
-      toast.success("문의가 성공적으로 제출되었습니다.");
+      toast.success("신고가 성공적으로 제출되었습니다.");
       setCategory("");
       setTitle("");
       setEmail("");
@@ -90,8 +90,8 @@ const ReportModal = () => {
 
       // 문의 제출 후 마이페이지로 이동
     } catch (error) {
-      toast.error("문의 제출 중 오류가 발생했습니다.");
-      console.log("문의 등록 실패", error);
+      toast.error("신고 제출 중 오류가 발생했습니다.");
+      console.log("신고 등록 실패", error);
     }
 
     toggleReport();

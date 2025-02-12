@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import useDocsStore from "../../store/translateStore/docsStore";
+import useModalStore from "../../store/translateStore/translateModalStore";
 import { fetchDocsList } from "./services/translateGetService";
 import { likeDocs } from "./services/translatePostService";
 import { motion } from "framer-motion";
@@ -84,9 +85,13 @@ const TransLatePage = () => {
                 <motion.div
                   key={items.docsId}
                   className="relative w-48 h-64 bg-white rounded-lg shadow-lg overflow-hidden cursor-pointer transform transition-transform hover:scale-105 border border-[#E8E5E1]"
-                  onClick={() =>
-                    navigate(`/translate/main/viewer/${items.docsId}`)
-                  }
+                  onClick={async () => {
+                    useModalStore.setState({
+                      isEditorOpen: false,
+                      isArchiveOpen: false,
+                    });
+                    navigate(`/translate/main/viewer/${items.docsId}`);
+                  }}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.1, duration: 0.5 }}
@@ -174,8 +179,13 @@ const TransLatePage = () => {
                     {docs.documentName}
                   </h3>
                   <button
-                    onClick={() => {
+                    onClick={async () => {
+                      useModalStore.setState({
+                        isEditorOpen: false,
+                        isArchiveOpen: false,
+                      });
                       navigate(`/translate/main/viewer/${docs.docsId}`);
+
                       console.log("docs", docs.documentName);
                       useDocsStore.setState({
                         documentName: docs.documentName,

@@ -87,8 +87,7 @@ const TranslateViewer = () => {
   } = useEditorStore();
   const { documentName } = useDocsStore();
   // 모달 관련 상태
-  const { openEditor, openArchive, toggleArchive, toggleEditor } =
-    useModalStore();
+  const { openEditor, openArchive } = useModalStore();
 
   // 우클릭 또는 버튼 클릭 시 UI 상태 토글
 
@@ -253,7 +252,6 @@ const TranslateViewer = () => {
     setPorder(part.pOrder);
     await fetchBestTranslate(part.docsId, "");
     await openArchive();
-    toggleArchive();
   };
 
   return (

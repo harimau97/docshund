@@ -7,9 +7,11 @@ import { Download } from "lucide-react";
 import useUserManagerStore from "../../store/adminStore/userManagerStore";
 import ToastViewer from "../../pages/translate/components/toastViewer";
 import { toast } from "react-toastify";
+import LodingImage from "../../assets/loading.gif";
 
 const ManageInquiry = () => {
   const inquiryListData = useRef([]);
+  const [loading, setLoading] = useState(false);
   const [answer, setAnswer] = useState("");
   const [inquiryStates, setInquiryStates] = useState({});
   const [userList, setUserList] = useState([]);
@@ -58,11 +60,14 @@ const ManageInquiry = () => {
   };
 
   const handleRespond = async (inquiryId) => {
+    setLoading(true);
     const data = await respondInquiry(inquiryId, answer);
     console.log(data);
     if (data.status === 200) {
+      setLoading(false);
       toast.success("작성 완료");
     } else {
+      setLoading(false);
       toast.error("작성 실패");
     }
   };
@@ -265,17 +270,18 @@ const ManageInquiry = () => {
                                   id=""
                                 ></textarea>
                               )}
-                              {!inquiry.answerCreatedAt && (
-                                <button
-                                  onClick={() => {
-                                    handleRespond(inquiry.inquiryId, answer);
-                                  }}
-                                  className="cursor-pointer text-white bg-[#3b5998] hover:bg-[#3b5998]/90 focus:ring-4 focus:outline-none focus:ring-[#3b5998]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-[#3b5998]/55 me-2 mb-2"
-                                >
-                                  작성 완료
-                                </button>
-                              )}
                             </div>
+
+                            {!inquiry.answerCreatedAt && (
+                              <button
+                                onClick={() => {
+                                  handleRespond(inquiry.inquiryId, answer);
+                                }}
+                                className="cursor-pointer mt-2 text-white bg-[#BC5B39] hover:bg-[#C96442]/90 focus:ring-4 focus:outline-none focus:ring-[#3b5998]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-[#3b5998]/55 me-2 mb-2"
+                              >
+                                작성 완료
+                              </button>
+                            )}
                           </div>
                         </div>
                       </div>
@@ -287,6 +293,11 @@ const ManageInquiry = () => {
           </table>
         </div>
       </div>
+      {loading && (
+        <div className="fixed inset-0 bg-opacity-50 flex flex-col justify-center items-center z-50 backdrop-brightness-80">
+          <img src={LodingImage} alt="로딩중" />
+        </div>
+      )}
     </div>
   );
 };

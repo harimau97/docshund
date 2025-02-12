@@ -26,7 +26,7 @@ import navToggle2 from "../../assets/icon/navToggle2.png";
 
 const LeftNav = () => {
   let userId = 0;
-
+  const navigate = useNavigate();
   if (localStorage.getItem("token")) {
     const token = localStorage.getItem("token");
     userId = jwtDecode(token).userId;
@@ -77,7 +77,7 @@ const LeftNav = () => {
   };
 
   //문서 목록 관련 상태
-  const { docsList } = useDocsStore();
+  const { docsList, setDocsList } = useDocsStore();
 
   function toggleNav() {
     if (isNavOpen === true) {
@@ -98,6 +98,14 @@ const LeftNav = () => {
       );
     }
   }
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const tmpDocsList = await fetchDocsList();
+      setDocsList(tmpDocsList);
+    };
+    fetchData();
+  }, []);
 
   return (
     <div className="h-screen">
@@ -141,11 +149,9 @@ const LeftNav = () => {
                 <div className="px-5">
                   {docsList.map((doc, index) => (
                     <div
-                      onClick={() =>
-                        window.location.replace(
-                          `/translate/main/viewer/${doc.docsId}`
-                        )
-                      }
+                      onClick={async () => {
+                        navigate(`/translate/main/viewer/${doc.docsId}`);
+                      }}
                       key={index}
                       className="cursor-pointer py-2.5 flex justify-between items-center border-b border-[#E0DED9] hover:bg-[#F5F4F0] transition-colors duration-200"
                     >
@@ -197,7 +203,7 @@ const LeftNav = () => {
         <div className="items-center justify-center flex mb-10">
           <RoundCornerBtn
             onClick={() => {
-              window.location.replace("/translate");
+              navigate("/translate");
             }}
             text="뷰어 나가기"
           />
