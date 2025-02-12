@@ -1,4 +1,3 @@
-import "react-contexify/dist/ReactContexify.css";
 import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
@@ -11,12 +10,15 @@ import {
   fetchTranslateData,
   fetchBestTranslate,
 } from "./hooks/translateGetService.jsx";
-import * as motion from "motion/react-client";
 
 // 컴포넌트 import
 import TranslateEditor from "./translateEditor.jsx";
 import TranslateArchive from "./translateArchive.jsx";
 import ToastViewer from "./components/toastViewer.jsx";
+
+//우클릭 커스타마이즈
+import "react-contexify/dist/ReactContexify.css";
+
 import {
   Menu,
   Item,
@@ -264,6 +266,8 @@ const TranslateViewer = () => {
     toggleArchive();
   };
 
+  //우클릭 스타일 변경
+
   return (
     <div className="h-[99%] min-w-[800px] max-w-[70%] absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 overflow-x-auto overflow-y-scroll p-6 flex flex-col z-[1000] max-w-screen-xl mx-auto">
       <button
@@ -397,7 +401,7 @@ const TranslateViewer = () => {
             {contextMenuDocsName}문서 {contextMenuOriginId}번째 문단
           </Item>
           <Separator />
-          <Item className="hover:bg-gray-100" onClick={handleTranslate}>
+          <Item className="hover:bg-gray-100!" onClick={handleTranslate}>
             번역하기
           </Item>
           <Item onClick={handleArchive}>번역 기록</Item>
