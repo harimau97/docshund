@@ -72,7 +72,11 @@ function App() {
   // UseSSE(token ? jwtDecode(token).userId : null);
 
   return (
-    <div className="flex flex-col min-h-screen min-w-[768px] overflow-hidden">
+    <div
+      className={`flex flex-col min-h-screen min-w-[768px] overflow-hidden ${
+        isTranslateViewerPage ? "bg-[#FAF9F5]" : ""
+      }`}
+    >
       <ToastModal />
       {isTranslateViewerPage ? <LeftNav /> : null}
       {!isTranslateViewerPage && !isAdminPage ? <UpperNav /> : null}
