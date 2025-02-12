@@ -25,9 +25,8 @@ public class AlertsController {
 	// 알림 목록 조회
 	@GetMapping("")
 	public ResponseEntity<List<AlertOutputDto>> getAlerts(
-		@PathVariable Long userId
 	) {
-		List<AlertOutputDto> alerts = alertsService.getAllAlerts(userId);
+		List<AlertOutputDto> alerts = alertsService.getAllAlerts();
 		return ResponseEntity.ok(alerts);
 	}
 
