@@ -4,7 +4,10 @@ import { format, isSameDay } from "date-fns";
 import { jwtDecode } from "jwt-decode";
 
 import communityArticleStore from "../../store/communityStore/communityArticleStore";
+import useReportStore from "../../store/reportStore";
 import ArticleItemService from "./services/articleItemService";
+
+import ReportModal from "../../pages/report";
 import CommunityHeader from "./components/communityHeader";
 import ArticleFooter from "./components/articleFooter";
 import SkeletonArticleItem from "./components/skeletonArticleItem";
@@ -12,6 +15,7 @@ import ReplyList from "./replyList";
 import RectBtn from "../../components/button/rectBtn";
 import ToastViewer from "../translate/components/toastViewer";
 import logo from "../../assets/logo.png";
+import { use } from "react";
 
 const ArticleItem = () => {
   const navigate = useNavigate();
@@ -36,6 +40,23 @@ const ArticleItem = () => {
     (state) => state.clearArticleItems
   );
   const setArticleData = communityArticleStore((state) => state.setArticleData);
+
+  const handleReport = (data) => {
+    //TEST
+    console.log("data", data);
+
+    useReportStore.setState({
+      originContent: data.content,
+      reportedUser: data.userId,
+      commentId: null,
+      articleId: data.articleId,
+      transId: null,
+      chatId: null,
+    });
+
+    useReportStore.openReport();
+    useReportStore.toggleReport();
+  };
 
   // NOTE: 즉시 store에 접근하여 데이터를 가져오기 위해 useEffect 사용
   useEffect(() => {
@@ -131,7 +152,12 @@ const ArticleItem = () => {
                     ? jwtDecode(token)?.userId != articleItems.userId && (
                         <div className="flex gap-2 text-sm text-gray-500">
                           <span>|</span>
-                          <button className="hover:text-gray-700 cursor-pointer">
+                          <button
+                            className="hover:text-gray-700 cursor-pointer"
+                            onClick={() => {
+                              handleReport(articleItems);
+                            }}
+                          >
                             신고
                           </button>
                         </div>
