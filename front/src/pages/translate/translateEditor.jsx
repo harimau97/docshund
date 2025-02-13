@@ -48,7 +48,7 @@ const TranslateEditor = () => {
     <AnimatePresence>
       {isEditorOpen && (
         <motion.div
-          className="fixed inset-0 flex items-center justify-center z-[2200] backdrop-brightness-60 border-box w-full h-full"
+          className="fixed inset-0 flex items-center justify-center z-[2100] backdrop-brightness-60 border-box w-full h-full"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -88,15 +88,6 @@ const TranslateEditor = () => {
                   <span className="text-sm text-slate-600">번역 중</span>
                 </div>
                 <div className="flex space-x-6 ">
-                  <RectBtn
-                    onClick={async () => {
-                      setTempSave(currentUserText);
-                      toast.success("임시 저장 완료");
-                      setIsVisible(true);
-                      setTimeout(() => setIsVisible(false), 1500);
-                    }}
-                    text="임시저장"
-                  />
                   <RectBtn
                     onClick={async () => {
                       if (
