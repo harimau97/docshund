@@ -153,7 +153,7 @@ const Chat = () => {
   };
 
   const handleInputChange = (event) => {
-    if (event.target.value.length <= 255) {
+    if (event.target.value.length <= 200) {
       setInputValue(event.target.value);
     }
   };
