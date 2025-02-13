@@ -1,5 +1,6 @@
 package com.ssafy.docshund.global.config;
 
+import java.util.Arrays;
 import java.util.Collections;
 
 import org.springframework.context.annotation.Bean;
@@ -77,7 +78,11 @@ public class SecurityConfig {
 	@Bean
 	public CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration configuration = new CorsConfiguration();
-		configuration.setAllowedOrigins(Collections.singletonList("http://localhost:5173"));
+		configuration.setAllowedOrigins(Arrays.asList(
+			"http://localhost:5173",
+			"https://localhost:5173",
+			"https://i12a703.p.ssafy.io"
+		));
 		configuration.setAllowedMethods(Collections.singletonList("*"));
 		configuration.setAllowedHeaders(Collections.singletonList("*"));
 		configuration.setAllowCredentials(true);
