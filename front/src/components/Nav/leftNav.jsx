@@ -219,7 +219,9 @@ const LeftNav = () => {
               </div>
               <div className="px-5">
                 {Array.isArray(memos) && memos.length === 0 ? (
-                  <p className="text-[#7E7C77]">작성된 메모가 없습니다.</p>
+                  <p className="text-[#7E7C77] text-xs">
+                    작성된 메모가 없습니다.
+                  </p>
                 ) : (
                   Array.isArray(memos) &&
                   memos.slice(0, 3).map((memo, index) => (
@@ -227,7 +229,7 @@ const LeftNav = () => {
                       key={index}
                       className="py-2.5 flex justify-between items-center border-b border-[#E0DED9] hover:bg-[#F5F4F0] transition-colors duration-200"
                     >
-                      <span className="w-32 text-[#7E7C77] break-all line-clamp-1">
+                      <span className="sm:w-25 md:w-36 text-[#7E7C77] break-all line-clamp-1">
                         {memo.title}
                       </span>
                       <button
@@ -256,9 +258,9 @@ const LeftNav = () => {
         <EditorModal
           title={memoData ? "메모 수정" : "새 메모"}
           buttonText={memoData ? "수정 완료" : "작성 완료"}
+          onSubmit={memoData ? handleEditMemo : handleCreateMemo}
           isOpen={isOpen}
           closeModal={closeModal}
-          onSubmit={memoData ? handleEditMemo : handleCreateMemo}
           memoData={memoData}
           onDelete={memoData ? handleDeleteMemo : null}
         />

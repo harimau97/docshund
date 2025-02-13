@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Editor } from "@toast-ui/react-editor";
 import "@toast-ui/editor/dist/toastui-editor.css";
-import PropTypes from "prop-types";
+import propTypes from "prop-types";
 
 import useEditorStore from "../../../store/translateStore/editorStore";
 import communityArticleStore from "../../../store/communityStore/communityArticleStore";
@@ -15,8 +15,9 @@ const EditorContent = ({ initialTextContent, maxLength = 15000 }) => {
   const setFileUrl = communityArticleStore((state) => state.setFileUrl);
 
   useEffect(() => {
-    if (editorRef.current) {
-      editorRef.current.getInstance().setMarkdown(initialTextContent);
+    if (!initialTextContent) {
+      editorRef.current.getInstance().setMarkdown("");
+      setContentLength(0);
     }
   }, [initialTextContent]);
 
@@ -37,6 +38,8 @@ const EditorContent = ({ initialTextContent, maxLength = 15000 }) => {
     if (editorRef.current) {
       const editor = editorRef.current.getInstance();
       editor.insertText(`![image](${url})<br/>`);
+    } else {
+      console.log("editorRef is null");
     }
   };
 
@@ -78,8 +81,8 @@ const EditorContent = ({ initialTextContent, maxLength = 15000 }) => {
 };
 
 EditorContent.propTypes = {
-  initialTextContent: PropTypes.string.isRequired,
-  maxLength: PropTypes.number.isRequired,
+  initialTextContent: propTypes.string,
+  maxLength: propTypes.number.isRequired,
 };
 
 export default EditorContent;

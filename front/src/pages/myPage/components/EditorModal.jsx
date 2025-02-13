@@ -1,12 +1,13 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import PropTypes from "prop-types";
 import { motion, AnimatePresence } from "framer-motion";
+import { Editor } from "@toast-ui/react-editor";
 import "@toast-ui/editor/dist/toastui-editor.css";
 import back from "../../../assets/icon/goBack.png";
-import EditorContent from "../../translate/components/editorContent";
 import useEditorStore from "../../../store/translateStore/editorStore";
 
 const MAX_TITLE_LENGTH = 50;
+const MAX_CONTENT_LENGTH = 15000;
 
 const EditorModal = ({
   title,
@@ -17,24 +18,32 @@ const EditorModal = ({
   memoData,
   onDelete,
 }) => {
-  const [formData, setFormData] = useState({ title: "", content: "" });
-  const { currentUserText, setCurrentUserText } = useEditorStore();
+  const [formData, setFormData] = useState({ title: "" });
+  const { setCurrentUserText, currentUserText } = useEditorStore();
+  const editorRef = useRef(null);
 
   useEffect(() => {
     if (isOpen) {
+      console.log("Opening EditorModal with memoData:", memoData);
       if (memoData) {
-        setFormData({
-          title: memoData.title,
-          content: memoData.content,
-        });
-        setCurrentUserText(memoData.content);
+        setFormData({ title: memoData.title || "" });
+        setCurrentUserText(memoData.content || "");
+        if (editorRef.current) {
+          editorRef.current.getInstance().setMarkdown(memoData.content || "");
+        }
       } else {
-        setFormData({ title: "", content: "" });
+        setFormData({ title: "" });
         setCurrentUserText("");
+        if (editorRef.current) {
+          editorRef.current.getInstance().setMarkdown("");
+        }
       }
     } else {
-      setFormData({ title: "", content: "" });
+      setFormData({ title: "" });
       setCurrentUserText("");
+      if (editorRef.current) {
+        editorRef.current.getInstance().setMarkdown("");
+      }
     }
   }, [isOpen, memoData, setCurrentUserText]);
 
@@ -42,14 +51,27 @@ const EditorModal = ({
     const { name, value } = e.target;
     if (name === "title" && value.length <= MAX_TITLE_LENGTH) {
       setFormData({ ...formData, [name]: value });
-    } else if (name === "content") {
-      setFormData({ ...formData, content: value });
+    }
+  };
+
+  const handleEditorChange = () => {
+    if (editorRef.current) {
+      const editorInstance = editorRef.current.getInstance();
+      const markdownContent = editorInstance.getMarkdown();
+      if (markdownContent.length <= MAX_CONTENT_LENGTH) {
+        setCurrentUserText(markdownContent);
+      } else {
+        editorInstance.setMarkdown(
+          markdownContent.slice(0, MAX_CONTENT_LENGTH)
+        );
+      }
     }
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     const editorContent = currentUserText;
+    console.log("Submitting with content:", editorContent);
     const submitData = { ...formData, content: editorContent };
     if (memoData && memoData.memoId) {
       onSubmit(memoData.memoId, submitData);
@@ -75,7 +97,7 @@ const EditorModal = ({
           onClick={closeModal}
         >
           <motion.div
-            className="h-[75vh] bg-white w-3/5 rounded-lg border border-[#E1E1DF] shadow-lg overflow-hidden flex flex-col"
+            className="bg-white w-3/5 rounded-lg border border-[#E1E1DF] shadow-lg overflow-hidden flex flex-col"
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.8, opacity: 0 }}
@@ -91,7 +113,7 @@ const EditorModal = ({
 
             <form
               onSubmit={handleSubmit}
-              className="flex flex-col flex-grow p-4 space-y-4"
+              className="flex flex-col p-4 space-y-4"
             >
               <div>
                 <label className="block text-lg font-medium text-black mb-2">
@@ -110,7 +132,18 @@ const EditorModal = ({
                   {formData.title.length} / {MAX_TITLE_LENGTH}
                 </p>
               </div>
-              <EditorContent initialTextContent={formData.content} />
+              <Editor
+                ref={editorRef}
+                initialValue={memoData?.content || " "}
+                height="400px"
+                initialEditType="wysiwyg"
+                useCommandShortcut={true}
+                placeholder="내용을 입력해주세요"
+                onChange={handleEditorChange}
+              />
+              <p className="text-xs text-gray-500 mt-1 mr-2 text-right">
+                {currentUserText.length} / {MAX_CONTENT_LENGTH}
+              </p>
 
               <div className="flex justify-end space-x-3">
                 {memoData && (
