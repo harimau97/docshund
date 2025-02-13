@@ -29,6 +29,26 @@ const TransLatePage = () => {
 
   const navigate = useNavigate();
 
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth);
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+
+  const filteredBestDocsList =
+    windowWidth < 768
+      ? bestDocsList.slice(0, 2)
+      : windowWidth < 1024
+      ? bestDocsList.slice(0, 3)
+      : bestDocsList.slice(0, 4);
+
   useEffect(() => {
     const fetchData = async () => {
       const tmpDocsList = await fetchDocsList();
@@ -81,7 +101,7 @@ const TransLatePage = () => {
               인기 번역 문서
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-12">
-              {bestDocsList?.slice(0, 4).map((items, index) => (
+              {filteredBestDocsList.map((items, index) => (
                 <motion.div
                   key={items.docsId}
                   className="relative w-48 h-64 bg-white rounded-lg shadow-lg overflow-hidden cursor-pointer transform transition-transform hover:scale-105 border border-[#E8E5E1]"
