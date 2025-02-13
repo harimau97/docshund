@@ -4,7 +4,7 @@ import { format, isSameDay } from "date-fns";
 import { jwtDecode } from "jwt-decode";
 import { ThumbsUp } from "lucide-react";
 import { toast } from "react-toastify";
-import _, { set } from "lodash";
+import _ from "lodash";
 
 import communityArticleStore from "../../store/communityStore/communityArticleStore";
 import useReportStore from "../../store/reportStore";
@@ -18,7 +18,6 @@ import ReplyList from "./replyList";
 import RectBtn from "../../components/button/rectBtn";
 import ToastViewer from "../translate/components/toastViewer";
 import logo from "../../assets/logo.png";
-import { article } from "motion/react-client";
 
 const ArticleItem = () => {
   const navigate = useNavigate();
@@ -31,7 +30,6 @@ const ArticleItem = () => {
 
   // stroe의 데이터를 가져오기 위해 정의
   const articleItems = communityArticleStore((state) => state.articleItems);
-  const storeArticleId = communityArticleStore((state) => state.articleId);
   const likeCount = communityArticleStore((state) => state.likeCount);
 
   // store의 메소드를 가져오기 위해 정의
@@ -65,21 +63,18 @@ const ArticleItem = () => {
 
   // NOTE: 즉시 store에 접근하여 데이터를 가져오기 위해 useEffect 사용
   useEffect(() => {
-    console.log("useEffect 실행 -> ", articleId);
-
     const fetchArticleItems = async (articleId) => {
       // 데이터를 가져오기 전에 로딩 상태를 true로 변경
       setLoading(true);
-
-      // clearArticleItems(); // store의 articleItems 초기화
+      clearArticleItems(); // store의 articleItems 초기화
 
       // 데이터 가져오기
       try {
         //NOTE: updatedAt이 업데이트 되는 도중에 새로고침해서 데이터를 가져오려 하면 에러 발생
-        console.log("articleItems -> ", articleItems);
 
         // 게시글 아이템을 가져오는 fetchArticleItems 함수 호출
-        if (articleId && _.isEqual(articleItems, {})) {
+        if (articleId) {
+          // detailedArticleService.fetchDetailedArticle 함수를 호출하여 데이터를 가져옴
           const data = await ArticleItemService.fetchArticleItem(articleId);
           // NOTE: data 호출에 길어봐야 200ms, 0.2초 밖에 안걸림
           // -> 로딩하는 동안 이전 값들이 보이는 것은 store에 상태를 다시 세팅하는 시간이 걸리기 때문으로 추측
@@ -89,12 +84,15 @@ const ArticleItem = () => {
             setArticleData(data);
             setIsInitialLoad(false);
           }
+        } else {
+          setTimeout(() => {
+            setIsInitialLoad(false);
+          }, 500);
         }
       } catch (error) {
         setError(error);
       } finally {
         setLoading(false);
-        setIsInitialLoad(false);
       }
     };
 
@@ -102,7 +100,7 @@ const ArticleItem = () => {
 
     // 컴포넌트가 언마운트 될 때 store의 articleItems 초기화
     return () => {
-      if (articleId !== storeArticleId) clearArticleItems();
+      clearArticleItems();
     };
   }, [articleId]);
 
@@ -133,9 +131,6 @@ const ArticleItem = () => {
 
   return (
     <div className="flex justify-center w-full">
-      {/* TEST */}
-      {console.log("DOM -> ", articleItems)}
-
       <main className="flex-1 p-4 max-w-[1280px]">
         {/* header */}
         <CommunityHeader />
