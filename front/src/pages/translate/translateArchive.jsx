@@ -156,7 +156,7 @@ const TranslateArchive = () => {
                   }}
                   className={`${
                     orderByUpdatedAt ? toggledStyle : defaultStyle
-                  } transition-all duration-200 hover:shadow-md`}
+                  } transition-all duration-200 hover:underline`}
                 >
                   최신순
                 </div>
@@ -168,7 +168,7 @@ const TranslateArchive = () => {
                   }}
                   className={`${
                     orderByLike ? toggledStyle : defaultStyle
-                  } transition-all duration-200 hover:shadow-md`}
+                  } transition-all duration-200 hover:underline`}
                 >
                   좋아요순
                 </div>
