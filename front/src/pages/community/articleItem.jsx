@@ -22,7 +22,12 @@ const ArticleItem = () => {
   const navigate = useNavigate();
   const { articleId } = useParams();
 
-  const [isLiked, setIsLiked] = useState(false);
+  const isLikedArticleIds = communityArticleStore(
+    (state) => state.isLikedArticleIds
+  );
+  const setIsLikedArticleIds = communityArticleStore(
+    (state) => state.setIsLikedArticleIds
+  );
   const [isInitialLoad, setIsInitialLoad] = useState(true);
 
   const token = localStorage.getItem("token");
@@ -59,6 +64,31 @@ const ArticleItem = () => {
 
     openReport();
     toggleReport();
+  };
+  console.log(isLikedArticleIds);
+
+  const handleLikeClick = async () => {
+    // 좋아요 api 날리기
+    const response = await ArticleItemService.likeArticleItem(articleId);
+
+    const status = response.status;
+
+    // status가 204이면 좋아요 성공
+    if (status == 204) {
+      if (isLikedArticleIds.includes(articleId)) {
+        setIsLikedArticleIds(
+          isLikedArticleIds.filter((id) => id !== articleId)
+        ); // 좋아요 취소
+      } else {
+        setIsLikedArticleIds([...isLikedArticleIds, articleId]); // 좋아요한 게시글 기록
+      }
+
+      setLikeCount(
+        isLikedArticleIds.includes(articleId) ? likeCount - 1 : likeCount + 1
+      );
+    } else {
+      toast.alert("좋아요에 실패했습니다.");
+    }
   };
 
   // NOTE: 즉시 store에 접근하여 데이터를 가져오기 위해 useEffect 사용
@@ -263,22 +293,7 @@ const ArticleItem = () => {
               <div className="flex justify-center items-center gap-4">
                 {token ? (
                   <RectBtn
-                    onClick={async () => {
-                      // 좋아요 api 날리기
-                      const response = await ArticleItemService.likeArticleItem(
-                        articleId
-                      );
-
-                      const status = response.status;
-
-                      // status가 204이면 좋아요 성공
-                      if (status == 204) {
-                        setIsLiked(!isLiked); // 좋아요 상태 변경
-                        setLikeCount(isLiked ? likeCount - 1 : likeCount + 1); // 좋아요 상태에 따라 수 변경
-                      } else {
-                        toast.alert("좋아요에 실패했습니다.");
-                      }
-                    }}
+                    onClick={handleLikeClick}
                     text={
                       <div className="flex items-center gap-2">
                         <ThumbsUp className="w-4 h-4" />
