@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Carousel } from "flowbite";
 
 const Information = () => {
@@ -6,6 +6,7 @@ const Information = () => {
   useEffect(() => {
     const carouselElement = document.getElementById("indicators-carousel");
     const carousel = new Carousel(carouselElement);
+    carousel.init();
   }, []);
 
   const handleAgree = () => {
@@ -14,16 +15,19 @@ const Information = () => {
   };
 
   useEffect(() => {
-    const hasAgreed = localStorage.getItem("hasAgreed");
-    if (hasAgreed === "true") {
-      setAgree(true);
-    }
+    const checkAgreement = async () => {
+      const hasAgreed = localStorage.getItem("hasAgreed");
+      if (hasAgreed === "true") {
+        setAgree(true);
+      }
+    };
+    checkAgreement();
   }, []);
 
   return (
     <div>
       {!agree && (
-        <div className="w-3/5 md:w-2/3 lg:w-1/2 h-4/5 md:h-3/5 z-[3000] fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#E4DCD4] rounded-xl shadow-2xl transition-all duration-300 ease-in-out">
+        <div className="w-3/4 md:w-3/4 lg:w-1/2 h-4/5 md:h-4/5 z-[3000] fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#E4DCD4] rounded-xl shadow-2xl transition-all duration-300 ease-in-out">
           <div
             id="indicators-carousel"
             className="relative w-full h-full"

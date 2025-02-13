@@ -7,6 +7,7 @@ import {
   loadData,
   closeAllConnections,
 } from "./services/indexedDbService.jsx";
+import userProfileService from "../myPage/services/userProfileService.jsx";
 import {
   fetchTranslateData,
   fetchBestTranslate,
@@ -76,7 +77,7 @@ const TranslateViewer = () => {
   const [isDbInitialized, setIsDbInitialized] = useState(false);
 
   // 번역 관련 상태
-  const { transList, setTransList } = useArchiveStore();
+  const { transList, setTransList, transUserList } = useArchiveStore();
   const {
     bestTrans,
     setBestTrans,
@@ -90,6 +91,13 @@ const TranslateViewer = () => {
   const { openEditor, openArchive } = useModalStore();
 
   // 우클릭 또는 버튼 클릭 시 UI 상태 토글
+
+  const generateUserList = async (translateList) => {
+    translateList.forEach(async (trans) => {
+      const user = await userProfileService.fetchProfile(trans.userId);
+      transUserList[trans.userId] = user.nickname;
+    });
+  };
 
   const toggleDocpart = (partId) => {
     setDocpartStates((prev) => ({
@@ -250,7 +258,8 @@ const TranslateViewer = () => {
     setDocsId(part.docsId);
     setOriginId(part.originId);
     setPorder(part.pOrder);
-    await fetchBestTranslate(part.docsId, "");
+    // await fetchBestTranslate(part.docsId, "");
+    // await generateUserList(transList);
     await openArchive();
   };
 
@@ -283,6 +292,7 @@ const TranslateViewer = () => {
                 "best"
               );
               setTransList(tmpTransList);
+              await generateUserList(tmpTransList);
               if (tmpTransList !== undefined) {
                 const filteredTranslations = tmpTransList.filter(
                   (item) => item.originId === part.originId
@@ -301,7 +311,6 @@ const TranslateViewer = () => {
             <div
               onClick={async (e) => {
                 e.stopPropagation();
-
                 const tmpTransList = await fetchBestTranslate(
                   part.docsId,
                   "best"
@@ -311,7 +320,10 @@ const TranslateViewer = () => {
                   const filteredTranslations = tmpTransList.filter(
                     (item) => item.originId === part.originId
                   );
-                  if (filteredTranslations.length > 0) {
+                  if (
+                    filteredTranslations.length > 0 &&
+                    filteredTranslations[0].likeCount > 0
+                  ) {
                     setBestTrans(filteredTranslations[0].content);
                   } else {
                     setBestTrans("");

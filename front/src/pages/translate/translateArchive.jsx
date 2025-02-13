@@ -19,6 +19,7 @@ import useModalStore from "../../store/translateStore/translateModalStore.jsx";
 const TranslateArchive = () => {
   let userId = 0;
   const tmpUserList = useRef([]);
+  const [isLiked, setIsLiked] = useState(false);
   if (localStorage.getItem("token")) {
     const token = localStorage.getItem("token");
     userId = jwtDecode(token).userId;
@@ -41,6 +42,7 @@ const TranslateArchive = () => {
   } = useEditorStore();
   const {
     transList,
+    transUserList,
     orderBy,
     orderByLike,
     defaultStyle,
@@ -79,10 +81,7 @@ const TranslateArchive = () => {
 
   const handleLike = async (docsId, transId) => {
     const status = await likeTranslate(docsId, transId);
-    if (status === 200) {
-      await fetchBestTranslate(docsId, "");
-      setStatus(200);
-    }
+    return status;
   };
 
   const handleClose = () => {
@@ -107,25 +106,17 @@ const TranslateArchive = () => {
     }
   };
 
-  const generateUserList = async (translateList) => {
-    translateList.forEach(async (trans) => {
-      const user = await userProfileService.fetchProfile(trans.userId);
-      tmpUserList.current[trans.userId] = user.nickname;
-    });
-  };
-
   useEffect(() => {
     const fetchData = async () => {
-      const tmpTransList = await fetchBestTranslate(docsId, "");
-      console.log(docsId, "번역 전체", tmpTransList);
-      setTransList(tmpTransList);
-      await generateUserList(tmpTransList);
-      changeOrderBy("like", tmpTransList);
+      if (isArchiveOpen) {
+        const tmpTransList = await fetchBestTranslate(docsId, "");
+        console.log(docsId, "번역 전체", tmpTransList);
+        setTransList(tmpTransList);
+        changeOrderBy("like", tmpTransList);
+      }
     };
-
-    setStatus(0);
     fetchData();
-  }, [isArchiveOpen, status]);
+  }, []);
 
   return (
     <AnimatePresence>
@@ -215,7 +206,7 @@ const TranslateArchive = () => {
                         >
                           <div className="flex flex-col gap-1">
                             <div className="text-lg font-medium">
-                              {tmpUserList.current[trans.userId]}
+                              {transUserList[trans.userId]}
                               님의 번역본
                             </div>
                             <div className="text-sm text-gray-500">
@@ -246,9 +237,9 @@ const TranslateArchive = () => {
                             </button>
 
                             <div
-                              onClick={(e) => {
+                              onClick={async (e) => {
                                 e.stopPropagation();
-                                handleLike(docsId, trans.transId);
+                                await handleLike(docsId, trans.transId);
                               }}
                               className={`flex w-fititems-center gap-2 px-4 py-2 rounded-lg transition-all duration-300 cursor-pointer right-5 top-1/2  ${
                                 trans.likeUserIds.includes(Number(userId))
