@@ -52,8 +52,10 @@ public class SecurityConfig {
 				.successHandler(customSuccessHandler)
 			)
 			.authorizeHttpRequests(auth -> auth
-				.requestMatchers("/login").denyAll()  // 🚫 기본 로그인 경로 차단
-				.requestMatchers("/oauth2/**", "/login/oauth2/**", "/ws-connect").permitAll() // ✅ OAuth2 로그인만 허용
+				.requestMatchers("/login")
+				.denyAll()  // 🚫 기본 로그인 경로 차단
+				.requestMatchers("/oauth2/**", "/login/oauth2/**", "/ws-connect", "/ws-connect/**")
+				.permitAll() // ✅ OAuth2 로그인만 허용
 				.requestMatchers(
 					"/api/v1/docshund/docs",
 					"/api/v1/docshund/docs/*/origin",
@@ -68,8 +70,10 @@ public class SecurityConfig {
 					"/api/v1/docshund/supports/notice/*",
 					"/api/v1/docshund/users/profile/*",
 					"/api/v1/docshund/docs/trans"
-				).permitAll()
-				.anyRequest().authenticated())
+				)
+				.permitAll()
+				.anyRequest()
+				.authenticated())
 			.sessionManagement(session -> session
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 			.exceptionHandling(ex -> ex.authenticationEntryPoint(jwtAuthenticationEntryPoint));
