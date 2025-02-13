@@ -99,6 +99,7 @@ const TranslateArchive = () => {
     const fetchData = async () => {
       if (isArchiveOpen) {
         const tmpTransList = await fetchBestTranslate(docsId, "");
+        tmpTransList.sort((a, b) => b.likeCount - a.likeCount);
         console.log(docsId, "번역 전체", tmpTransList);
         setTransList(tmpTransList);
         changeOrderBy("like", tmpTransList);
