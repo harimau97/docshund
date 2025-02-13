@@ -30,7 +30,7 @@ public class StompHandler implements ChannelInterceptor {
 		if (StompCommand.CONNECT == accessor.getCommand() || StompCommand.SEND == accessor.getCommand()) {
 
 			String authHeader = accessor.getFirstNativeHeader("Authorization");
-			log.info("authHeader: {}", authHeader);
+			log.info("Stomp authHeader: {}", authHeader);
 
 			if (jwtUtil.isValidAuthorization(authHeader)) {
 				throw new MessageDeliveryException("Token is missing or invalid");
