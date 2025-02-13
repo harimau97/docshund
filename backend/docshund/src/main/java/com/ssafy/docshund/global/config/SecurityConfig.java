@@ -57,11 +57,14 @@ public class SecurityConfig {
 					"/api/v1/docshund/docs/*/trans",
 					"/api/v1/docshund/forums",
 					"/api/v1/docshund/forums/*",
+					"/api/v1/docshund/forums/user/*",
 					"/api/v1/docshund/forums/*/comments",
+					"/api/v1/docshund/forums/comments/user/*",
 					"/api/v1/docshund/supports/inquiry",
 					"/api/v1/docshund/supports/notice",
 					"/api/v1/docshund/supports/notice/*",
-					"/api/v1/docshund/users/profile/*"
+					"/api/v1/docshund/users/profile/*",
+					"/api/v1/docshund/docs/trans/*"
 				).permitAll()
 				.anyRequest().authenticated())
 			.sessionManagement(session -> session
