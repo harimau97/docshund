@@ -30,7 +30,7 @@ public class JwtFilter extends OncePerRequestFilter {
 	private final AntPathMatcher pathMatcher = new AntPathMatcher();
 
 	private static final List<String> NO_CHECK_URLS = Arrays.asList(
-		"/ws/**"
+		"/ws", "/ws/", "/wss", "/wss/", "/ws-connect", "/ws-connect/"
 	);
 
 	@Override
