@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import Proptypes from "prop-types";
 import { jwtDecode } from "jwt-decode";
 import _ from "lodash";
@@ -15,6 +16,7 @@ const ReplyRenderItem = ({
   reCommentFlag,
   setReCommentFlag,
 }) => {
+  const navigate = useNavigate();
   const token = localStorage.getItem("token");
 
   const setIsReplied = communityArticleStore((state) => state.setIsReplied);
@@ -54,7 +56,10 @@ const ReplyRenderItem = ({
         <img
           src={item.profileImage}
           alt="프로필"
-          className="w-10 h-10 rounded-full mr-4"
+          className="w-10 h-10 rounded-full mr-4 cursor-pointer"
+          onClick={() => {
+            navigate(`/userPage/${item.userId}`);
+          }}
         />
         <div className="flex-1 min-w-0">
           <div className="flex justify-between items-center mb-2">
@@ -73,7 +78,7 @@ const ReplyRenderItem = ({
             {token
               ? jwtDecode(token)?.userId === item.userId && (
                   <button
-                    className="text-[#7d7c77] underline cursor-pointer"
+                    className="text-[#7d7c77] underline text-sm cursor-pointer"
                     onClick={handleDeleteReply}
                   >
                     삭제
