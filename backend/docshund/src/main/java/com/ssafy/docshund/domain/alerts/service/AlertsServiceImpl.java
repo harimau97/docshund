@@ -28,7 +28,9 @@ import com.ssafy.docshund.global.util.user.UserUtil;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AlertsServiceImpl implements AlertsService {
@@ -82,6 +84,22 @@ public class AlertsServiceImpl implements AlertsService {
 		if (userId == null) {
 			throw new AlertsException(AlertsExceptionCode.USER_NOT_AUTHORIZED);
 		}
+
+		log.info("userId {}", userId);
+		log.info("userId {}", userId);
+		log.info("userId {}", userId);
+		log.info("userId {}", userId);
+		log.info("userId {}", userId);
+		log.info("userId {}", userId);
+		log.info("userId {}", userId);
+		log.info("userId {}", userId);
+		log.info("userId {}", userId);
+		log.info("userId {}", userId);
+		log.info("userId {}", userId);
+		log.info("userId {}", userId);
+		log.info("userId {}", userId);
+		log.info("userId {}", userId);
+		log.info("userId {}", userId);
 
 		SseEmitter emitter = new SseEmitter(10 * 60 * 1000L); // 10분
 		SseEmitter oldEmitter = emitters.put(userId, emitter);
