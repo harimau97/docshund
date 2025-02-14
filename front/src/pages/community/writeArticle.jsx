@@ -30,6 +30,7 @@ const WriteArticle = () => {
   const setContentLength = communityArticleStore(
     (state) => state.setContentLength
   );
+  const fileUrl = communityArticleStore((state) => state.fileUrl);
   const setFileUrl = communityArticleStore((state) => state.setFileUrl);
 
   // 제목 입력 핸들러
@@ -59,6 +60,7 @@ const WriteArticle = () => {
         toast.info("사진진 크기는 최대 5MB까지 업로드 가능합니다.");
         return;
       }
+
       setFile(selectedFile);
 
       // S3에 파일 업로드 후 url 받아오기
@@ -79,7 +81,12 @@ const WriteArticle = () => {
     const content = currentUserText; // 에디터 내용
 
     // 제목, 대분류, 소분류, 내용, 파일이 모두 입력되었는지 확인
-    if (!title || !mainCategory || !subCategory || !content) {
+    if (
+      !title.trim() ||
+      !mainCategory.trim() ||
+      !subCategory.trim() ||
+      !content.trim()
+    ) {
       toast.info("모든 항목을 입력해주세요.");
       return;
     } else {
@@ -89,9 +96,9 @@ const WriteArticle = () => {
       }
 
       const response = await ArticleItemService.postArticleItem(
-        title,
-        subCategory,
-        content
+        title.trim(),
+        subCategory.trim(),
+        content.trim()
       );
 
       const data = response.data;
