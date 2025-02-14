@@ -56,9 +56,14 @@ const LeftNav = () => {
     if (token) {
       const decodedToken = jwtDecode(token);
       setUserId(decodedToken.userId);
-      fetchMemos(userId);
     }
   }, [token]);
+
+  useEffect(() => {
+    if (userId) {
+      fetchMemos(userId);
+    }
+  }, [userId]);
 
   const fetchMemos = async (userId) => {
     if (!userId) {
