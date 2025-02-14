@@ -17,13 +17,17 @@ import SkeletonArticleItem from "./components/skeletonArticleItem";
 import ReplyList from "./replyList";
 import RectBtn from "../../components/button/rectBtn";
 import ToastViewer from "../translate/components/toastViewer";
-import logo from "../../assets/logo.png";
 
 const ArticleItem = () => {
   const navigate = useNavigate();
   const { articleId } = useParams();
 
-  const [isLiked, setIsLiked] = useState(false);
+  const isLikedArticleIds = communityArticleStore(
+    (state) => state.isLikedArticleIds
+  );
+  const setIsLikedArticleIds = communityArticleStore(
+    (state) => state.setIsLikedArticleIds
+  );
   const [isInitialLoad, setIsInitialLoad] = useState(true);
 
   const token = localStorage.getItem("token");
@@ -61,6 +65,30 @@ const ArticleItem = () => {
     toggleReport();
   };
 
+  const handleLikeClick = async () => {
+    // 좋아요 api 날리기
+    const response = await ArticleItemService.likeArticleItem(articleId);
+
+    const status = response.status;
+
+    // status가 204이면 좋아요 성공
+    if (status == 204) {
+      if (isLikedArticleIds.includes(articleId)) {
+        setIsLikedArticleIds(
+          isLikedArticleIds.filter((id) => id !== articleId)
+        ); // 좋아요 취소
+      } else {
+        setIsLikedArticleIds([...isLikedArticleIds, articleId]); // 좋아요한 게시글 기록
+      }
+
+      setLikeCount(
+        isLikedArticleIds.includes(articleId) ? likeCount - 1 : likeCount + 1
+      );
+    } else {
+      toast.alert("좋아요에 실패했습니다.");
+    }
+  };
+
   // NOTE: 즉시 store에 접근하여 데이터를 가져오기 위해 useEffect 사용
   useEffect(() => {
     const fetchArticleItems = async (articleId) => {
@@ -74,7 +102,6 @@ const ArticleItem = () => {
 
         // 게시글 아이템을 가져오는 fetchArticleItems 함수 호출
         if (articleId) {
-          // detailedArticleService.fetchDetailedArticle 함수를 호출하여 데이터를 가져옴
           const data = await ArticleItemService.fetchArticleItem(articleId);
           // NOTE: data 호출에 길어봐야 200ms, 0.2초 밖에 안걸림
           // -> 로딩하는 동안 이전 값들이 보이는 것은 store에 상태를 다시 세팅하는 시간이 걸리기 때문으로 추측
@@ -104,17 +131,15 @@ const ArticleItem = () => {
     };
   }, [articleId]);
 
-  const handleDeleteClick = () => async () => {
-    async () => {
-      if (window.confirm("게시글을 삭제하시겠습니까?")) {
-        const response = await ArticleItemService.deleteArticleItem(articleId);
+  const handleDeleteClick = async () => {
+    if (window.confirm("게시글을 삭제하시겠습니까?")) {
+      const response = await ArticleItemService.deleteArticleItem(articleId);
 
-        if (response.status == 204) {
-          toast.info("게시글이 삭제되었습니다.");
-          navigate("/community");
-        }
+      if (response.status == 204) {
+        toast.info("게시글이 삭제되었습니다.");
+        navigate("/community");
       }
-    };
+    }
   };
 
   // NOTE: isInitialLoad가 true일 때만 실행. 로딩중일 때의 깜빡임 현상을 줄여 UX 개선하기 위함
@@ -128,6 +153,39 @@ const ArticleItem = () => {
       </div>
     );
   }
+
+  const renderActionButtons = () => {
+    try {
+      if (!token || !articleItems) return null;
+
+      const decodedToken = jwtDecode(token);
+      const isAuthor = decodedToken?.userId === articleItems.userId;
+
+      if (!isAuthor) return null;
+
+      return (
+        <div className="flex gap-2 text-sm text-gray-500 flex-shrink-0">
+          <button
+            className="text-[#7d7c77] underline hover:text-gray-700 cursor-pointer"
+            onClick={() => navigate(`/community/modify/${articleId}`)}
+          >
+            수정
+          </button>
+          <span>|</span>
+          <button
+            className="text-[#7d7c77] underline hover:text-gray-700 cursor-pointer"
+            onClick={handleDeleteClick}
+          >
+            삭제
+          </button>
+        </div>
+      );
+    } catch (error) {
+      console.error("권한 확인 중 에러:", error);
+      return null;
+    }
+  };
+  // TEST
 
   return (
     <div className="flex justify-center w-full">
@@ -145,9 +203,8 @@ const ArticleItem = () => {
                 <h1 className="text-2xl font-bold flex-1 mr-4">
                   {articleItems.title}
                 </h1>
-                {/* TODO: 본인이 작성한 게 아니면 보이지 않도록 + 불가능하도록 하기 */}
                 <div className="flex gap-2 text-sm text-gray-500 flex-shrink-0">
-                  {token
+                  {/* {token
                     ? jwtDecode(token)?.userId === articleItems.userId && (
                         <div className="flex gap-2 text-sm text-gray-500 flex-shrink-0">
                           <button
@@ -172,7 +229,8 @@ const ArticleItem = () => {
                             : null}
                         </div>
                       )
-                    : null}
+                    : null} */}
+                  {renderActionButtons()}
                   {/* INFO: 신고 */}
                   {token
                     ? jwtDecode(token)?.userId != articleItems.userId && (
@@ -232,22 +290,7 @@ const ArticleItem = () => {
               <div className="flex justify-center items-center gap-4">
                 {token ? (
                   <RectBtn
-                    onClick={async () => {
-                      // 좋아요 api 날리기
-                      const response = await ArticleItemService.likeArticleItem(
-                        articleId
-                      );
-
-                      const status = response.status;
-
-                      // status가 204이면 좋아요 성공
-                      if (status == 204) {
-                        setIsLiked(!isLiked); // 좋아요 상태 변경
-                        setLikeCount(isLiked ? likeCount - 1 : likeCount + 1); // 좋아요 상태에 따라 수 변경
-                      } else {
-                        toast.alert("좋아요에 실패했습니다.");
-                      }
-                    }}
+                    onClick={handleLikeClick}
                     text={
                       <div className="flex items-center gap-2">
                         <ThumbsUp className="w-4 h-4" />

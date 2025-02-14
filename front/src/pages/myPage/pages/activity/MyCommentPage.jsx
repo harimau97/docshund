@@ -87,7 +87,7 @@ const MyCommentPage = () => {
       <ListRender
         data={currentData}
         renderItem={renderComment}
-        totalPages={totalPages}
+        totalPages={comments.length > 0 ? totalPages : 0}
         currentPage={currentPage}
         setCurrentPage={setCurrentPage}
         itemCategory="comment"
