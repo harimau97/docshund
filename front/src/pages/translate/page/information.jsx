@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import Joyride from "react-joyride";
+import Joyride, { STATUS } from "react-joyride";
 
 const Information = () => {
   const [agree, setAgree] = useState(true);
@@ -20,6 +20,15 @@ const Information = () => {
     }
   };
 
+  const handleJoyrideCallback = async (data) => {
+    const { status } = data;
+    if (status === STATUS.FINISHED || status === STATUS.SKIPPED) {
+      console.log("튜토리얼 완료됨!");
+      handleAgree();
+      setRun(false); // Joyride 종료
+    }
+  };
+
   const steps = [
     {
       target: "#navbar",
@@ -37,7 +46,7 @@ const Information = () => {
     },
     {
       target: "#chatbot",
-      content: "챗봇 버튼을 통해 번역봇과 대화할 수 있습니다..",
+      content: "챗봇 버튼을 통해 번역봇과 대화할 수 있습니다.",
     },
     {
       target: "#chat",
@@ -48,24 +57,41 @@ const Information = () => {
   return (
     <div>
       {!agree && (
-        <div className="fixed inset-0 flex items-center justify-center z-[3000] backdrop-brightness-60 border-box w-full h-full">
+        <div className="fixed inset-0 flex items-center justify-center z-[3000] bg-transparent border-box w-full h-full">
           {/* Joyride를 상단에서 렌더링하여 UI 위에 나타나도록 변경 */}
           <Joyride
             steps={steps}
             continuous={true}
             showProgress={true}
             run={true}
-            styles={{ options: { zIndex: 20000 }, overlayColor: "transparent" }} // z-index를 높여 가이드가 가려지지 않도록 설정
+            callback={handleJoyrideCallback} // 스텝 완료 이벤트 감지
+            styles={{
+              options: {
+                zIndex: 20000,
+                overlayColor: "transparent",
+              },
+              overlay: {
+                backgroundColor: "transparent",
+                mixBlendMode: "unset",
+              },
+              spotlight: {
+                backgroundColor: "transparent", // Spotlight(초점 강조) 투명하게 설정
+                boxShadow: "none", // 기본 그림자 효과 제거
+              },
+            }}
           />
 
           {/* 가이드 대상이 되는 요소들 */}
-          <div id="navbar" className="fixed top-39 left-7 w-8 h-8"></div>
+          <div
+            id="navbar"
+            className="fixed top-30 left-5 w-8 h-8 bg-transparent"
+          ></div>
           <div id="paragraph" className="fixed top-35 left-250"></div>
-          <div id="toggleTranslate" className="fixed bottom-24 right-8"></div>
-          <div id="chatbot" className="fixed bottom-16 right-8"></div>
+          <div id="toggleTranslate" className="fixed bottom-32 right-16"></div>
+          <div id="chatbot" className="fixed bottom-16 right-16"></div>
           <div
             id="chat"
-            className="fixed bottom-8 right-8"
+            className="fixed bottom-8 right-16"
             onClick={handleAgree}
           ></div>
         </div>
