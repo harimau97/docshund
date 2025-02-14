@@ -97,6 +97,7 @@ public class UserUtil {
 
 		// OSIV 영향 방지: 영속성 컨텍스트 강제 종료
 		entityManager.clear();
+		entityManager.close();
 
 		return userId;
 	}
