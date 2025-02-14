@@ -2,6 +2,7 @@ package com.ssafy.docshund.domain.alerts.controller;
 
 import com.ssafy.docshund.domain.alerts.dto.AlertOutputDto;
 import com.ssafy.docshund.domain.alerts.service.AlertsService;
+import com.ssafy.docshund.domain.users.entity.User;
 import com.ssafy.docshund.global.util.user.UserUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -76,11 +77,11 @@ public class AlertsController {
 	// 알림 받기 (SSE 연결)
 	@GetMapping(value = "/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
 	public SseEmitter subscribe() {
-		if(userUtil.getUser() == null) {
+		User user = userUtil.getUser();
+		if(user == null) {
 			throw new SecurityException("로그인이 필요합니다.");
 		}
-		Long userId = userUtil.getUser().getUserId();
+		Long userId = user.getUserId();
 		return alertsService.subscribe(userId);
 	}
-
 }
