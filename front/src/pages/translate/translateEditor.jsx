@@ -1,5 +1,5 @@
 import Modal from "react-modal";
-import { useState, useCallback, useMemo } from "react";
+import { useState, useMemo } from "react";
 import * as motion from "motion/react-client";
 import { fetchBestTranslate } from "./services/translateGetService";
 import { registTranslate } from "./services/translatePostService";
@@ -57,13 +57,6 @@ const TranslateEditor = () => {
         }
       }, 400),
     [docsId, originId, currentUserText]
-  );
-
-  const debouncedHandleSubmit = useCallback(
-    _.debounce(async (docsId, originId, currentUserText) => {
-      return handleSubmit(docsId, originId, currentUserText);
-    }, 500),
-    []
   );
 
   const handleClose = () => {
