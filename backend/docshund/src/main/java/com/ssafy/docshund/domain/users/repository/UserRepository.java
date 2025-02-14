@@ -3,6 +3,7 @@ package com.ssafy.docshund.domain.users.repository;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import com.ssafy.docshund.domain.users.entity.Provider;
@@ -17,5 +18,6 @@ public interface UserRepository extends JpaRepository<User, Long>, UserRepositor
 
 	boolean existsByNickname(String nickName);
 
+	@Query("SELECT u.userId FROM User u WHERE u.personalId = :personalId")
 	Optional<Long> findUserIdByPersonalId(String personalId);
 }

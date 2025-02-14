@@ -84,15 +84,7 @@ public class AlertsServiceImpl implements AlertsService {
 		if (userId == null) {
 			throw new AlertsException(AlertsExceptionCode.USER_NOT_AUTHORIZED);
 		}
-
-		log.info("userId {}", userId);
-		log.info("userId {}", userId);
-		log.info("userId {}", userId);
-		log.info("userId {}", userId);
-		log.info("userId {}", userId);
-		log.info("userId {}", userId);
-		log.info("userId {}", userId);
-		log.info("userId {}", userId);
+		
 		log.info("userId {}", userId);
 		log.info("userId {}", userId);
 		log.info("userId {}", userId);
