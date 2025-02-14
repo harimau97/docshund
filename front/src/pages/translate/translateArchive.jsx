@@ -104,7 +104,7 @@ const TranslateArchive = () => {
       if (isArchiveOpen) {
         const tmpTransList = await fetchBestTranslate(docsId, "");
         tmpTransList.sort((a, b) => b.likeCount - a.likeCount);
-        console.log(docsId, "번역 전체", tmpTransList);
+        // console.log(docsId, "번역 전체", tmpTransList);
         setTransList(tmpTransList);
         changeOrderBy("like", tmpTransList);
       }
@@ -214,7 +214,7 @@ const TranslateArchive = () => {
                             <button
                               onClick={(e) => {
                                 e.stopPropagation();
-                                console.log(trans);
+                                // console.log(trans);
                                 useReportStore.setState({
                                   originContent: trans.content,
                                   reportedUser: trans.userId,
