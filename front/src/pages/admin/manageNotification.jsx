@@ -1,9 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { fetchNoticeList } from "./services/adminGetService";
 import { registNotification } from "./services/adminPostService";
 import { deleteNotification } from "./services/adminDeleteService";
 import { modifyNotice } from "./services/adminPatchService";
 import { toast } from "react-toastify";
+import _ from "lodash";
 
 const ManageNotification = () => {
   const [notifications, setNotifications] = useState([]);
@@ -56,6 +57,13 @@ const ManageNotification = () => {
     });
   };
 
+  const debouncedHandleSaveNotification = useCallback(
+    _.debounce((title, content) => {
+      handleSaveNotification(title, content);
+    }, 500),
+    []
+  );
+
   const handleEditNotification = async (noticeId, title, content) => {
     const response = await modifyNotice(noticeId, title, content);
     if (response === 200) {
@@ -73,6 +81,13 @@ const ManageNotification = () => {
     });
   };
 
+  const debouncedHandleEditNotification = useCallback(
+    _.debounce((noticeId, title, content) => {
+      handleEditNotification(noticeId, title, content);
+    }, 500),
+    []
+  );
+
   const handleDeleteNotification = async (noticeId) => {
     const response = await deleteNotification(noticeId);
     if (response === 200) {
@@ -82,6 +97,13 @@ const ManageNotification = () => {
       toast.error("공지 삭제 실패");
     }
   };
+
+  const debouncedHandleDeleteNotification = useCallback(
+    _.debounce((noticeId) => {
+      handleDeleteNotification(noticeId);
+    }, 500),
+    []
+  );
 
   useEffect(() => {
     fetchNoticeData();
@@ -149,7 +171,7 @@ const ManageNotification = () => {
                 {isEditing ? (
                   <button
                     onClick={() =>
-                      handleEditNotification(
+                      debouncedHandleEditNotification(
                         editId,
                         newNotification.title,
                         newNotification.content
@@ -162,7 +184,7 @@ const ManageNotification = () => {
                 ) : (
                   <button
                     onClick={() =>
-                      handleSaveNotification(
+                      debouncedHandleSaveNotification(
                         newNotification.title,
                         newNotification.content
                       )
@@ -234,7 +256,7 @@ const ManageNotification = () => {
                     </button>
                     <button
                       onClick={() =>
-                        handleDeleteNotification(notification.noticeId)
+                        debouncedHandleDeleteNotification(notification.noticeId)
                       }
                       className="text-red-600 hover:text-red-700 transition-colors duration-150"
                     >
