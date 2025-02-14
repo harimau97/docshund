@@ -1,6 +1,8 @@
 package com.ssafy.docshund.domain.alerts.controller;
 
 import com.ssafy.docshund.domain.alerts.dto.AlertOutputDto;
+import com.ssafy.docshund.domain.alerts.exception.AlertsException;
+import com.ssafy.docshund.domain.alerts.exception.AlertsExceptionCode;
 import com.ssafy.docshund.domain.alerts.service.AlertsService;
 import com.ssafy.docshund.domain.users.entity.User;
 import com.ssafy.docshund.global.util.user.UserUtil;
@@ -79,7 +81,7 @@ public class AlertsController {
 	public SseEmitter subscribe() {
 		User user = userUtil.getUser();
 		if(user == null) {
-			throw new SecurityException("로그인이 필요합니다.");
+			throw new AlertsException(AlertsExceptionCode.USER_NOT_AUTHORIZED);
 		}
 		Long userId = user.getUserId();
 		return alertsService.subscribe(userId);
