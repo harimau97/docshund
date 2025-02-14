@@ -43,6 +43,7 @@ const ReplyRenderItem = ({
   };
 
   const handleDeleteReply = _.debounce(async () => {
+    // TODO: window.confirm 및 debounce 취소
     await ReplyItemService.deleteReplyItem(item.articleId, item.commentId);
 
     //  삭제 후 댓글 리스트 리렌더링

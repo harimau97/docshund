@@ -54,6 +54,9 @@ const WriteArticle = () => {
   const handleFileChange = _.debounce(async (e) => {
     const selectedFile = e.target.files[0];
 
+    // TODO: 파일 헤더 확인 <- 이미지 일때만 업로드 가능하도록
+    console.log("파일 타입 체크 -> ", selectedFile.type);
+
     if (selectedFile) {
       if (selectedFile.size > 5 * 1024 * 1024) {
         // 5MB 제한
@@ -201,7 +204,7 @@ const WriteArticle = () => {
                 <div className="mb-6">
                   <div className="flex items-center mb-2">
                     <label className="block text-lg font-medium text-black">
-                      파일 첨부
+                      사진 첨부
                     </label>
                     {file && (
                       <p className="text-sm text-gray-800 ml-6">
