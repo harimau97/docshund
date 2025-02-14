@@ -85,14 +85,6 @@ public class AlertsServiceImpl implements AlertsService {
 			throw new AlertsException(AlertsExceptionCode.USER_NOT_AUTHORIZED);
 		}
 		
-		log.info("userId {}", userId);
-		log.info("userId {}", userId);
-		log.info("userId {}", userId);
-		log.info("userId {}", userId);
-		log.info("userId {}", userId);
-		log.info("userId {}", userId);
-		log.info("userId {}", userId);
-
 		SseEmitter emitter = new SseEmitter(10 * 60 * 1000L); // 10분
 		SseEmitter oldEmitter = emitters.put(userId, emitter);
 		if (oldEmitter != null) {
