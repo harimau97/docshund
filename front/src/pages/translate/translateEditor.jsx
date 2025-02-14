@@ -1,5 +1,5 @@
 import Modal from "react-modal";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import * as motion from "motion/react-client";
 import { fetchBestTranslate } from "./services/translateGetService";
 import { registTranslate } from "./services/translatePostService";
@@ -8,6 +8,7 @@ import { toast } from "react-toastify";
 import TextContent from "./components/textContent";
 import EditorContent from "./components/editorContent";
 import RectBtn from "../../components/button/rectBtn";
+import _ from "lodash";
 
 //상태 관련
 import useModalStore from "../../store/translateStore/translateModalStore";
@@ -40,6 +41,13 @@ const TranslateEditor = () => {
     const status = await registTranslate(docsId, originId, currentUserText);
     return status;
   };
+
+  const debouncedHandleSubmit = useCallback(
+    _.debounce(async (docsId, originId, currentUserText) => {
+      return handleSubmit(docsId, originId, currentUserText);
+    }, 500),
+    []
+  );
 
   const handleClose = () => {
     clearDocsPart();
@@ -83,7 +91,7 @@ const TranslateEditor = () => {
                       strokeLinecap="round"
                       strokeLinejoin="round"
                       strokeWidth={2}
-                      d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+                      d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
                     />
                   </svg>
                   <span className="text-base font-semibold text-slate-700">
@@ -104,7 +112,7 @@ const TranslateEditor = () => {
                         return;
                       }
                       setSubmitData(currentUserText);
-                      const status = await handleSubmit(
+                      const status = await debouncedHandleSubmit(
                         docsId,
                         originId,
                         currentUserText
