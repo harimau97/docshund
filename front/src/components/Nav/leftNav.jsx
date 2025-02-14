@@ -56,27 +56,25 @@ const LeftNav = () => {
     if (token) {
       const decodedToken = jwtDecode(token);
       setUserId(decodedToken.userId);
+      fetchMemos(userId);
     }
   }, [token]);
 
-  useEffect(() => {
-    const fetchMemos = async (userId) => {
-      try {
-        const data = await memoService.fetchMemos(userId);
-        if (data) {
-          setMemos(data.reverse());
-        } else {
-          setMemos([]);
-        }
-      } catch (error) {
-        console.error("Error fetching memos:", error);
-      }
-    };
-
-    if (token) {
-      fetchMemos(userId);
+  const fetchMemos = async (userId) => {
+    if (!userId) {
+      return;
     }
-  }, [userId, setMemos, token]);
+    try {
+      const data = await memoService.fetchMemos(userId);
+      if (data) {
+        setMemos(data.reverse());
+      } else {
+        setMemos([]);
+      }
+    } catch (error) {
+      console.error("Error fetching memos:", error);
+    }
+  };
 
   const handleCreateMemo = async (memoData) => {
     if (userId) {
