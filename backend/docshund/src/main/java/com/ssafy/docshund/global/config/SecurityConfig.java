@@ -60,8 +60,8 @@ public class SecurityConfig {
 				.permitAll() // ✅ OAuth2 로그인만 허용
 				.requestMatchers(
 					"/api/v1/docshund/docs",
-					"/api/v1/docshund/docs/*/origin",
-					"/api/v1/docshund/docs/*/trans",
+					"/api/v1/docshund/docs/**/origin",
+					"/api/v1/docshund/docs/**/trans",
 					"/api/v1/docshund/forums",
 					"/api/v1/docshund/forums/*",
 					"/api/v1/docshund/forums/user/*",
