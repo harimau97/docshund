@@ -78,7 +78,14 @@ public class ArticleRepositoryCustomImpl implements ArticleRepositoryCustom {
                         article.user.userId,
                         article.user.nickname,
                         article.user.profileImage,
-                        Expressions.booleanTemplate("case when count({0}) > 0 then true else false end", userArticleLike.alikeId)
+                        JPAExpressions
+                                .selectOne()
+                                .from(userArticleLike)
+                                .where(
+                                        userArticleLike.article.articleId.eq(article.articleId)
+                                                .and(userArticleLike.user.userId.eq(userId))
+                                )
+                                .exists()
                 ))
                 .from(article)
                 .join(document).on(article.document.docsId.eq(document.docsId))
@@ -133,7 +140,14 @@ public class ArticleRepositoryCustomImpl implements ArticleRepositoryCustom {
                         article.user.userId,
                         article.user.nickname,
                         article.user.profileImage,
-                        Expressions.booleanTemplate("case when count({0}) > 0 then true else false end", userArticleLike.alikeId)
+                        JPAExpressions
+                                .selectOne()
+                                .from(userArticleLike)
+                                .where(
+                                        userArticleLike.article.articleId.eq(article.articleId)
+                                                .and(userArticleLike.user.userId.eq(userId))
+                                )
+                                .exists()
                 ))
                 .from(article)
                 .join(document).on(article.document.docsId.eq(document.docsId))
@@ -191,7 +205,14 @@ public class ArticleRepositoryCustomImpl implements ArticleRepositoryCustom {
                         article.user.userId,
                         article.user.nickname,
                         article.user.profileImage,
-                        Expressions.booleanTemplate("case when count({0}) > 0 then true else false end", userArticleLike.alikeId)
+                        JPAExpressions
+                                .selectOne()
+                                .from(userArticleLike)
+                                .where(
+                                        userArticleLike.article.articleId.eq(article.articleId)
+                                                .and(userArticleLike.user.userId.eq(userId))
+                                )
+                                .exists()
                 ))
                 .from(article)
                 .join(document).on(article.document.docsId.eq(document.docsId))
