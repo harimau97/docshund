@@ -81,7 +81,6 @@ public class UserUtil {
 		return true;
 	}
 
-	@Transactional(readOnly = true)
 	public Long getUserId() {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		Object principal = authentication.getPrincipal();
