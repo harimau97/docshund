@@ -73,7 +73,7 @@ const LeftNav = () => {
       }
     };
 
-    if (userId) {
+    if (userId !== null) {
       fetchMemos(userId);
     }
   }, [userId, setMemos]);
@@ -134,7 +134,6 @@ const LeftNav = () => {
 
   // 알림 모달 상태 초기화
   useEffect(() => {
-    console.log("알림 모달 상태 초기화");
     closeNotificationModal();
   }, []);
 

@@ -22,14 +22,18 @@ const ArticleItem = () => {
   const navigate = useNavigate();
   const { articleId } = useParams();
 
-  const [isLiked, setIsLiked] = useState(false);
+  const isLikedArticleIds = communityArticleStore(
+    (state) => state.isLikedArticleIds
+  );
+  const setIsLikedArticleIds = communityArticleStore(
+    (state) => state.setIsLikedArticleIds
+  );
   const [isInitialLoad, setIsInitialLoad] = useState(true);
 
   const token = localStorage.getItem("token");
 
   // stroe의 데이터를 가져오기 위해 정의
   const articleItems = communityArticleStore((state) => state.articleItems);
-  const storeArticleId = communityArticleStore((state) => state.articleId);
   const likeCount = communityArticleStore((state) => state.likeCount);
 
   // store의 메소드를 가져오기 위해 정의
@@ -61,13 +65,36 @@ const ArticleItem = () => {
     toggleReport();
   };
 
+  const handleLikeClick = async () => {
+    // 좋아요 api 날리기
+    const response = await ArticleItemService.likeArticleItem(articleId);
+
+    const status = response.status;
+
+    // status가 204이면 좋아요 성공
+    if (status == 204) {
+      if (isLikedArticleIds.includes(articleId)) {
+        setIsLikedArticleIds(
+          isLikedArticleIds.filter((id) => id !== articleId)
+        ); // 좋아요 취소
+      } else {
+        setIsLikedArticleIds([...isLikedArticleIds, articleId]); // 좋아요한 게시글 기록
+      }
+
+      setLikeCount(
+        isLikedArticleIds.includes(articleId) ? likeCount - 1 : likeCount + 1
+      );
+    } else {
+      toast.alert("좋아요에 실패했습니다.");
+    }
+  };
+
   // NOTE: 즉시 store에 접근하여 데이터를 가져오기 위해 useEffect 사용
   useEffect(() => {
     const fetchArticleItems = async (articleId) => {
       // 데이터를 가져오기 전에 로딩 상태를 true로 변경
       setLoading(true);
-
-      // clearArticleItems(); // store의 articleItems 초기화
+      clearArticleItems(); // store의 articleItems 초기화
 
       // 데이터 가져오기
       try {
@@ -84,12 +111,15 @@ const ArticleItem = () => {
             setArticleData(data);
             setIsInitialLoad(false);
           }
+        } else {
+          setTimeout(() => {
+            setIsInitialLoad(false);
+          }, 500);
         }
       } catch (error) {
         setError(error);
       } finally {
         setLoading(false);
-        setIsInitialLoad(false);
       }
     };
 
@@ -97,7 +127,7 @@ const ArticleItem = () => {
 
     // 컴포넌트가 언마운트 될 때 store의 articleItems 초기화
     return () => {
-      if (articleId !== storeArticleId) clearArticleItems();
+      clearArticleItems();
     };
   }, [articleId]);
 
@@ -124,10 +154,7 @@ const ArticleItem = () => {
     );
   }
 
-  // TEST
   const renderActionButtons = () => {
-    console.log("articleItems => ", articleItems);
-
     try {
       if (!token || !articleItems) return null;
 
@@ -263,22 +290,7 @@ const ArticleItem = () => {
               <div className="flex justify-center items-center gap-4">
                 {token ? (
                   <RectBtn
-                    onClick={async () => {
-                      // 좋아요 api 날리기
-                      const response = await ArticleItemService.likeArticleItem(
-                        articleId
-                      );
-
-                      const status = response.status;
-
-                      // status가 204이면 좋아요 성공
-                      if (status == 204) {
-                        setIsLiked(!isLiked); // 좋아요 상태 변경
-                        setLikeCount(isLiked ? likeCount - 1 : likeCount + 1); // 좋아요 상태에 따라 수 변경
-                      } else {
-                        toast.alert("좋아요에 실패했습니다.");
-                      }
-                    }}
+                    onClick={handleLikeClick}
                     text={
                       <div className="flex items-center gap-2">
                         <ThumbsUp className="w-4 h-4" />
