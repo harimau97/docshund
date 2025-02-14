@@ -8,6 +8,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
@@ -22,6 +24,7 @@ import com.ssafy.docshund.domain.docs.entity.TranslatedDocument;
 import com.ssafy.docshund.domain.forums.entity.Article;
 import com.ssafy.docshund.domain.forums.entity.Comment;
 import com.ssafy.docshund.domain.supports.entity.Inquiry;
+import com.ssafy.docshund.domain.users.dto.auth.CustomOAuth2User;
 import com.ssafy.docshund.domain.users.entity.User;
 import com.ssafy.docshund.global.util.user.UserUtil;
 
@@ -76,7 +79,11 @@ public class AlertsServiceImpl implements AlertsService {
 	 ☆ SSE 연결 관련 로직 ☆
 	 */
 	public SseEmitter subscribe() {
-		Long userId = userUtil.getUserId(); // 트랜잭션을 따로 관리하는 메서드 호출
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		Object principal = authentication.getPrincipal();
+		CustomOAuth2User customUser = (CustomOAuth2User)principal;
+		Long userId = customUser.getUserId();
+
 		if (userId == null) {
 			throw new AlertsException(AlertsExceptionCode.USER_NOT_AUTHORIZED);
 		}

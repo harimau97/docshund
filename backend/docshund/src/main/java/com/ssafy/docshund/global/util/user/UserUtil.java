@@ -3,7 +3,6 @@ package com.ssafy.docshund.global.util.user;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.ssafy.docshund.domain.users.dto.auth.CustomOAuth2User;
@@ -12,8 +11,6 @@ import com.ssafy.docshund.domain.users.entity.Status;
 import com.ssafy.docshund.domain.users.entity.User;
 import com.ssafy.docshund.domain.users.repository.UserRepository;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -22,8 +19,6 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class UserUtil {
 
-	@PersistenceContext
-	private final EntityManager entityManager;
 	private final UserRepository userRepository;
 
 	@Transactional(readOnly = true)
@@ -84,22 +79,6 @@ public class UserUtil {
 
 		log.info("is Mine");
 		return true;
-	}
-
-	@Transactional(propagation = Propagation.REQUIRES_NEW, readOnly = true)
-	public Long getUserId() {
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		Object principal = authentication.getPrincipal();
-		CustomOAuth2User customUser = (CustomOAuth2User)principal;
-		String personalId = customUser.getPersonalId();
-
-		Long userId = userRepository.findUserIdByPersonalId(personalId).orElse(null);
-
-		// OSIV 영향 방지: 영속성 컨텍스트 강제 종료
-		entityManager.clear();
-		entityManager.close();
-
-		return userId;
 	}
 
 }
