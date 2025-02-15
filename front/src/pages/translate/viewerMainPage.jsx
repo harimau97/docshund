@@ -1,5 +1,6 @@
 import { Outlet, useNavigate, useParams, useLocation } from "react-router-dom";
 import { useEffect } from "react";
+import RoundCornerBtn from "../../components/button/roundCornerBtn.jsx";
 import ChatBotBtn from "../chatBot/chatBotBtn.jsx";
 import Information from "./page/information.jsx";
 import { MessageCircle } from "lucide-react";
@@ -24,7 +25,8 @@ const ViewerMainPage = () => {
   const { docsId } = useParams();
   const location = useLocation().pathname;
 
-  const { isArchiveOpen, isEditorOpen } = useModalStore();
+  const { isArchiveOpen, isEditorOpen, openNav, closeNav, isNavOpen } =
+    useModalStore();
   const { setDocsList, setBestDocsList } = useDocsStore();
 
   useEffect(() => {
@@ -42,9 +44,27 @@ const ViewerMainPage = () => {
       onContextMenu={(e) => {
         e.preventDefault();
       }}
-      className="md:min-w-[768px] h-full flex"
+      className="md:min-w-[768px] h-screen flex"
     >
       <Information />
+
+      {/* 내브바 관련 버튼 */}
+      <button
+        className="flex cursor-pointer fixed items-center justify-center top-2 left-10 hover:shadow-lg"
+        onClick={() => openNav()}
+      >
+        메뉴
+      </button>
+      <div className="items-center justify-center flex mb-10 fixed top-2 left-20">
+        <RoundCornerBtn
+          onClick={() => {
+            navigate("/translate");
+          }}
+          text="나가기"
+        />
+      </div>
+      {/* // */}
+
       <ChatBotBtn />
       {!isArchiveOpen && !isEditorOpen && (
         <button
@@ -78,8 +98,8 @@ const ViewerMainPage = () => {
           <MessageCircle className="text-white w-6 h-6 transition-transform duration-300" />
         </div>
       )}
-      {isChatVisible && <Chat />}
-      <Outlet className="md:min-w-[768px] h-fit pr-16" />
+      <Chat />
+      <Outlet className="h-screen pr-16" />
     </div>
   );
 };
