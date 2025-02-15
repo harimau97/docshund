@@ -99,6 +99,14 @@ const TranslateArchive = () => {
     }
   };
 
+  const handleUTC = (time) => {
+    const date = new Date(time);
+    const kor = date.getHours() + 9;
+    date.setHours(kor);
+    console.log(date);
+    return date;
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       if (isArchiveOpen) {
@@ -125,13 +133,6 @@ const TranslateArchive = () => {
           {/* {isArchiveVisible ? ( */}
           <motion.div
             key="archive-modal"
-            // initial={{ opacity: 0, y: 1000 }}
-            // animate={{ opacity: 1, y: 0 }}
-            // exit={{ opacity: 0, y: 1000 }}
-            // transition={{
-            //   ease: "easeOut",
-            //   duration: 0.3,
-            // }}
             className="fixed inset-0 flex items-center justify-center min-w-full min-h-full "
           >
             <ReportModal />
@@ -205,9 +206,7 @@ const TranslateArchive = () => {
                               님의 번역본
                             </div>
                             <div className="text-sm text-gray-500">
-                              {new Date(
-                                new Date(trans.updatedAt).toISOString()
-                              ).toLocaleString()}
+                              {handleUTC(trans.updatedAt).toLocaleString()}
                             </div>
                           </div>
                           <div className="flex items-center gap-4">

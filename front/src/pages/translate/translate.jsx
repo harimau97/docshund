@@ -202,7 +202,7 @@ const TransLatePage = () => {
                 </button>
               )}
               <div className="p-6 flex flex-col items-center">
-                <div className="bg-gray-50 rounded-lg flex items-center justify-center mb-4">
+                <div className="bg-transparent rounded-lg flex items-center justify-center mb-4">
                   <img
                     src={docs.documentLogo}
                     alt="문서 아이콘"
