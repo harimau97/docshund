@@ -109,8 +109,6 @@ const ArticleItem = () => {
           // NOTE: data 호출에 길어봐야 200ms, 0.2초 밖에 안걸림
           // -> 로딩하는 동안 이전 값들이 보이는 것은 store에 상태를 다시 세팅하는 시간이 걸리기 때문으로 추측
 
-          console.log("data:", data);
-
           if (!_.isEqual(data, {})) {
             setArticleId(articleId);
             setArticleData(data);
@@ -138,13 +136,13 @@ const ArticleItem = () => {
   }, [articleId]);
 
   const handleDeleteClick = _.debounce(async () => {
-    if (window.confirm("게시글을 삭제하시겠습니까?")) {
-      const response = await ArticleItemService.deleteArticleItem(articleId);
+    if (!window.confirm("정말 삭제하시겠습니까?")) return;
 
-      if (response.status == 204) {
-        toast.info("게시글이 삭제되었습니다.");
-        navigate("/community");
-      }
+    const response = await ArticleItemService.deleteArticleItem(articleId);
+
+    if (response.status == 204) {
+      toast.info("게시글이 삭제되었습니다.");
+      navigate("/community");
     }
   }, 300); // 300ms delay to prevent multiple rapid delete requests
 
