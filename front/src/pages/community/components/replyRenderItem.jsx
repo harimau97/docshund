@@ -57,7 +57,7 @@ const ReplyRenderItem = ({
       //  삭제 후 댓글 리스트 리렌더링
       setIsReplied((prev) => !prev);
     }
-  }, 500);
+  }, 100);
 
   return (
     <div className="flex flex-col bg-white p-4 rounded-lg mt-2 mb-2">

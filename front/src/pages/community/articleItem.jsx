@@ -148,7 +148,7 @@ const ArticleItem = () => {
       toast.info("게시글이 삭제되었습니다.");
       navigate("/community");
     }
-  }, 300); // 300ms delay to prevent multiple rapid delete requests
+  }, 100); // 300ms delay to prevent multiple rapid delete requests
 
   // NOTE: isInitialLoad가 true일 때만 실행. 로딩중일 때의 깜빡임 현상을 줄여 UX 개선하기 위함
   if (isInitialLoad) {
