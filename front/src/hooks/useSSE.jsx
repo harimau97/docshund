@@ -47,7 +47,6 @@ const UseSSE = (userId) => {
 
         // INFO: 이벤트 소스 연결 성공 시
         eventSource.onopen = () => {
-          console.log("SSE 연결 성공");
           setIsConnected(true);
           setError(null);
           // setRetryCount(0);
@@ -58,11 +57,17 @@ const UseSSE = (userId) => {
           try {
             const notification = JSON.parse(event.data);
 
-            addNotification(notification);
+            // INFO: 알림 추가, requestAnimationFrame으로 비동기 처리
+            requestAnimationFrame(() => {
+              addNotification(notification);
 
-            // NOTE: 알림왔다고 알려주기
-            toast.info(notification, "알림이 왔습니다!");
-            console.log(notification.message, "알림이 왔습니다!");
+              // NOTE: 알림왔다고 알려주기
+              toast.info(notification.content, {
+                position: "top-right",
+                autoClose: 2000,
+                hideProgressBar: true,
+              });
+            });
           } catch (err) {
             console.error("알림 데이터 파싱 오류:", err);
           }
