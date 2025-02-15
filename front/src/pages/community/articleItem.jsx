@@ -109,11 +109,15 @@ const ArticleItem = () => {
           // NOTE: data 호출에 길어봐야 200ms, 0.2초 밖에 안걸림
           // -> 로딩하는 동안 이전 값들이 보이는 것은 store에 상태를 다시 세팅하는 시간이 걸리기 때문으로 추측
 
-          if (!_.isEqual(data, {})) {
+          // 데이터가 비어있지 않다면 store에 데이터를 세팅
+          if (data) {
             setArticleId(articleId);
             setArticleData(data);
             setCommentCount(data.commentCount);
             setIsInitialLoad(false);
+          } else {
+            toast.error("해당 게시글을 찾을 수 없습니다.");
+            navigate("/community/list");
           }
         } else {
           setTimeout(() => {

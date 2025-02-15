@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { EventSourcePolyfill, NativeEventSource } from "event-source-polyfill";
+import { toast } from "react-toastify";
 import notificationModalStore from "../store/notificationModalStore";
 
 const UseSSE = (userId) => {
@@ -58,6 +59,10 @@ const UseSSE = (userId) => {
             const notification = JSON.parse(event.data);
 
             addNotification(notification);
+
+            // NOTE: 알림왔다고 알려주기
+            toast.info(notification, "알림이 왔습니다!");
+            console.log(notification.message, "알림이 왔습니다!");
           } catch (err) {
             console.error("알림 데이터 파싱 오류:", err);
           }
@@ -105,12 +110,12 @@ const UseSSE = (userId) => {
     connectSSE();
 
     // Cleanup
-    return () => {
-      if (eventSource) {
-        console.log("SSE 연결 종료");
-        eventSource.close();
-      }
-    };
+    // return () => {
+    //   if (eventSource) {
+    //     console.log("SSE 연결 종료");
+    //     eventSource.close();
+    //   }
+    // };
   }, [userId]); // userId가 변경될 때만 재연결
 
   return {
