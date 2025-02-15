@@ -4,8 +4,12 @@ import RoundCornerBtn from "../../components/button/roundCornerBtn.jsx";
 import ChatBotBtn from "../chatBot/chatBotBtn.jsx";
 import Information from "./page/information.jsx";
 import { MessageCircle } from "lucide-react";
+
+//아이콘
 import Korean from "../../assets/icon/korean.png";
 import English from "../../assets/icon/english.png";
+import { ArrowLeftToLine } from "lucide-react";
+import { Menu } from "lucide-react";
 
 //상태
 import useModalStore from "../../store/translateStore/translateModalStore.jsx";
@@ -46,23 +50,26 @@ const ViewerMainPage = () => {
       }}
       className="md:min-w-[768px] h-screen flex"
     >
-      <Information />
+      {/* <Information /> */}
 
       {/* 내브바 관련 버튼 */}
-      <button
-        className="flex cursor-pointer fixed items-center justify-center top-2 left-10 hover:shadow-lg"
-        onClick={() => openNav()}
-      >
-        메뉴
-      </button>
-      <div className="items-center justify-center flex mb-10 fixed top-2 left-20">
-        <RoundCornerBtn
+      <div className="fixed w-25 top-2 left-5 flex gap-4 justify-between z-[1200]">
+        <button
+          className="flex cursor-pointer items-center justify-center hover:shadow-lg bg-gradient-to-r from-[#BC5B39] to-[#ff835a] hover:w-11 hover:h-11 rounded-full w-10 h-10 border-2 border-white transition-all duration-300"
           onClick={() => {
             navigate("/translate");
           }}
-          text="나가기"
-        />
+        >
+          <ArrowLeftToLine className="text-white" />
+        </button>
+        <button
+          className="flex cursor-pointer items-center justify-center hover:shadow-lg bg-gradient-to-r from-[#BC5B39] to-[#ff835a] hover:w-11 hover:h-11 rounded-full w-10 h-10 border-2 border-white transition-all duration-300"
+          onClick={() => openNav()}
+        >
+          <Menu className="text-white" />
+        </button>
       </div>
+
       {/* // */}
 
       <ChatBotBtn />
@@ -75,7 +82,7 @@ const ViewerMainPage = () => {
               navigate(`/translate/main/viewer/${docsId}/best`);
             }
           }}
-          className="transition-all duration-300 fixed bottom-26 right-2 z-[2600] group rounded-full w-10 h-10 bg-gradient-to-r from-[#BC5B39] to-[#ff835a] flex justify-center items-center cursor-pointer shadow-lg hover:shadow-xl border-2 border-white"
+          className="transition-all duration-300 fixed bottom-26 right-2 z-[2500] group rounded-full w-10 h-10 bg-gradient-to-r from-[#BC5B39] to-[#ff835a] flex justify-center items-center cursor-pointer shadow-lg hover:shadow-xl hover:scale-110 border-2 border-white"
         >
           {/* <img className="w-7 h-6" src={Korean} alt="전체 번역 보기" /> */}
           {location.includes("best") ? (

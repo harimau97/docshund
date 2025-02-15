@@ -34,6 +34,7 @@ import {
   ChevronUp,
   StickyNote,
   Plus,
+  X,
 } from "lucide-react";
 import navToggle2 from "../../assets/icon/navToggle2.png";
 
@@ -44,12 +45,6 @@ const LeftNav = () => {
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [docs, setDocs] = useState([]);
-  const [btnToggled, setBtnToggled] = useState(
-    "absolute top-15 -right-6 transform"
-  );
-  const [showNav, setShowNav] = useState(
-    "max-w-[15%] min-w-fit w-60 h-[80vh] bg-[#F0EEE5] shadow-lg flex flex-col border-box border-1 border-[#E0DED9] absolute top-1/2 -translate-y-1/2 rounded-br-4xl rounded-tr-4xl transform transition-all duration-400 -translate-x-[90%] z-[1500]"
-  ); // 배경색 및 테두리 색상 변경, 애니메이션 효과 조정
 
   //내브 바 열림 및 닫힘
   const { isNavOpen, openNav, closeNav } = useModalStore();
@@ -160,8 +155,13 @@ const LeftNav = () => {
   }, []);
 
   return (
-    <div className="z-[1100]">
-      <Drawer open={isNavOpen} onClose={closeNav} className="dark:bg-white">
+    <div className="z-[1500]">
+      <Drawer
+        open={isNavOpen}
+        onClose={closeNav}
+        className="dark:bg-[#FAF9F5] max-w-[36vw] shadow-2xl"
+        backdrop={false}
+      >
         <div className="flex items-center justify-center">
           <NavLink to="/">
             <img
@@ -171,6 +171,12 @@ const LeftNav = () => {
             />
           </NavLink>
         </div>
+        <button
+          className="absolute top-4 right-4 cursor-pointer"
+          onClick={closeNav}
+        >
+          <X />
+        </button>
         <Drawer.Items>
           <Sidebar
             aria-label="Sidebar with multi-level dropdown example"
@@ -180,7 +186,7 @@ const LeftNav = () => {
               <div>
                 <Sidebar.Items>
                   <Sidebar.ItemGroup>
-                    <Sidebar.Item className="dark:hover:bg-white">
+                    <Sidebar.Item className="dark:hover:bg-transparent">
                       <div
                         className="px-2 py-2.5 mb-2 flex flex-row items-center cursor-pointer hover:bg-[#F5F4F0] transition-colors duration-200"
                         // onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -217,7 +223,7 @@ const LeftNav = () => {
                       </div>
                       {/* )} */}
                     </Sidebar.Item>
-                    <Sidebar.Item className="dark:hover:bg-white">
+                    <Sidebar.Item className="dark:hover:bg-transparent">
                       {localStorage.getItem("token") && (
                         <div className="flex-1 overflow-y-auto">
                           <div
@@ -231,7 +237,7 @@ const LeftNav = () => {
                           </div>
                           {createPortal(
                             <div
-                              className={`absolute z-[1100] transition-all top-110 left-2 duration-300 transform ${
+                              className={`absolute  transition-all top-110 left-2 duration-300 z-[1600] transform ${
                                 isNotificationModalOpen
                                   ? "opacity-100 translate-y-0"
                                   : "opacity-0 -translate-y-2 pointer-events-none"
@@ -246,7 +252,7 @@ const LeftNav = () => {
                     </Sidebar.Item>
                   </Sidebar.ItemGroup>
                   <Sidebar.ItemGroup>
-                    <Sidebar.Item className="dark:hover:bg-white">
+                    <Sidebar.Item className="dark:hover:bg-transparent">
                       {localStorage.getItem("token") && (
                         <div className="flex-1 overflow-y-auto">
                           <div className="px-2 py-2.5 mb-2 w-full flex items-center hover:bg-[#F5F4F0] transition-colors duration-200">
