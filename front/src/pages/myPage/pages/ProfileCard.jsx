@@ -118,7 +118,7 @@ const ProfileCard = ({
                 value={nickname}
                 onChange={handleNicknameInputChange}
                 placeholder="닉네임 입력"
-                className="border p-1 rounded mr-3 focus:outline-none focus:ring-[#bc5b39] focus:border-[#bc5b39] text-sm md:text-base"
+                className="border p-1 rounded mr-3 focus:outline-none focus:ring-[#bc5b39] focus:border-[#bc5b39] text-sm md:text-base w-34"
               />
               <button
                 type="button"
