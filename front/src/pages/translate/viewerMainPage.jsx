@@ -48,6 +48,7 @@ const ViewerMainPage = () => {
         e.preventDefault();
       }}
       className="md:min-w-[768px] h-screen flex overflow-hidden"
+      id="mainPage"
     >
       <Information />
 

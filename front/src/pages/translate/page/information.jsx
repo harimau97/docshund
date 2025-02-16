@@ -13,6 +13,14 @@ const Information = () => {
     }
   }, []);
 
+  useEffect(() => {
+    if (!agree) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "auto";
+    }
+  }, [agree]);
+
   const handleAgree = () => {
     if (!localStorage.getItem("hasAgreed")) {
       setAgree(true);
@@ -48,7 +56,7 @@ const Information = () => {
       target: "#upperBtns",
       content:
         "사이드바에서는 문서 목록, 알림, 메모를 조회할 수 있습니다. 뒤로 나가기 버튼을 통해 문서 목록으로 돌아 갈 수 있습니다.",
-      placement: "auto",
+      placement: "bottom",
       styles: {
         options: {
           backgroundColor: "#E4DCD4",
@@ -112,17 +120,30 @@ const Information = () => {
         },
       },
     },
+    {
+      target: "body",
+      content: "시작 버튼을 누르면 사이트의 사용약관에 동의하게 됩니다.",
+      placement: "center",
+      styles: {
+        options: {
+          backgroundColor: "#E4DCD4",
+          textAlign: "center",
+          arrowColor: "#E4DCD4",
+          color: "#424242",
+        },
+      },
+    },
   ];
 
   return (
-    <div className="h-screen overflow-hidden">
+    <div className="fixed inset-0 w-screen h-screen overflow-hidden">
       {!agree && (
-        <div className="fixed inset-0 flex items-center justify-center z-[3000] border-box w-full h-full overflow-hidden">
+        <div className="flex items-center inset-0 justify-center z-[3000] w-full h-full overflow-hidden">
           {/* Joyride를 상단에서 렌더링하여 UI 위에 나타나도록 변경 */}
           <Joyride
             steps={steps}
             continuous={true}
-            showProgress={true}
+            showProgress={false}
             allowClickThruHole={true}
             spotlightClicks={false} // 스포트라이트 영역 클릭 방지
             disableCloseOnEsc={true} // ESC 키로 종료 방지
@@ -134,15 +155,16 @@ const Information = () => {
               options: {
                 zIndex: 20000,
                 primaryColor: "#BC5B39",
-
-                tooltip: {
-                  backgroundColor: "#E4DCD4",
-                  textAlign: "center",
-                  padding: "0.5rem 1rem",
-                  fontSize: "1rem",
-                  color: "#424242",
+                overlay: {
+                  position: "fixed",
                 },
               },
+            }}
+            locale={{
+              back: "이전",
+              close: "닫기",
+              last: "시작",
+              next: "다음", // 진행 상황을 포함한 텍스트
             }}
           />
         </div>
