@@ -96,8 +96,14 @@ const TranslateViewer = () => {
   // 모달 관련 상태
   const { openEditor, openArchive, closeEditor, closeArchive } =
     useModalStore();
-  const { currentProgress, setCurrentProgress, resetCurrentProgress } =
-    useProgressStore();
+  const {
+    currentProgress,
+    totalData,
+    setTotalData,
+    clearTotalData,
+    setCurrentProgress,
+    resetCurrentProgress,
+  } = useProgressStore();
 
   // 우클릭 또는 버튼 클릭 시 UI 상태 토글
 
@@ -122,7 +128,9 @@ const TranslateViewer = () => {
 
   // 문서 내용을 청크 단위로 불러오기
   const loadMore = async () => {
-    if (loading || !hasMore) return;
+    if (loading || !hasMore) {
+      return;
+    }
     try {
       setLoading(true);
       // 인위적인 지연 추가 (개발용)
@@ -135,6 +143,7 @@ const TranslateViewer = () => {
       const newChunk = data.slice(processedCount, processedCount + chunk_size);
       if (!newChunk || newChunk.length === 0) {
         setHasMore(false);
+        setCurrentProgress(100);
         return;
       }
       // element.content가 null 또는 undefined일 경우 ""로 대체
@@ -144,6 +153,7 @@ const TranslateViewer = () => {
       }));
       setDocParts((prev) => [...prev, ...processedChunk]);
       setProcessedCount((prev) => prev + chunk_size);
+      setCurrentProgress((processedCount / totalData) * 100);
     } catch (error) {
       // console.log(error);
     } finally {
@@ -185,6 +195,7 @@ const TranslateViewer = () => {
         // console.log("Initializing DB for docsId:", docsId);
         await initDB(dbName, objectStoreName);
         const loadedData = await loadData(objectStoreName);
+        setTotalData(loadedData.length);
         // console.log("Loaded data from DB:", loadedData.length);
 
         if (!isMounted) return;

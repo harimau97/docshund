@@ -62,8 +62,9 @@ const ViewerMainPage = () => {
       <Progress
         progress={currentProgress}
         size="sm"
-        color="dark"
+        color="blue"
         className="fixed z-[1050]"
+        labelProgress={false}
       />
       {/* 내브바 관련 버튼 */}
       <div
