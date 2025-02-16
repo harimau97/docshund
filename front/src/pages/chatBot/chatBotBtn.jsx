@@ -106,7 +106,7 @@ const ChatBotBtn = () => {
                   ease: "easeInOut",
                   duration: 0.5,
                 }}
-                className=" w-[30vw] h-[97vh] bg-white rounded-xl shadow-lg border border-gray-200 z-[2500] flex flex-col -translate-x-[15%] translate-y-[10%]"
+                className="w-[30vw] h-[97vh] bg-white rounded-xl shadow-lg border border-gray-200 z-[2500] flex flex-col -translate-x-[15%] translate-y-[10%]"
               >
                 {/* 챗봇 헤더 */}
                 <div className="flex items-center p-4 border-b border-gray-200 bg-[#C96442] rounded-t-xl w-full">
@@ -115,11 +115,8 @@ const ChatBotBtn = () => {
                     <div className="ml-3 text-white">
                       <h3 className="font-semibold">DocshunD 번역봇</h3>
                     </div>
-                    <button
-                      className="cursor-pointer"
-                      onClick={() => handleClose()}
-                    >
-                      <X className="h-8 w-8 flex left-0 text-white" />
+                    <button className="cursor-pointer" onClick={handleClose}>
+                      <X className="h-8 w-8 text-white" />
                     </button>
                   </div>
                 </div>
@@ -192,15 +189,18 @@ const ChatBotBtn = () => {
               </motion.div>
             )}
           </AnimatePresence>
+
+          {/* 챗봇 토글 버튼 (위치 변경: bottom-20) */}
           <div
             id="chatBotBtn"
             onClick={() => {
               toggleChatBot();
               ChatStore.setState({ isChatVisible: false });
             }}
-            className="fixed bottom-15 right-2 rounded-full w-10 h-10 bg-gradient-to-r from-[#BC5B39] to-[#ff835a] flex justify-center items-center cursor-pointer shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 border-2 border-white"
+            className="fixed bottom-20 right-4 z-[2500] flex items-center gap-2 bg-gradient-to-r from-pink-400 to-purple-400 text-white rounded-full px-4 py-2 shadow-xl hover:scale-105 transition-all duration-300 cursor-pointer"
           >
-            <Bot className="h-8 w-8 text-white group-hover:rotate-12 transition-transform duration-300" />
+            <Bot className="w-6 h-6" />
+            <span className="text-sm font-medium">챗봇</span>
           </div>
         </div>
       )}
