@@ -13,14 +13,6 @@ const Information = () => {
     }
   }, []);
 
-  useEffect(() => {
-    if (!agree) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "auto";
-    }
-  }, [agree]);
-
   const handleAgree = () => {
     if (!localStorage.getItem("hasAgreed")) {
       setAgree(true);

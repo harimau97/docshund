@@ -30,13 +30,7 @@ const TransLatePage = () => {
   } = useDocsStore();
 
   const navigate = useNavigate();
-
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
-  useEffect(() => {
-    const handleResize = () => setWindowWidth(window.innerWidth);
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
 
   const filteredBestDocsList =
     windowWidth < 768
@@ -44,6 +38,12 @@ const TransLatePage = () => {
       : windowWidth < 1024
       ? bestDocsList.slice(0, 3)
       : bestDocsList.slice(0, 4);
+
+  useEffect(() => {
+    const handleResize = () => setWindowWidth(window.innerWidth);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -55,6 +55,10 @@ const TransLatePage = () => {
     // 채팅 모달 상태 초기화
     closeChat();
     fetchData();
+  }, []);
+
+  useEffect(() => {
+    document.body.style.overflow = "auto";
   }, []);
 
   const handleLike = async (docsId) => {

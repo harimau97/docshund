@@ -210,25 +210,27 @@ const TranslateArchive = () => {
                             </div>
                           </div>
                           <div className="flex items-center gap-4">
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                // console.log(trans);
-                                useReportStore.setState({
-                                  originContent: trans.content,
-                                  reportedUser: trans.userId,
-                                  commentId: null,
-                                  articleId: null,
-                                  transId: trans.transId,
-                                  chatId: null,
-                                });
-                                openReport();
-                                toggleReport();
-                              }}
-                              className="text-gray-500 cursor-pointer underline"
-                            >
-                              신고
-                            </button>
+                            {userId !== trans.userId && (
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  // console.log(trans);
+                                  useReportStore.setState({
+                                    originContent: trans.content,
+                                    reportedUser: trans.userId,
+                                    commentId: null,
+                                    articleId: null,
+                                    transId: trans.transId,
+                                    chatId: null,
+                                  });
+                                  openReport();
+                                  toggleReport();
+                                }}
+                                className="text-gray-500 cursor-pointer underline"
+                              >
+                                신고
+                              </button>
+                            )}
 
                             <div
                               onClick={async (e) => {

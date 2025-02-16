@@ -42,6 +42,10 @@ const ViewerMainPage = () => {
     fetchData();
   }, []);
 
+  useEffect(() => {
+    document.body.style.overflow = "hidden";
+  }, []);
+
   return (
     <div
       onContextMenu={(e) => {
