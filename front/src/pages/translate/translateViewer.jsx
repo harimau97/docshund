@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import { toast } from "react-toastify";
 import {
@@ -45,7 +45,8 @@ import { createPortal } from "react-dom";
 
 const TranslateViewer = () => {
   let userId = 0;
-  const navigate = useNavigate();
+  const location = useLocation();
+
   if (localStorage.getItem("token")) {
     const token = localStorage.getItem("token");
     userId = jwtDecode(token).userId;
@@ -84,10 +85,16 @@ const TranslateViewer = () => {
     setOriginId,
     setDocsPart,
     setPorder,
+    clearCurrentUserText,
+    clearDocsPart,
+    clearBestTrans,
+    clearTempSave,
+    clearSubmitData,
   } = useEditorStore();
   const { documentName } = useDocsStore();
   // 모달 관련 상태
-  const { openEditor, openArchive } = useModalStore();
+  const { openEditor, openArchive, closeEditor, closeArchive } =
+    useModalStore();
 
   // 우클릭 또는 버튼 클릭 시 UI 상태 토글
 
@@ -140,6 +147,20 @@ const TranslateViewer = () => {
       setLoading(false);
     }
   };
+  // 주송 이동 예외 처리
+  const handleClose = () => {
+    clearDocsPart();
+    clearBestTrans();
+    clearTempSave();
+    clearSubmitData();
+    clearCurrentUserText();
+  };
+
+  useEffect(() => {
+    closeEditor();
+    closeArchive();
+    handleClose();
+  }, [location]);
 
   useEffect(() => {
     let isMounted = true; // 마운트 여부 추적
@@ -170,7 +191,7 @@ const TranslateViewer = () => {
           try {
             const data = await fetchTranslateData(docsId, "");
             if (data.length === 0) {
-              toast.info("문서 원본을 추가 중입니다. 조금만 기다려 주세요.");
+              toast.info("문서 원본을 추가 중입니다.");
               navigate(-1);
               return;
             }
@@ -270,7 +291,10 @@ const TranslateViewer = () => {
   };
 
   return (
-    <div className="h-screen min-w-[65vw] md:min-w-[65vw] lg:min-w-[60vw] bg-white fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 overflow-x-auto overflow-y-scroll p-6 flex flex-col z-[1000] max-w-screen-xl mx-auto shadow-xl">
+    <div
+      id="mainContent"
+      className="h-screen min-w-[65vw] md:min-w-[65vw] lg:min-w-[60vw] bg-white fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 overflow-x-auto overflow-y-scroll p-6 flex flex-col z-[1000] max-w-screen-xl mx-auto shadow-xl"
+    >
       <div className="flex flex-col gap-2">
         {docParts.map((part, index) => (
           <div

@@ -1,4 +1,3 @@
-import Modal from "react-modal";
 import { useState, useMemo } from "react";
 import * as motion from "motion/react-client";
 import { fetchBestTranslate } from "./services/translateGetService";
@@ -8,7 +7,6 @@ import { AnimatePresence } from "motion/react";
 import { toast } from "react-toastify";
 import debounce from "lodash/debounce";
 import TextContent from "./components/textContent";
-import EditorContent from "./components/editorContent";
 import GodEditorContent from "./components/godEditorContent";
 import RectBtn from "../../components/button/rectBtn";
 import _ from "lodash";

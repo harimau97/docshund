@@ -1,6 +1,5 @@
 import { Outlet, useNavigate, useParams, useLocation } from "react-router-dom";
 import { useEffect } from "react";
-import RoundCornerBtn from "../../components/button/roundCornerBtn.jsx";
 import ChatBotBtn from "../chatBot/chatBotBtn.jsx";
 import Information from "./page/information.jsx";
 import { MessageCircle } from "lucide-react";
@@ -48,12 +47,15 @@ const ViewerMainPage = () => {
       onContextMenu={(e) => {
         e.preventDefault();
       }}
-      className="md:min-w-[768px] h-screen flex"
+      className="md:min-w-[768px] h-screen flex overflow-hidden"
     >
-      {/* <Information /> */}
+      <Information />
 
       {/* 내브바 관련 버튼 */}
-      <div className="fixed w-25 top-2 left-5 flex gap-4 justify-between z-[1200]">
+      <div
+        id="upperBtns"
+        className="fixed w-25 top-2 left-5 flex gap-4 justify-between z-[1200]"
+      >
         <button
           className="flex cursor-pointer items-center justify-center hover:shadow-lg bg-gradient-to-r from-[#BC5B39] to-[#ff835a] hover:w-11 hover:h-11 rounded-full w-10 h-10 border-2 border-white transition-all duration-300"
           onClick={() => {
@@ -75,6 +77,7 @@ const ViewerMainPage = () => {
       <ChatBotBtn />
       {!isArchiveOpen && !isEditorOpen && (
         <button
+          id="translateAllBtn"
           onClick={async () => {
             if (location.includes("best")) {
               navigate(`/translate/main/viewer/${docsId}/`);
@@ -94,6 +97,7 @@ const ViewerMainPage = () => {
       )}
       {localStorage.getItem("token") && (
         <div
+          id="chatBtn"
           onClick={() => {
             toggleChat();
             ChatBotStore.setState({
@@ -105,6 +109,7 @@ const ViewerMainPage = () => {
           <MessageCircle className="text-white w-6 h-6 transition-transform duration-300" />
         </div>
       )}
+
       <Chat />
       <Outlet className="h-screen pr-16" />
     </div>
