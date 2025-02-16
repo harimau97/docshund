@@ -68,7 +68,7 @@ const Information = () => {
   return (
     <div className="h-screen overflow-hidden">
       {!agree && (
-        <div className="fixed inset-0 flex items-center justify-center z-[3000] border-box w-full h-full">
+        <div className="fixed inset-0 flex items-center justify-center z-[3000] border-box w-full h-full overflow-hidden">
           {/* Joyride를 상단에서 렌더링하여 UI 위에 나타나도록 변경 */}
           <Joyride
             steps={steps}
