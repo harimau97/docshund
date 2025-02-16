@@ -201,13 +201,8 @@ const TransLatePage = () => {
                   </svg>
                 </button>
               )}
-<<<<<<< HEAD
               <div className="p-6 flex flex-col items-center">
                 <div className="bg-transparent rounded-lg flex items-center justify-center mb-4">
-=======
-              <div className="p-4 flex flex-col items-center">
-                <div className="bg-gray-50 rounded-lg flex items-center justify-center mb-3">
->>>>>>> 043141ce670656e6995d6ae2afb3bfd1126c8672
                   <img
                     src={docs.documentLogo}
                     alt="문서 아이콘"
@@ -228,11 +223,7 @@ const TransLatePage = () => {
                       documentName: docs.documentName,
                     });
                   }}
-<<<<<<< HEAD
                   className="cursor-pointer mt-4 px-6 py-2 bg-[rgba(188,91,57,1)] text-white rounded-lg hover:bg-[rgba(188,91,57,0.8)] transition-colors duration-200 font-medium"
-=======
-                  className="mt-2 px-2 py-1 text-xs sm:px-4 sm:py-2 sm:text-sm bg-[rgba(188,91,57,1)] text-white rounded-lg hover:bg-[rgba(188,91,57,0.8)] transition-colors duration-200 font-medium"
->>>>>>> 043141ce670656e6995d6ae2afb3bfd1126c8672
                 >
                   {localStorage.getItem("token") ? "번역 하기" : "번역 보기"}
                 </button>
