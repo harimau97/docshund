@@ -10,8 +10,7 @@ import {
 } from "flowbite-react";
 import { jwtDecode } from "jwt-decode";
 import { NavLink, useNavigate } from "react-router-dom";
-import EditorModal from "../../pages/myPage/components/EditorModal.jsx";
-import RoundCornerBtn from "../button/roundCornerBtn.jsx";
+import MemoModal from "../../pages/myPage/components/MemoModal.jsx";
 import { fetchDocsList } from "../../pages/translate/services/translateGetService.jsx";
 import memoService from "../../pages/myPage/services/memoService";
 import useMemoStore from "../../store/myPageStore/memoStore";
@@ -27,24 +26,13 @@ import notificationModalStore from "../../store/notificationModalStore";
 
 //이미지 주소 import
 import Logo from "../../assets/logo.png";
-import {
-  Bell,
-  ScrollText,
-  ChevronDown,
-  ChevronUp,
-  StickyNote,
-  Plus,
-  X,
-} from "lucide-react";
-import navToggle2 from "../../assets/icon/navToggle2.png";
+import { Bell, ScrollText, StickyNote, Plus, X } from "lucide-react";
 
 const LeftNav = () => {
   //flowbite 라이트모드 강제 설정
   const { setMode } = useThemeMode();
 
   const navigate = useNavigate();
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [docs, setDocs] = useState([]);
 
   //내브 바 열림 및 닫힘
   const { isNavOpen, openNav, closeNav } = useModalStore();
@@ -303,7 +291,7 @@ const LeftNav = () => {
         </Drawer.Items>
       </Drawer>
       <div className="absolute z-[2500]">
-        <EditorModal
+        <MemoModal
           title={memoData ? "메모 수정" : "새 메모"}
           buttonText={memoData ? "수정 완료" : "작성 완료"}
           onSubmit={memoData ? handleEditMemo : handleCreateMemo}
