@@ -201,8 +201,8 @@ const TransLatePage = () => {
                   </svg>
                 </button>
               )}
-              <div className="p-6 flex flex-col items-center">
-                <div className="bg-transparent rounded-lg flex items-center justify-center mb-4">
+              <div className="p-4 flex flex-col items-center">
+                <div className="rounded-lg flex items-center justify-center mb-3">
                   <img
                     src={docs.documentLogo}
                     alt="문서 아이콘"
