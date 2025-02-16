@@ -223,7 +223,7 @@ const TransLatePage = () => {
                       documentName: docs.documentName,
                     });
                   }}
-                  className="mt-4 px-6 py-2 bg-[rgba(188,91,57,1)] text-white rounded-lg hover:bg-[rgba(188,91,57,0.8)] transition-colors duration-200 font-medium"
+                  className="cursor-pointer mt-4 px-6 py-2 bg-[rgba(188,91,57,1)] text-white rounded-lg hover:bg-[rgba(188,91,57,0.8)] transition-colors duration-200 font-medium"
                 >
                   {localStorage.getItem("token") ? "번역 하기" : "번역 보기"}
                 </button>
