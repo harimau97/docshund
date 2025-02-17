@@ -220,7 +220,7 @@ const ChatBotBtn = () => {
               toggleChatBot();
               ChatStore.setState({ isChatVisible: false });
             }}
-            className="group fixed bottom-20 right-4 z-[2500] flex items-center overflow-hidden w-10 h-10 rounded-full bg-gradient-to-r from-[#BC5B39] to-[#ff835a] text-white transition-all duration-300 hover:w-24 hover:shadow-2xl cursor-pointer"
+            className="group fixed bottom-20 right-4 z-[2700] flex items-center overflow-hidden w-10 h-10 rounded-full bg-gradient-to-r from-[#BC5B39] to-[#ff835a] text-white transition-all duration-300 hover:w-24 hover:shadow-2xl cursor-pointer"
           >
             <div className="flex-shrink-0 flex items-center justify-center w-10 h-10">
               <Bot className="w-6 h-6" />

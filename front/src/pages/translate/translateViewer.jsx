@@ -69,7 +69,7 @@ const TranslateViewer = () => {
   const [checkComplete, setCheckComplete] = useState(false);
   const docData = useRef([]);
   const loadingRef = useRef(null);
-  const chunk_size = 100;
+  const chunk_size = 20;
   // 문단 높이 조절을 위한 초기 높이 저장 ref
   const initialHeights = useRef({});
   //우클릭메뉴 커스텀을 위한 상태
@@ -320,7 +320,7 @@ const TranslateViewer = () => {
   return (
     <div
       id="mainContent"
-      className="h-screen w-[90vw] md:w-[60vw] bg-white absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 overflow-x-auto overflow-y-scroll p-6 flex flex-col z-[1000] mx-auto shadow-xl"
+      className="h-screen w-[90vw] md:w-[60vw] bg-white fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 overflow-x-auto overflow-y-scroll p-6 flex flex-col z-[1000] mx-auto shadow-xl"
     >
       {createPortal(<SearchDB tableId={docsId} />, document.body)}
 
