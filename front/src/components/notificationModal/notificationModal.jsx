@@ -59,9 +59,6 @@ const NotificationModal = () => {
     };
   }, [closeNotificationModal]);
 
-  // 알림 SSE <- hook은 항상 최상단에 위치해야 함, 조건부 불가능
-  // UseSSE(userId);
-
   if (!token) {
     toast.warn("로그인이 필요한 서비스입니다.");
     return null;
