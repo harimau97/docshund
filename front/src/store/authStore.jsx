@@ -25,6 +25,10 @@ const useAuthStore = create((set, get) => ({
   // 로그아웃 함수
   logout: () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("communityArticle-storage");
+    localStorage.removeItem("flowbite-theme-mode");
+    localStorage.removeItem("hasAgreed");
+    localStorage.removeItem("hasClearedDB");
     set({ token: null });
   },
 

@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import { fetchDocsList } from "./services/translateGetService";
 import { likeDocs } from "./services/translatePostService";
+import { clearDB } from "./services/indexedDbService.jsx";
 import { motion } from "framer-motion";
 
 import useModalStore from "../../store/translateStore/translateModalStore";
@@ -59,6 +60,14 @@ const TransLatePage = () => {
 
   useEffect(() => {
     document.body.style.overflow = "auto";
+
+    const resetDB = async () => {
+      if (!localStorage.getItem("hasClearedDB")) {
+        await clearDB("docs");
+        localStorage.setItem("hasClearedDB", "true");
+      }
+    };
+    resetDB();
   }, []);
 
   const handleLike = async (docsId) => {

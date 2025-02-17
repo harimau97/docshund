@@ -3,7 +3,6 @@ import { useEffect } from "react";
 import ChatBotBtn from "../chatBot/chatBotBtn.jsx";
 import Information from "./page/information.jsx";
 import { MessageCircle } from "lucide-react";
-import { Progress } from "flowbite-react";
 
 // 아이콘
 import Korean from "../../assets/icon/korean.png";
@@ -14,7 +13,6 @@ import { Menu } from "lucide-react";
 // 상태
 import useModalStore from "../../store/translateStore/translateModalStore.jsx";
 import useDocsStore from "../../store/translateStore/docsStore.jsx";
-import useProgressStore from "../../store/translateStore/progressStore.jsx";
 
 // 채팅
 import Chat from "../chat/chat.jsx";
@@ -23,6 +21,7 @@ import ChatBotStore from "../../store/chatBotStore.jsx";
 
 // 서비스
 import { fetchDocsList } from "./services/translateGetService.jsx";
+import { clearDB } from "./services/indexedDbService.jsx";
 
 const ViewerMainPage = () => {
   const { isChatVisible, toggleChat } = ChatStore();
@@ -70,7 +69,7 @@ const ViewerMainPage = () => {
 
       {/* 내브바 관련 버튼 (왼쪽 상단) */}
       <div
-        id="navGroup"
+        id="upperBtns"
         className="fixed top-4 left-4 z-[1200] flex items-center gap-2 px-2 py-1 bg-white/80 backdrop-blur-md rounded-full shadow-lg"
       >
         <button
