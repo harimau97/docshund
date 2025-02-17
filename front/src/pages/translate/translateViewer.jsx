@@ -320,11 +320,11 @@ const TranslateViewer = () => {
   return (
     <div
       id="mainContent"
-      className="h-screen min-w-[90vw] md:min-w-[65vw] lg:min-w-[60vw] bg-white fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 overflow-x-auto overflow-y-scroll p-6 flex flex-col z-[1000] max-w-screen-xl mx-auto shadow-xl"
+      className="h-screen w-[90vw] md:w-[60vw] bg-white absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 overflow-x-auto overflow-y-scroll p-6 flex flex-col z-[1000] mx-auto shadow-xl"
     >
       {createPortal(<SearchDB tableId={docsId} />, document.body)}
 
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-2 w-full">
         {docParts.map((part, index) => (
           <div
             key={index}
@@ -354,7 +354,7 @@ const TranslateViewer = () => {
                 setBestTrans("");
               }
             }}
-            className="paragraph flex flex-row gap-4 w-full"
+            className="paragraph flex flex-row gap-4 w-ful"
           >
             <div
               onClick={async (e) => {

@@ -74,13 +74,13 @@ const ViewerMainPage = () => {
         className="fixed top-4 left-4 z-[1200] flex items-center gap-2 px-2 py-1 bg-white/80 backdrop-blur-md rounded-full shadow-lg"
       >
         <button
-          className="cursor-pointer flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 hover:scale-105 transition-all duration-300"
+          className="cursor-pointer flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-r from-[#BC5B39] to-[#ff835a] text-white hover:scale-105 hover:shadow-lg transition-all duration-300"
           onClick={() => navigate("/translate")}
         >
           <ArrowLeftToLine />
         </button>
         <button
-          className="cursor-pointer flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-r from-green-500 to-teal-500 hover:scale-105 transition-all duration-300"
+          className="cursor-pointer flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-r from-[#BC5B39] to-[#ff835a] text-white hover:scale-105 hover:shadow-lg transition-all duration-300"
           onClick={openNav}
         >
           <Menu />
@@ -98,7 +98,7 @@ const ViewerMainPage = () => {
               navigate(`/translate/main/viewer/${docsId}/best`);
             }
           }}
-          className="cursor-pointer fixed bottom-34 right-4 z-[2500] flex items-center gap-2 bg-gradient-to-r from-orange-400 to-red-400 text-white rounded-full px-4 py-2 shadow-xl hover:scale-105 transition-all duration-300"
+          className="cursor-pointer group fixed bottom-34 right-4 z-[2500] flex items-center overflow-hidden w-10 h-10 rounded-full bg-gradient-to-r from-[#BC5B39] to-[#ff835a] text-white transition-all duration-300 hover:w-42 hover:shadow-2xl"
         >
           {/* 아이콘 영역 */}
           <div className="flex-shrink-0 flex items-center justify-center w-10 h-10">
