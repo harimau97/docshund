@@ -1,9 +1,15 @@
 import { useEffect, useState } from "react";
 import { EventSourcePolyfill, NativeEventSource } from "event-source-polyfill";
 import { toast } from "react-toastify";
+
 import notificationModalStore from "../store/notificationModalStore";
+import useAuthStore from "../store/authStore";
 
 const UseSSE = (userId) => {
+  const token = useAuthStore(
+    (state) => state.token,
+    (prev, next) => prev === next // shallow comparison
+  );
   const addNotification = notificationModalStore(
     (state) => state.addNotification
   );
@@ -30,6 +36,11 @@ const UseSSE = (userId) => {
         // 이전 연결이 있다면 정리
         if (eventSource) {
           eventSource.close();
+        }
+
+        // token이 없고(로그아웃 상태) 연결이 되어있으면 return
+        if (!token) {
+          return;
         }
 
         // INFO: EventSource 객체 생성 -> stream 주소, 헤더 설정
@@ -115,13 +126,14 @@ const UseSSE = (userId) => {
     connectSSE();
 
     // Cleanup
-    // return () => {
-    //   if (eventSource) {
-    //     console.log("SSE 연결 종료");
-    //     eventSource.close();
-    //   }
-    // };
-  }, [userId]); // userId가 변경될 때만 재연결
+    return () => {
+      if (eventSource) {
+        console.log("SSE 연결 종료");
+        eventSource.close();
+        setIsConnected(false);
+      }
+    };
+  }, [userId, token]); // userId가 변경될 때만 재연결
 
   return {
     isConnected,
