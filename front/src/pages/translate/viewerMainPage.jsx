@@ -63,7 +63,7 @@ const ViewerMainPage = () => {
       id="mainPage"
     >
       <Information />
-      <div className="fixed top-5.5 left-35 text-2xl font-bold mb-4">
+      <div className="fixed top-20 left-5 text-2xl font-bold mb-4">
         {documentName}
       </div>
 
