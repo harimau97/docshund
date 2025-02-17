@@ -6,15 +6,18 @@ import communityArticleStore from "../../../store/communityStore/communityArticl
 import ReplyItemService from "../services/replyItemService";
 import ListRender from "../../../components/pagination/listRender";
 import ReplyRenderItem from "./replyRenderItem";
+import ReplyTextarea from "./replyTextarea";
 
 const ReplyItem = ({ reCommentFlag, setReCommentFlag }) => {
   const { articleId } = useParams();
+  const token = localStorage.getItem("token");
 
   // store에서 데이터를 가져오기 위해 정의
   const [replyList, setReplyList] = useState([]);
 
   const isReplied = communityArticleStore((state) => state.isReplied);
   const replySortType = communityArticleStore((state) => state.replySortType);
+  const replyId = communityArticleStore((state) => state.replyId);
 
   // store의 메소드를 가져오기 위해 정의
   const setArticleId = communityArticleStore((state) => state.setArticleId);
@@ -74,17 +77,16 @@ const ReplyItem = ({ reCommentFlag, setReCommentFlag }) => {
         setReCommentFlag={setReCommentFlag}
       />
 
-      {/* 대댓글 렌더링 */}
-      {item.replies?.length > 0 && (
-        <div className="flex flex-col mt-4 w-full">
-          {/* 대댓글 목록을 세로 정렬 */}
+      {/* 대댓글 영역 */}
+      <div className="flex flex-col mt-4 w-full">
+        {/* 대댓글 목록 */}
+        {item.replies?.length > 0 && (
           <div className="flex flex-col space-y-2 w-full">
             {item.replies.map((reply) => (
               <div
                 key={reply.commentId}
                 className="flex items-center border-t-2 border-gray-200 pt-2 w-full"
               >
-                {/* 대댓글 표시 꺾쇠 */}
                 <div className="pb-2 pr-2">
                   <svg
                     viewBox="0 0 24 24"
@@ -104,15 +106,26 @@ const ReplyItem = ({ reCommentFlag, setReCommentFlag }) => {
                   <ReplyRenderItem
                     item={reply}
                     rootCommentId={item.commentId}
-                    reCommentFlag={true}
+                    reCommentFlag={reCommentFlag}
                     setReCommentFlag={setReCommentFlag}
                   />
                 </div>
               </div>
             ))}
           </div>
-        </div>
-      )}
+        )}
+
+        {/* 대댓글 작성 영역 - 해당 댓글에 대한 댓글달기가 활성화된 경우에만 표시 */}
+        {token && reCommentFlag && replyId === item.commentId && (
+          <div className="ml-14 mt-2">
+            {console.log(item)}
+            <ReplyTextarea
+              reCommentFlag={reCommentFlag}
+              commentId={item.commentId}
+            />
+          </div>
+        )}
+      </div>
     </div>
   );
 
