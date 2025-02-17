@@ -50,6 +50,7 @@ const TranslateViewer = () => {
   let userId = 0;
   const location = useLocation();
   const navigate = useNavigate();
+  const [bestTransMap, setBestTransMap] = useState({});
 
   if (localStorage.getItem("token")) {
     const token = localStorage.getItem("token");
@@ -117,15 +118,28 @@ const TranslateViewer = () => {
     });
   };
 
+  // const toggleDocpart = (partId) => {
+  //   setDocpartStates((prev) => ({
+  //     ...Object.keys(prev).reduce((acc, key) => {
+  //       if (key !== partId) {
+  //         acc[key] = false;
+  //       }
+  //       return acc;
+  //     }, {}),
+  //     [partId]: !prev[partId],
+  //   }));
+  // };
+
   const toggleDocpart = (partId) => {
+    const partKey = String(partId);
     setDocpartStates((prev) => ({
       ...Object.keys(prev).reduce((acc, key) => {
-        if (key !== partId) {
+        if (key !== partKey) {
           acc[key] = false;
         }
         return acc;
       }, {}),
-      [partId]: !prev[partId],
+      [partKey]: !prev[partKey],
     }));
   };
 
@@ -365,12 +379,14 @@ const TranslateViewer = () => {
                 );
                 setTransList(tmpTransList);
 
-                if (tmpTransList !== undefined) {
+                if (tmpTransList) {
                   const filteredTranslations = tmpTransList.filter(
                     (item) => item.originId === part.originId
                   );
                   if (filteredTranslations.length > 0) {
                     setBestTrans(filteredTranslations[0].content);
+
+                    toggleDocpart(part.id);
                   } else {
                     setBestTrans("");
                     toast.info("아직 등록된 변역이 없습니다.");
@@ -378,9 +394,6 @@ const TranslateViewer = () => {
                 } else {
                   setBestTrans("");
                 }
-                setTimeout(() => {
-                  toggleDocpart(part.id);
-                }, 50);
               }}
               className="flex flex-col w-full h-fit rounded-md p-2 text-[#424242] hover:shadow-[0px_0px_15px_0px_rgba(149,_157,_165,_0.3)] hover:border-gray-200 cursor-pointer transition-all duration-250 ease-in-out"
             >

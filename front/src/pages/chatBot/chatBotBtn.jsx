@@ -37,7 +37,7 @@ const ChatBotBtn = () => {
 
   const testGeminiAPI = async (fullPrompt) => {
     setLoading(true);
-    console.log("Sending chat content:", chatContent);
+
     try {
       const cloudFunctionUrl = `${import.meta.env.VITE_CLOUD_FUNCTION_URL}`;
       const response = await axios.post(
@@ -128,7 +128,7 @@ const ChatBotBtn = () => {
                 exit={{ opacity: 0, y: 1000 }}
                 transition={{ ease: "easeInOut", duration: 0.5 }}
                 // className="w-[30vw] h-[97vh] bg-white rounded-xl shadow-lg border border-gray-200 z-[2500] flex flex-col -translate-x-[15%] translate-y-[10%]"
-                className="fixed inset-0 sm:inset-auto sm:bottom-35 sm:right-3.5 w-full h-full sm:w-[400px] sm:h-[95vh] bg-white rounded-xl shadow-lg border border-gray-200 flex flex-col z-[2600] sm:-translate-x-[12.5%] sm:translate-y-[16%]"
+                className="fixed inset-0 sm:inset-auto sm:bottom-25 sm:right-3.5 w-full h-full sm:w-[400px] sm:h-[95vh] bg-white rounded-xl shadow-lg border border-gray-200 flex flex-col z-[2600] sm:-translate-x-[12.5%] sm:translate-y-[16%]"
                 onClick={(e) => e.stopPropagation()}
               >
                 {/* 챗봇 헤더 */}

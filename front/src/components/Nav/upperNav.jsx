@@ -86,6 +86,11 @@ const UpperNav = () => {
     }
   }, [localStorage.getItem("token")]);
 
+  const handleToggleNotificationModal = (e) => {
+    e.stopPropagation();
+    toggleNotificationModal();
+  };
+
   // 링크 스타일
   const activeLink = "font-bold text-[clamp(16px,1.5vw,20px)] text-[#bc5b39]";
   const inactiveLink =
@@ -133,7 +138,7 @@ const UpperNav = () => {
                   className="w-[clamp(20px,2.1vw,32px)] h-auto cursor-pointer"
                   src={notification}
                   alt="알림 아이콘"
-                  onClick={() => toggleNotificationModal()}
+                  onClick={handleToggleNotificationModal}
                 />
                 <div
                   className={`absolute left-1/2 -translate-x-1/2 top-[calc(100%+1.8rem)] z-[1000] transition-all duration-300 transform ${
@@ -283,7 +288,7 @@ const UpperNav = () => {
                   className="w-[clamp(20px,2.1vw,32px)] h-auto cursor-pointer"
                   src={notification}
                   alt="알림 아이콘"
-                  onClick={() => toggleNotificationModal()}
+                  onClick={handleToggleNotificationModal}
                 />
                 <div
                   className={`absolute left-1/2 -translate-x-1/2 top-[calc(100%+1.8rem)] z-[1000] transition-all duration-300 transform ${
