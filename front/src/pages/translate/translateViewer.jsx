@@ -286,7 +286,6 @@ const TranslateViewer = () => {
     });
 
     await openEditor();
-    toggleEditor();
   };
 
   // 메뉴 항목: 번역 기록
