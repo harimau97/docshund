@@ -24,7 +24,7 @@ const ManageNotification = () => {
       const data = await fetchNoticeList();
       setNotifications(data.content);
     } catch (error) {
-      console.log("공지사항 목록 조회 실패", error);
+      // console.log("공지사항 목록 조회 실패", error);
     }
   };
 

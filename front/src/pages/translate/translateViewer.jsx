@@ -174,11 +174,9 @@ const TranslateViewer = () => {
 
   const showCurrentDocumentName = async () => {
     const tmpDocsList = await fetchDocsList();
-    console.log(tmpDocsList);
     const currentDocs = await tmpDocsList.filter(
       (doc) => doc.docsId === Number(docsId)
     );
-    console.log(currentDocs);
     if (currentDocs.length !== 0) {
       setDocumentName(currentDocs[0].documentName);
     } else {

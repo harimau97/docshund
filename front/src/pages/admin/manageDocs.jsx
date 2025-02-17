@@ -88,7 +88,6 @@ const ManageDocs = () => {
       {/* Header */}
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-2xl font-bold text-gray-800">문서관리</h1>
-        <h2>* 삭제하실 문서를 선택 후 삭제 버튼을 눌러주세요.</h2>
         <div className="flex gap-2">
           {/* <button className="cursor-pointer px-2 py-2 bg-[#ff2121] text-white rounded-lg hover:bg-[#a34e31] transition-colors duration-200">
             - 문서삭제

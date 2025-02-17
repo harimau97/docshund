@@ -39,6 +39,16 @@ const ManageInquiry = () => {
         (inquiry) => inquiry.inquiryCategory === "REPORT"
       );
       setInquiryList(tmpInquiryList);
+    } else if (category === "ANSWERED") {
+      const tmpInquiryList = inquiryListData.current.filter(
+        (inquiry) => inquiry.answered === true
+      );
+      setInquiryList(tmpInquiryList);
+    } else if (category === "NOTANSWERED") {
+      const tmpInquiryList = inquiryListData.current.filter(
+        (inquiry) => inquiry.answered === false
+      );
+      setInquiryList(tmpInquiryList);
     }
   };
 
@@ -92,7 +102,6 @@ const ManageInquiry = () => {
     const date = new Date(time);
     const kor = date.getHours() + 9;
     date.setHours(kor);
-    console.log(date);
     return date;
   };
 
@@ -130,6 +139,8 @@ const ManageInquiry = () => {
     { label: "회원 관련", value: "MEMBER" },
     { label: "문서 요청 관련", value: "DOCUMENT_REQUEST" },
     { label: "신고 관련", value: "REPORT" },
+    { label: "답변 완료", value: "ANSWERED" },
+    { label: "답변 대기", value: "NOTANSWERED" },
   ];
 
   return (

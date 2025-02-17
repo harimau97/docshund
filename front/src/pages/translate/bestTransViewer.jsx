@@ -180,7 +180,7 @@ const BestTransViewer = () => {
           }
         }
       } catch (error) {
-        console.log("Error in checkDB:", error);
+        // console.log("Error in checkDB:", error);
       } finally {
         if (isMounted) {
           setLoading(false);

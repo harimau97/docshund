@@ -19,7 +19,6 @@ export const fetchReportList = async (page = 0, size = 9999999) => {
       `/supports/reports?page=${page}&size=${size}`
     );
     const data = response.data.content;
-    console.log(data);
     return data;
   } catch (error) {
     // console.log("신고 목록 조회 실패", error);
@@ -32,7 +31,6 @@ export const fetchInquiryList = async (page = 0, size = 999999) => {
       `/supports/inquiry?page=${page}&size=${size}`
     );
     const data = response.data.content;
-    console.log(data);
     return data;
   } catch (error) {
     // console.log("문의 목록 조회 실패", error);
@@ -45,7 +43,6 @@ export const fetchNoticeList = async () => {
   try {
     const response = await axiosJsonInstance.get(`supports/notice`);
     const data = response.data;
-    // console.log(data);
     return data;
   } catch (error) {
     // console.log("공지 목록 조회 실패", error);
