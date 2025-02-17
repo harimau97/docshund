@@ -55,6 +55,8 @@ const BestTransViewer = () => {
     clearSubmitData,
   } = useEditorStore();
 
+  const { documentName, setDocumentName } = useDocsStore();
+
   const handleClose = () => {
     clearDocsPart();
     clearBestTrans();

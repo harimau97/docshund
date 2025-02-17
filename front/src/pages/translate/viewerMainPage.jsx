@@ -29,7 +29,7 @@ const ViewerMainPage = () => {
   const location = useLocation().pathname;
 
   const { isArchiveOpen, isEditorOpen, openNav } = useModalStore();
-  const { setDocsList, setBestDocsList } = useDocsStore();
+  const { setDocsList, setBestDocsList, documentName } = useDocsStore();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -54,6 +54,9 @@ const ViewerMainPage = () => {
       id="mainPage"
     >
       <Information />
+      <div className="fixed top-5.5 left-35 text-2xl font-bold mb-4">
+        {documentName}
+      </div>
 
       {/* 내브바 관련 버튼 */}
       <div
@@ -61,13 +64,13 @@ const ViewerMainPage = () => {
         className="fixed top-4 left-4 z-[1200] flex items-center gap-2 px-2 py-1 bg-white/80 backdrop-blur-md rounded-full shadow-lg"
       >
         <button
-          className="flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 hover:scale-105 transition-all duration-300"
+          className="cursor-pointer flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 hover:scale-105 transition-all duration-300"
           onClick={() => navigate("/translate")}
         >
           <ArrowLeftToLine className="text-white" />
         </button>
         <button
-          className="flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-r from-green-500 to-teal-500 hover:scale-105 transition-all duration-300"
+          className="cursor-pointer flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-r from-green-500 to-teal-500 hover:scale-105 transition-all duration-300"
           onClick={openNav}
         >
           <Menu className="text-white" />
@@ -85,7 +88,7 @@ const ViewerMainPage = () => {
               navigate(`/translate/main/viewer/${docsId}/best`);
             }
           }}
-          className="fixed bottom-34 right-4 z-[2500] flex items-center gap-2 bg-gradient-to-r from-orange-400 to-red-400 text-white rounded-full px-4 py-2 shadow-xl hover:scale-105 transition-all duration-300"
+          className="cursor-pointer fixed bottom-34 right-4 z-[2500] flex items-center gap-2 bg-gradient-to-r from-orange-400 to-red-400 text-white rounded-full px-4 py-2 shadow-xl hover:scale-105 transition-all duration-300"
         >
           {location.includes("best") ? (
             <>
