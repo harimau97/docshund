@@ -58,8 +58,8 @@ const TranslateEditor = () => {
           tmpTransList.sort((a, b) => b.likeCount - a.likeCount);
           setTransList(tmpTransList);
           generateUserList(tmpTransList);
-          setTimeout(() => closeEditor(), 300);
-          setTimeout(() => openArchive(), 300);
+          setTimeout(() => closeEditor(), 100);
+          setTimeout(() => openArchive(), 100);
         }
       }, 500),
     [docsId, originId, currentUserText]
