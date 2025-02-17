@@ -197,6 +197,7 @@ const ChatBotBtn = () => {
                     <input
                       type="text"
                       value={inputMessage}
+                      maxLength={300}
                       onChange={(e) => setInputMessage(e.target.value)}
                       placeholder="메시지를 입력하세요..."
                       className="flex-1 px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:border-[#C96442] flex-wrap"
