@@ -6,6 +6,7 @@ import _ from "lodash";
 import useEditorStore from "../../../store/translateStore/editorStore";
 import communityArticleStore from "../../../store/communityStore/communityArticleStore";
 import ArticleItemService from "../../community/services/articleItemService";
+import { toast } from "react-toastify";
 
 const GodEditorContent = ({ initialTextContent, maxLength = 15000 }) => {
   const { docsPart, currentUserText, setCurrentUserText } = useEditorStore();
@@ -14,6 +15,11 @@ const GodEditorContent = ({ initialTextContent, maxLength = 15000 }) => {
   const setFileUrl = communityArticleStore((state) => state.setFileUrl);
 
   const handleChange = (newText) => {
+    if (newText.length > 15000) {
+      toast.info("글 내용은 15000자 이하로 작성해주세요.");
+      return;
+    }
+
     setValue(newText);
     setCurrentUserText(newText);
     // console.log("현재 에디터에 입력되는 값입니다.", value);
@@ -47,6 +53,11 @@ const GodEditorContent = ({ initialTextContent, maxLength = 15000 }) => {
           const imageUrl = response.data.imageUrl;
           if (imageUrl) {
             const imageMarkdown = `![${file.name}](${imageUrl})`;
+            if (imageMarkdown.length + value.length > maxLength) {
+              toast.info("글 내용은 15000자 이하로 작성해주세요.");
+              return;
+            }
+
             api.replaceSelection(imageMarkdown);
           }
         }
@@ -59,6 +70,12 @@ const GodEditorContent = ({ initialTextContent, maxLength = 15000 }) => {
   const handleInsertImage = _.debounce(() => {
     if (fileUrl) {
       const imageMarkdown = `![image](${fileUrl})`;
+
+      if (imageMarkdown.length + value.length > maxLength) {
+        toast.info("글 내용은 15000자 이하로 작성해주세요.");
+        return;
+      }
+
       setValue(value + imageMarkdown);
       setFileUrl("");
     }

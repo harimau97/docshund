@@ -35,7 +35,7 @@ const ModifyArticle = () => {
 
   useEffect(() => {
     const loadArticleData = async () => {
-      console.log("articleItems", articleItems);
+      // console.log("articleItems", articleItems);
 
       try {
         // articleItems가 비어있거나 현재 articleId와 다른 경우에만 데이터를 새로 불러옵니다
@@ -43,7 +43,7 @@ const ModifyArticle = () => {
           const data = await ArticleItemService.fetchArticleItem(articleId);
           setArticleItems(data); // store에 데이터 저장
 
-          console.log("data", data);
+          // console.log("data", data);
 
           if (data) {
             // 로컬 상태 업데이트
