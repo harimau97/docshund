@@ -10,7 +10,7 @@ import useEditorStore from "../../store/translateStore/editorStore";
 
 // components
 import CommunityHeader from "./components/communityHeader";
-import EditorContent from "../translate/components/editorContent";
+import EditorContent from "../translate/components/godEditorContent";
 import ArticleItemService from "./services/articleItemService";
 
 const WriteArticle = () => {

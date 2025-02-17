@@ -12,8 +12,8 @@ const GodEditorContent = ({ initialTextContent, maxLength = 15000 }) => {
   const handleChange = (newText) => {
     setValue(newText);
     setCurrentUserText(newText);
-    console.log("현재 에디터에 입력되는 값입니다.", value);
-    console.log("제출될 내용입니다.", currentUserText);
+    // console.log("현재 에디터에 입력되는 값입니다.", value);
+    // console.log("제출될 내용입니다.", currentUserText);
   };
 
   return (
@@ -36,11 +36,11 @@ const GodEditorContent = ({ initialTextContent, maxLength = 15000 }) => {
       <div
         style={{
           marginTop: "10px",
-          color: value.length >= maxLength ? "red" : "black",
+          color: value?.length >= maxLength ? "red" : "black",
         }}
         className="flex justify-end mx-5"
       >
-        {maxLength - value.length} 글자 남음
+        {maxLength - value?.length} 글자 남음
       </div>
     </div>
   );
