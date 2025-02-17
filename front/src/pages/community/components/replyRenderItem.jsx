@@ -19,8 +19,11 @@ const ReplyRenderItem = ({
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
 
+  const commentCount = communityArticleStore((state) => state.commentCount);
   const setIsReplied = communityArticleStore((state) => state.setIsReplied);
-
+  const setCommentCount = communityArticleStore(
+    (state) => state.setCommentCount
+  );
   const setReplyId = communityArticleStore((state) => state.setReplyId);
   const openReport = useReportStore((state) => state.openReport);
   const toggleReport = useReportStore((state) => state.toggleReport);
@@ -53,6 +56,8 @@ const ReplyRenderItem = ({
       toast.info("댓글이 삭제되었습니다.");
 
       //  삭제 후 댓글 리스트 리렌더링
+      const newCommentCount = commentCount - 1;
+      setCommentCount(newCommentCount);
       setIsReplied((prev) => !prev);
     }
   }, 100);
