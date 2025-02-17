@@ -1,7 +1,7 @@
 import { axiosJsonInstance } from "../../../utils/axiosInstance";
 
 // 좋아요한 문서 조회
-export const fetchUserList = async (page, size) => {
+export const fetchUserList = async (page = 0, size = 9999999) => {
   try {
     const response = await axiosJsonInstance.get(
       `/users?page=${page}&size=${size}`
@@ -13,9 +13,11 @@ export const fetchUserList = async (page, size) => {
   }
 };
 
-export const fetchReportList = async () => {
+export const fetchReportList = async (page = 0, size = 9999999) => {
   try {
-    const response = await axiosJsonInstance.get(`/supports/reports`);
+    const response = await axiosJsonInstance.get(
+      `/supports/reports?page=${page}&size=${size}`
+    );
     const data = response.data.content;
     console.log(data);
     return data;
@@ -24,14 +26,18 @@ export const fetchReportList = async () => {
   }
 };
 
-export const fetchInquiryList = async () => {
+export const fetchInquiryList = async (page = 0, size = 999999) => {
   try {
-    const response = await axiosJsonInstance.get(`/supports/inquiry`);
+    const response = await axiosJsonInstance.get(
+      `/supports/inquiry?page=${page}&size=${size}`
+    );
     const data = response.data.content;
     console.log(data);
     return data;
   } catch (error) {
     // console.log("문의 목록 조회 실패", error);
+    // console.log(response);
+    alert(error);
   }
 };
 

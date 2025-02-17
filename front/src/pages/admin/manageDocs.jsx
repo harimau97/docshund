@@ -20,6 +20,7 @@ const ManageDocs = () => {
   const fetchAdminDocs = async () => {
     try {
       const response = await fetchDocsList();
+      response.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
       setAdminDocsList(response);
     } catch (error) {}
   };
@@ -68,6 +69,13 @@ const ManageDocs = () => {
         toast.error("파일 업로드에 실패했습니다.");
       }
     }
+  };
+
+  const handleUTC = (time) => {
+    const date = new Date(time);
+    const kor = date.getHours() + 9;
+    date.setHours(kor);
+    return date;
   };
 
   return (
@@ -139,9 +147,7 @@ const ManageDocs = () => {
                     {adminDocs.license}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {new Date(
-                      new Date(adminDocs.createdAt).toISOString()
-                    ).toLocaleString()}
+                    {handleUTC(adminDocs.createdAt).toLocaleString()}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {adminDocs.viewCount}
