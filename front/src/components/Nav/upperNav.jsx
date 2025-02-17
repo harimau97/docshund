@@ -289,7 +289,7 @@ const UpperNav = () => {
                   className="w-[clamp(20px,2.1vw,32px)] h-auto cursor-pointer"
                   src={notification}
                   alt="알림 아이콘"
-                  onClick={() => toggleNotificationModal()}
+                  onClick={handleToggleNotificationModal}
                 />
                 <div
                   className={`absolute left-1/2 -translate-x-1/2 top-[calc(100%+1.8rem)] z-[1000] transition-all duration-300 transform ${
