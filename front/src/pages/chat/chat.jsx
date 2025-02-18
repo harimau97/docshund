@@ -169,7 +169,9 @@ const Chat = () => {
     if (event.target.value.length <= 200) {
       setInputValue(event.target.value);
     } else {
-      toast.warn("200자 이상의 메세지는 보낼 수 없습니다.");
+      toast.warn("200자 이상의 메세지는 보낼 수 없습니다.", {
+        toastId: "message-length-warning",
+      });
     }
   };
 
@@ -182,7 +184,9 @@ const Chat = () => {
 
   const sendMessage = () => {
     if (inputValue.length > 200) {
-      toast.warn("200자 이상의 메세지는 보낼 수 없습니다.");
+      toast.warn("200자 이상의 메세지는 보낼 수 없습니다.", {
+        toastId: "message-length-warning",
+      });
       return;
     }
     if (stompClient.current?.connected && inputValue.trim() !== "") {
@@ -200,10 +204,19 @@ const Chat = () => {
   };
 
   useEffect(() => {
+    // docsId가 변경될 때마다 기존 연결을 해제하고 상태를 초기화합니다.
+    disconnect();
+    setMessages([]);
+    setCurrentPage(0);
+    setHasMore(false);
+
+    // 새로운 docsId에 맞게 연결을 재설정하고 초기 메시지를 로드합니다.
     connect();
     loadInitialMessages();
+
+    // 컴포넌트 언마운트 혹은 docsId 변경 시 연결 해제
     return () => disconnect();
-  }, []);
+  }, [docsId]);
 
   return (
     <div>
