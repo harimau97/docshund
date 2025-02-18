@@ -9,6 +9,7 @@ import ReportModal from "../report.jsx";
 // 서비스
 import { fetchBestTranslate } from "./services/translateGetService.jsx";
 import { likeTranslate } from "./services/translatePostService.jsx";
+import userProfileService from "../myPage/services/userProfileService.jsx";
 
 //상태관리
 import useEditorStore from "../../store/translateStore/editorStore.jsx";
@@ -116,6 +117,7 @@ const TranslateArchive = () => {
       }
     };
     fetchData();
+    console.log(transUserList);
   }, [isArchiveOpen]);
 
   return (

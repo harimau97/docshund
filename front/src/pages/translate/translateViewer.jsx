@@ -326,8 +326,6 @@ const TranslateViewer = () => {
     setDocsId(part.docsId);
     setOriginId(part.originId);
     setPorder(part.pOrder);
-    // await fetchBestTranslate(part.docsId, "");
-    // await generateUserList(transList);
     await openArchive();
   };
 
@@ -338,7 +336,7 @@ const TranslateViewer = () => {
       className="h-screen w-[90vw] md:w-[60vw] bg-white fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 overflow-x-auto overflow-y-scroll p-6 flex flex-col z-[1000] mx-auto shadow-xl"
     >
       {createPortal(<SearchDB tableId={docsId} />, document.body)}
-
+      <div></div>
       <div className="flex flex-col gap-2 w-full">
         {docParts.map((part, index) => (
           <div
@@ -350,10 +348,7 @@ const TranslateViewer = () => {
               }
               setContextMenuPorder(part.pOrder);
               handleContextMenu(e, part);
-              const tmpTransList = await fetchBestTranslate(
-                part.docsId,
-                "best"
-              );
+              const tmpTransList = await fetchBestTranslate(part.docsId, "");
               setTransList(tmpTransList);
               await generateUserList(tmpTransList);
               if (tmpTransList !== undefined) {

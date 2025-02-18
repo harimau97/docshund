@@ -69,29 +69,30 @@ const ChatBotBtn = () => {
     _.debounce(async (e) => {
       e.preventDefault();
       if (!inputMessage.trim()) return;
+      if (!loading) {
+        const newUserMessage = {
+          text: inputMessage,
+          isUser: true,
+          timestamp: new Date().toLocaleTimeString(),
+        };
 
-      const newUserMessage = {
-        text: inputMessage,
-        isUser: true,
-        timestamp: new Date().toLocaleTimeString(),
-      };
+        // 새로운 메시지를 포함한 업데이트된 대화 내역
+        const updatedMessages = [...messages, newUserMessage];
+        setMessages(updatedMessages);
+        setInputMessage("");
 
-      // 새로운 메시지를 포함한 업데이트된 대화 내역
-      const updatedMessages = [...messages, newUserMessage];
-      setMessages(updatedMessages);
-      setInputMessage("");
+        // 메모리: 이전 2개의 메시지와 이번 메시지를 포함 (최대 3개)
+        const memoryMessages =
+          updatedMessages.length >= 3
+            ? updatedMessages.slice(-3)
+            : updatedMessages;
+        const memoryText = memoryMessages
+          .map((msg) => `${msg.isUser ? "User" : "Bot"}: ${msg.text}`)
+          .join("\n");
 
-      // 메모리: 이전 2개의 메시지와 이번 메시지를 포함 (최대 3개)
-      const memoryMessages =
-        updatedMessages.length >= 3
-          ? updatedMessages.slice(-3)
-          : updatedMessages;
-      const memoryText = memoryMessages
-        .map((msg) => `${msg.isUser ? "User" : "Bot"}: ${msg.text}`)
-        .join("\n");
-
-      const fullPrompt = `${memoryText}\n${personaInstruction}`;
-      await testGeminiAPI(fullPrompt);
+        const fullPrompt = `${memoryText}\n${personaInstruction}`;
+        await testGeminiAPI(fullPrompt);
+      }
     }, 500),
     [inputMessage, messages]
   );
@@ -99,9 +100,10 @@ const ChatBotBtn = () => {
   const onSubmit = (e) => {
     e.preventDefault();
     handleSubmit(e);
+    setInputMessage("");
   };
 
-  // 챗봇 창이 열릴 때, 메시지가 없으면 인사말 API 호출
+  // 챗봇 창이 열릴 때, 메시지가 없면 인사말 API 호출
   useEffect(() => {
     if (isChatBotVisible && messages.length === 0) {
       const greetingPrompt = `안녕하세요! 무엇을 도와드릴까요?\n${personaInstruction}`;
@@ -189,6 +191,7 @@ const ChatBotBtn = () => {
 
                 {/* 입력 영역 */}
                 <form
+                  disabaled={loading}
                   onSubmit={onSubmit}
                   className="p-4 border-t border-gray-200"
                 >
@@ -196,6 +199,7 @@ const ChatBotBtn = () => {
                     <input
                       type="text"
                       value={inputMessage}
+                      disabled={loading}
                       maxLength={300}
                       onChange={(e) => setInputMessage(e.target.value)}
                       placeholder="메시지를 입력하세요..."
