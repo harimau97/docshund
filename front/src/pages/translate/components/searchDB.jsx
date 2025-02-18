@@ -36,7 +36,7 @@ const SearchDB = ({ tableId }) => {
       const result = await searchData(objectStoreName, searchField, query);
       if (result.length === 0) {
         setLoading(false);
-        console.log("검색 결과가 없습니다.");
+        // console.log("검색 결과가 없습니다.");
         setSearchResults([{ content: "검색 결과가 없습니다." }]);
       } else {
         setSearchResults(result);
