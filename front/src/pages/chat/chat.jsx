@@ -204,10 +204,19 @@ const Chat = () => {
   };
 
   useEffect(() => {
+    // docsId가 변경될 때마다 기존 연결을 해제하고 상태를 초기화합니다.
+    disconnect();
+    setMessages([]);
+    setCurrentPage(0);
+    setHasMore(false);
+
+    // 새로운 docsId에 맞게 연결을 재설정하고 초기 메시지를 로드합니다.
     connect();
     loadInitialMessages();
+
+    // 컴포넌트 언마운트 혹은 docsId 변경 시 연결 해제
     return () => disconnect();
-  }, []);
+  }, [docsId]);
 
   return (
     <div>
@@ -291,7 +300,9 @@ const Chat = () => {
                             </p>
                           </div>
                           <div className="mt-1 ml-10 p-2 rounded-lg bg-gray-100 text-gray-800 max-w-[280px]">
-                            <p className="text-sm break-all">{item.content}</p>
+                            <p className="text-sm break-all break-words overflow-wrap">
+                              {item.content}
+                            </p>
                             <button
                               onClick={(e) => {
                                 e.stopPropagation();
@@ -322,7 +333,9 @@ const Chat = () => {
                         // 본인 메시지
                         <div key={index} className="flex flex-col items-end">
                           <div className="mt-1 p-2 rounded-lg bg-[#bc5b39] text-white max-w-[280px]">
-                            <p className="text-sm break-all">{item.content}</p>
+                            <p className="text-sm break-all break-words overflow-wrap">
+                              {item.content}
+                            </p>
                           </div>
                           <div className="mt-1">
                             <span className="text-xs text-gray-500">
