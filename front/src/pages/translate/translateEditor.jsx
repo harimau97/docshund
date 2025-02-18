@@ -113,7 +113,7 @@ const TranslateEditor = () => {
                   <RectBtn
                     onClick={async () => {
                       setLoading(true);
-                      disable = { loading };
+
                       if (
                         currentUserText === "" ||
                         currentUserText === null ||
