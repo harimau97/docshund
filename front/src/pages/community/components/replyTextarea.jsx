@@ -35,7 +35,7 @@ const ReplyTextarea = ({ reCommentFlag, commentId }) => {
           await ReplyItemService.postReReplyItem(
             articleId,
             commentId,
-            formattedContent
+            formattedContent.trim()
           );
         } else {
           await ReplyItemService.postReplyItem(articleId, formattedContent);
