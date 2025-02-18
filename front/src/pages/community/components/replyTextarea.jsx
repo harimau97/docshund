@@ -38,7 +38,10 @@ const ReplyTextarea = ({ reCommentFlag, commentId }) => {
             formattedContent.trim()
           );
         } else {
-          await ReplyItemService.postReplyItem(articleId, formattedContent);
+          await ReplyItemService.postReplyItem(
+            articleId,
+            formattedContent.trim()
+          );
         }
 
         const newCommentCount = commentCount + 1;
