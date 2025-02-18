@@ -50,7 +50,9 @@ const ReplyTextarea = ({ reCommentFlag, commentId }) => {
         setContentLength(0);
         setIsReplied((prev) => !prev);
       } catch (error) {
-        toast.error("댓글 작성에 실패했습니다.");
+        toast.error("댓글 작성에 실패했습니다.", {
+          toastId: "failedReply",
+        });
         return error;
       }
     }, 300),
@@ -60,7 +62,9 @@ const ReplyTextarea = ({ reCommentFlag, commentId }) => {
   // 즉시 상태를 업데이트하는 함수
   const updateContent = (value) => {
     if (value.length > 5000) {
-      window.alert("댓글은 5,000자 이내로 작성해주세요.");
+      toast.warn("댓글은 5,000자 이내로 작성해주세요.", {
+        toastId: "exceedReply",
+      });
       return;
     }
     setReplyContent(value);
