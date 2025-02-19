@@ -68,16 +68,17 @@ const UseSSE = (userId) => {
           try {
             const notification = JSON.parse(event.data);
 
+            // NOTE: 알림왔다고 알려주기
+            toast.info(notification.content, {
+              position: "top-right",
+              autoClose: 2000,
+              hideProgressBar: true,
+              toastId: notification.id, // 중복 방지를 위한 고유 ID 추가
+            });
+
             // INFO: 알림 추가, requestAnimationFrame으로 비동기 처리
             requestAnimationFrame(() => {
               addNotification(notification);
-
-              // NOTE: 알림왔다고 알려주기
-              toast.info(notification.content, {
-                position: "top-right",
-                autoClose: 2000,
-                hideProgressBar: true,
-              });
             });
           } catch (err) {
             console.error("알림 데이터 파싱 오류:", err);
