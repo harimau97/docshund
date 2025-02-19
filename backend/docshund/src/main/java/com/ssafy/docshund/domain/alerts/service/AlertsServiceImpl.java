@@ -140,7 +140,7 @@ public class AlertsServiceImpl implements AlertsService {
 			categoryId = alert.getArticle().getArticleId();
 			String articleTitle = alert.getArticle().getTitle(); // 게시글 제목 추가
 			title = alert.getTitle();
-			content = "[ " + articleTitle + " ] 에 새로운 댓글이 달렸습니다!";
+			content = "[ " + getShortContent(articleTitle) + " ] 에 새로운 댓글이 달렸습니다!";
 			originArticleId = null;
 		} else if (alert.getComment() != null) {
 			category = Category.COMMENT;
@@ -154,7 +154,7 @@ public class AlertsServiceImpl implements AlertsService {
 			categoryId = alert.getInquiry().getInquiryId();
 			String inquiryTitle = alert.getInquiry().getTitle();    // 문의 제목 추가
 			title = alert.getTitle();
-			content = "당신의 문의 [ " + inquiryTitle + " ] 에 대한 답변이 등록되었습니다!";
+			content = "당신의 문의 [ " + getShortContent(inquiryTitle) + " ] 에 대한 답변이 등록되었습니다!";
 			originArticleId = null;
 		} else {
 			throw new IllegalArgumentException("알 수 없는 카테고리입니다.");
