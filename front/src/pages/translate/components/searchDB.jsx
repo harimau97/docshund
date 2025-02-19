@@ -19,9 +19,8 @@ const SearchDB = ({ tableId }) => {
 
   // DB 초기화
   useEffect(() => {
-    initDB(dbName, objectStoreName)
-      .then((database) => setDb(database))
-      .catch((error) => console.error("DB 초기화 오류:", error));
+    initDB(dbName, objectStoreName).then((database) => setDb(database));
+    // .catch((error) => toast.error("DB 초기화 오류: " + error));
   }, []);
 
   // 검색 실행

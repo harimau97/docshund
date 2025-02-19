@@ -243,7 +243,7 @@ const TranslateViewer = () => {
               throw new Error("Invalid data format received from server");
             }
           } catch (error) {
-            console.error("Failed to fetch data from server:", error);
+            // console.error("Failed to fetch data from server:", error);
           }
         } else {
           toast.success("원문 데이터가 준비되었습니다.");
