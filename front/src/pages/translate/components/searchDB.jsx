@@ -92,6 +92,9 @@ const SearchDB = ({ tableId }) => {
           <div>
             {searchResults.map((item) => (
               <li
+                onClick={(e) => {
+                  e.stopPropagation();
+                }}
                 key={item.id}
                 className="p-2 border-b last:border-none flex bg-[#FAF9F5]"
               >

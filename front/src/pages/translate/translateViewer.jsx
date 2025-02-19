@@ -322,7 +322,10 @@ const TranslateViewer = () => {
 
   return (
     <div
-      onClick={() => clearSearchResults()}
+      onClick={(e) => {
+        e.stopPropagation();
+        clearSearchResults();
+      }}
       key={docsId}
       className="h-screen w-[90vw] md:w-[60vw] bg-white fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 overflow-x-auto overflow-y-scroll p-6 flex flex-col z-[1000] mx-auto shadow-xl"
     >
