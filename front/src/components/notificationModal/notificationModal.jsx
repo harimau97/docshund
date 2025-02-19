@@ -266,7 +266,7 @@ const NotificationModal = () => {
               >
                 <div className="flex justify-between items-start gap-3">
                   <p
-                    className={`text-sm ${
+                    className={`text-sm break-all break-words overflow-wrap ${
                       notification.checkedAt === null
                         ? "text-gray-900"
                         : "text-gray-500"

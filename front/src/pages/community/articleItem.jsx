@@ -85,11 +85,22 @@ const ArticleItem = () => {
         setIsLikedArticleIds([...isLikedArticleIds, articleId]); // 좋아요한 게시글 기록
       }
 
-      setLikeCount(
-        isLikedArticleIds.includes(articleId) ? likeCount - 1 : likeCount + 1
-      );
+      // setLikeCount(
+      //   isLikedArticleIds.includes(articleId) ? likeCount - 1 : likeCount + 1
+      // );
+
+      const resData = await ArticleItemService.fetchArticleItem(articleId);
+
+      if (resData) {
+        setLikeCount(resData.likeCount);
+        toast.success("좋아요를 눌렀습니다.", {
+          toastId: "like",
+        });
+      }
     } else {
-      toast.alert("좋아요에 실패했습니다.");
+      toast.alert("좋아요에 실패했습니다.", {
+        toastId: "like",
+      });
     }
   }, 300); // 300ms 딜레이 설정
 
@@ -107,7 +118,9 @@ const ArticleItem = () => {
             setCommentCount(data.commentCount);
             setIsInitialLoad(false);
           } else {
-            toast.error("해당 게시글을 찾을 수 없습니다.");
+            toast.error("해당 게시글을 찾을 수 없습니다.", {
+              toastId: "notFound",
+            });
             navigate("/community/list");
           }
         } else {
@@ -135,7 +148,9 @@ const ArticleItem = () => {
     const response = await ArticleItemService.deleteArticleItem(articleId);
 
     if (response.status === 204) {
-      toast.info("게시글이 삭제되었습니다.");
+      toast.info("게시글이 삭제되었습니다.", {
+        toastId: "delete",
+      });
       navigate("/community");
     }
   }, 100);
@@ -236,7 +251,7 @@ const ArticleItem = () => {
                   </div>
                   <div className="flex items-center gap-1">
                     <span>좋아요</span>
-                    <span>{articleItems.likeCount}</span>
+                    <span>{likeCount}</span>
                   </div>
                 </div>
               </div>
