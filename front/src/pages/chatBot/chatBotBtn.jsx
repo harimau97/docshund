@@ -52,7 +52,6 @@ const ChatBotBtn = () => {
 
   const testGeminiAPI = async (fullPrompt) => {
     setLoading(true);
-    console.log(fullPrompt);
     try {
       const cloudFunctionUrl = `${import.meta.env.VITE_CLOUD_FUNCTION_URL}`;
       const response = await axios.post(
