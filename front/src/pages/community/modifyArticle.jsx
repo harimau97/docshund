@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import _ from "lodash";
@@ -12,10 +12,13 @@ import useEditorStore from "../../store/translateStore/editorStore";
 import CommunityHeader from "./components/communityHeader";
 import EditorContent from "../translate/components/godEditorContent";
 import ArticleItemService from "./services/articleItemService";
+import UseFileTypeCheck from "../../hooks/useFileTypeCheck";
 
 const ModifyArticle = () => {
   const { articleId } = useParams();
   const navigate = useNavigate();
+  const { validateImageFile, isValidating, error } = UseFileTypeCheck();
+  const fileInputRef = useRef(null);
 
   // store에서 기존 게시글 데이터 및 메소드 불러오기
   const articleItems = communityArticleStore((state) => state.articleItems);
@@ -34,6 +37,9 @@ const ModifyArticle = () => {
   const documentNames = docsCategoryStore((state) => state.documentNames);
   const setFileUrl = communityArticleStore((state) => state.setFileUrl);
   const currentUserText = useEditorStore((state) => state.currentUserText);
+  const setCurrentUserText = useEditorStore(
+    (state) => state.setCurrentUserText
+  );
 
   // 게시글 데이터를 불러와서 로컬 상태 업데이트
   useEffect(() => {
@@ -54,6 +60,7 @@ const ModifyArticle = () => {
             setMainCategory(data.position);
             setSubCategory(data.documentName);
             setContent(data.content);
+            setCurrentUserText(data.content);
           }
         } else {
           // store에 있는 데이터 사용
@@ -61,6 +68,7 @@ const ModifyArticle = () => {
           setMainCategory(articleItems.position);
           setSubCategory(articleItems.documentName);
           setContent(articleItems.content);
+          setCurrentUserText(articleItems.content);
         }
       } catch (error) {
         // console.error("Failed to load article:", error);
@@ -90,12 +98,20 @@ const ModifyArticle = () => {
   // 파일 첨부 핸들러 (debounce)
   const handleFileChange = _.debounce(async (e) => {
     const selectedFile = e.target.files[0];
-    if (!selectedFile.type.includes("image"))
-      return toast.info("이미지 파일만 업로드 가능합니다.");
+
+    const isValid = await validateImageFile(selectedFile);
+
+    if (!isValid) {
+      toast.warn("이미지 파일만 업로드 가능합니다.");
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+      return;
+    }
 
     if (selectedFile) {
-      if (selectedFile.size > 5 * 1000 * 1000) {
-        toast.info("사진 크기는 최대 5MB까지 업로드 가능합니다.");
+      if (selectedFile.size > 10 * 1000 * 1000) {
+        toast.info("사진 크기는 최대 10MB까지 업로드 가능합니다.");
         return;
       }
       setFile(selectedFile);
@@ -124,29 +140,36 @@ const ModifyArticle = () => {
             toastId: "required",
           });
           return;
-        }
+        } else {
+          const formattedContent = content.replace(/\n/g, "\r\n"); // 개행 문자 정규화
 
-        const formattedContent = currentUserText.replace(/\n/g, "\r\n"); // 개행 문자 정규화
+          if (formattedContent.length > 15000) {
+            toast.info("글 내용은 15000자 이하로 작성해주세요.", {
+              toastId: "contentLength",
+            });
+            return;
+          }
 
-        const response = await ArticleItemService.patchArticleItem(
-          articleId,
-          title.trim(),
-          subCategory,
-          formattedContent.trim()
-        );
+          const response = await ArticleItemService.patchArticleItem(
+            articleId,
+            title.trim(),
+            subCategory,
+            formattedContent.trim()
+          );
 
-        if (response.status === 204) {
-          setArticleItems({
-            ...articleItems,
-            title,
-            position: mainCategory,
-            documentName: subCategory,
-            currentUserText,
-          });
-          toast.info("글 수정이 완료되었습니다.", {
-            toastId: "success",
-          });
-          navigate(`/community/article/${articleId}`);
+          if (response.status === 204) {
+            setArticleItems({
+              ...articleItems,
+              title,
+              position: mainCategory,
+              documentName: subCategory,
+              currentUserText,
+            });
+            toast.info("글 수정이 완료되었습니다.", {
+              toastId: "success",
+            });
+            navigate(`/community/article/${articleId}`);
+          }
         }
       } catch (error) {
         // console.error("Failed to modify article:", error);
@@ -251,6 +274,7 @@ const ModifyArticle = () => {
                     <div className="relative">
                       <input
                         type="file"
+                        ref={fileInputRef}
                         accept="image/png, image/jpeg, image/jpg"
                         onChange={handleFileChange}
                         className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
