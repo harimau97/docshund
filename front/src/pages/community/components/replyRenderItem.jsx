@@ -59,7 +59,9 @@ const ReplyRenderItem = ({
 
       //  삭제 후 댓글 리스트 리렌더링
       const resData = await ArticleItemService.fetchArticleItem(item.articleId);
-      setCommentCount(resData.commentCount);
+      if (resData) {
+        setCommentCount(resData.commentCount);
+      }
       setIsReplied((prev) => !prev);
     }
   }, 100);

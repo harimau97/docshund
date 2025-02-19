@@ -6,6 +6,7 @@ import { debounce } from "lodash";
 import communityArticleStore from "../../../store/communityStore/communityArticleStore";
 import ReplyItemService from "../services/replyItemService";
 import RectBtn from "../../../components/button/rectBtn";
+import ArticleItemService from "../services/articleItemService";
 
 const ReplyTextarea = ({ reCommentFlag, commentId }) => {
   const { articleId } = useParams();
@@ -18,6 +19,10 @@ const ReplyTextarea = ({ reCommentFlag, commentId }) => {
   );
   const setIsReplied = communityArticleStore((state) => state.setIsReplied);
 
+  const convertWhiteSpace = (content) => {
+    return content.replace(/\n/g, "\r\n"); // 개행 문자 정규화
+  };
+
   // Debounced submit handler
   const debouncedSubmit = useCallback(
     debounce(async (content, isReComment, commentId) => {
@@ -29,7 +34,9 @@ const ReplyTextarea = ({ reCommentFlag, commentId }) => {
       }
 
       try {
-        const formattedContent = content.replace(/\n/g, "\r\n"); // 개행 문자 정규화
+        const formattedContent = convertWhiteSpace(content); // 개행 문자 정규화
+
+        console.log("formattedContent", formattedContent.trim());
 
         if (isReComment) {
           await ReplyItemService.postReReplyItem(
@@ -44,8 +51,11 @@ const ReplyTextarea = ({ reCommentFlag, commentId }) => {
           );
         }
 
-        const newCommentCount = commentCount + 1;
-        setCommentCount(newCommentCount);
+        const resData = await ArticleItemService.fetchArticleItem(articleId);
+        if (resData) {
+          setCommentCount(resData.commentCount);
+        }
+
         setReplyContent("");
         setContentLength(0);
         setIsReplied((prev) => !prev);
@@ -61,14 +71,14 @@ const ReplyTextarea = ({ reCommentFlag, commentId }) => {
 
   // 즉시 상태를 업데이트하는 함수
   const updateContent = (value) => {
-    if (value.length > 500) {
+    if (convertWhiteSpace(value).length > 500) {
       toast.warn("댓글은 500자 이내로 작성해주세요.", {
         toastId: "exceedReply",
       });
       return;
     }
     setReplyContent(value);
-    setContentLength(value.length);
+    setContentLength(convertWhiteSpace(value).length);
   };
 
   // Cleanup function
