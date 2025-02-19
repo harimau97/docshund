@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.springframework.security.core.Authentication;
@@ -95,6 +97,16 @@ public class AlertsServiceImpl implements AlertsService {
 		}
 		emitter.onCompletion(() -> emitters.remove(userId));
 		emitter.onTimeout(() -> emitters.remove(userId));
+
+		// 🔥 일정 간격으로 heartbeat 메시지 전송 (연결 유지)
+		Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
+			try {
+				emitter.send(SseEmitter.event().name("heartbeat").data("ping"));
+			} catch (IOException e) {
+				emitter.complete();
+			}
+		}, 0, 15, TimeUnit.SECONDS); // 15초마다 실행
+
 		return emitter;
 	}
 
