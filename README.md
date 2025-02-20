@@ -120,7 +120,7 @@
 
 <div style="align: center;">
 
-<img src="image/ERD.png" width="100%">
+<img src="image/png/ERD.png" width="100%">
 </div>
 
 <br>
@@ -128,7 +128,7 @@
 ## 📜 프로젝트 구조
 
 <div>
-<img src="image/ARCHITECTURE.png" width="100%">
+<img src="image/png/ARCHITECTURE.png" width="100%">
 </div>
 
 <br>
@@ -143,11 +143,20 @@
 
 ## 🪛 기술적 설명
 
-### 회원관리
+### 메인화면
+메인화면
+![main.gif](image/gif/main.gif)
 
-<div>
-이곳엔 회원관리에 대한 설명과 움짤이 들어갑니다.
-</div>
+
+
+### 회원관리
+로그인
+![login.gif](image/gif/login.gif)
+
+
+마이페이지
+![profile.gif](image/gif/profile.gif)
+
 
 <br>
 
@@ -156,46 +165,59 @@
 <br>
 
 ### 문서번역
+문서리스트
+![docslist.gif](image/gif/docslist.gif)
 
-<div>
-이곳엔 문서번역에 대한 설명과 움짤이 들어갑니다.
-</div>
+
+문서번역
+![docstrans.gif](image/gif/docstrans.gif)
+
+
+
 
 <br>
 
 ---
 
 <br>
+
 
 ### 커뮤니티
+![forum.gif](image/gif/forum.gif)
 
-<div>
-이곳엔 커뮤니티에 대한 설명과 움짤이 들어갑니다.
-</div>
 
 <br>
 
 ---
 
 <br>
+
+
 
 ### 채팅 및 실시간 알림
+채팅
+![chatting.gif](image/gif/chatting.gif)
 
-<div>
-이곳엔 채팅 및 실시간 알림에 대한 설명과 움짤이 들어갑니다.
-</div>
+
+챗봇
+![chatbot.gif](image/gif/chatbot.gif)
+
+
+실시간 알림
+![alert.gif](image/gif/alert.gif)
+
 
 <br>
 
 ---
 
 <br>
+
 
 ### 기타
 
-<div>
-이곳엔 기타 사항에 대한 설명과 움짤이 들어갑니다.
-</div>
+메모
+![memo.gif](image/gif/memo.gif)
 
 <br>
 
@@ -220,27 +242,4 @@ SSE 연결할 때 DB Connection을 아예 생성하지 않기 때문에 불필�
 
 </div>
 
-<br>
-
 ---
-
-<br>
-
-## 💝 느낀점 및 후기
-
-<div>
-이곳엔 각자 느낀점과 작성한 후기가 들어갑니다.
-
-- 조홍균
-- 이시호
-- 김서현
-- 이경훈
-- 이승연
-- 정지은
-</div>
-
-<br>
-
----
-
-<br>
