@@ -1,7 +1,9 @@
 package com.ssafy.docshund.global.exception;
 
-import static org.springframework.http.HttpStatus.*;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,25 +27,36 @@ import lombok.extern.slf4j.Slf4j;
 public class GlobalExceptionHandler {
 
 	@ExceptionHandler(MethodArgumentNotValidException.class)
-	public ResponseEntity<List<String>> handleMethodArgumentNotValid(MethodArgumentNotValidException exception) {
+	public ResponseEntity handleMethodArgumentNotValid(MethodArgumentNotValidException exception) {
 		List<String> errors = exception.getBindingResult()
 			.getFieldErrors()
 			.stream()
 			.map(error -> error.getField() + " " + error.getDefaultMessage())
 			.collect(Collectors.toList());
 
-		return ResponseEntity.badRequest().body(errors);
+		ExceptionResponse response = new ExceptionResponse(
+			400,
+			"G-M-001",
+			errors.get(0),
+			LocalDateTime.now());
+		return ResponseEntity.badRequest().body(response);
 	}
 
 	@ExceptionHandler(BindException.class)
-	public ResponseEntity<List<String>> handleBindException(BindException exception) {
+	public ResponseEntity handleBindException(BindException exception) {
 		List<String> errors = exception.getBindingResult()
 			.getFieldErrors()
 			.stream()
 			.map(error -> error.getField() + " " + error.getDefaultMessage())
 			.collect(Collectors.toList());
 
-		return ResponseEntity.badRequest().body(errors);
+		ExceptionResponse response = new ExceptionResponse(
+			400,
+			"G-M-001",
+			errors.get(0),
+			LocalDateTime.now());
+
+		return ResponseEntity.badRequest().body(response);
 	}
 
 	@ExceptionHandler(DataIntegrityViolationException.class)
@@ -64,10 +77,13 @@ public class GlobalExceptionHandler {
 	) {
 		log.error("{}", exception.getMessage());
 
-		return new ResponseEntity<>(
-			exception.getMessage(),
-			NOT_FOUND
-		);
+		ExceptionResponse response = new ExceptionResponse(
+			400,
+			"G-RN-001",
+			"해당 데이터를 찾을 수 없습니다.",
+			LocalDateTime.now());
+
+		return ResponseEntity.badRequest().body(response);
 	}
 
 	@ExceptionHandler(AccessDeniedException.class)
@@ -76,10 +92,13 @@ public class GlobalExceptionHandler {
 	) {
 		log.error("{}", exception.getMessage());
 
-		return new ResponseEntity<>(
-			exception.getMessage(),
-			UNAUTHORIZED
-		);
+		ExceptionResponse response = new ExceptionResponse(
+			400,
+			"G-AC-001",
+			"접근할 수 없는 권한입니다.",
+			LocalDateTime.now());
+
+		return ResponseEntity.badRequest().body(response);
 	}
 
 	@ExceptionHandler(MailException.class)
@@ -93,6 +112,12 @@ public class GlobalExceptionHandler {
 	public ResponseEntity globalException(Exception e) {
 		log.error("{}", e);
 
-		return new ResponseEntity(e.getMessage(), INTERNAL_SERVER_ERROR);
+		ExceptionResponse response = new ExceptionResponse(
+			500,
+			"G-001",
+			"서버에 접속할 수 없습니다.",
+			LocalDateTime.now());
+
+		return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(response);
 	}
 }
