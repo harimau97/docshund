@@ -50,14 +50,9 @@ const RegistDocs = ({ open, onClose }) => {
       toast.success("문서 등록 성공", {
         toastId: "registDocs",
       });
-      formData.documentCategory = "";
-      formData.documentName = "";
-      formData.documentVersion = "";
-      formData.documentLink = "";
-      formData.documentLogo = "";
-      formData.license = "";
-      formData.position = "";
-      await fetchDocsList();
+
+      // await fetchDocsList();
+      window.location.reload();
       onClose();
     } else {
       toast.error("문서 등록 실패", {
