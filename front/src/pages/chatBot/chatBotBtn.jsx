@@ -181,7 +181,7 @@ const ChatBotBtn = () => {
                         className={`max-w-[70%] px-4 py-2 rounded-lg ${
                           message.isUser
                             ? "bg-[#E4DCD4] text-gray-800 rounded-br-none"
-                            : "bg-gray-100 text-gray-800 rounded-bl-none"
+                            : "bg-gray-200 text-gray-800 rounded-bl-none"
                         }`}
                       >
                         <p className="text-sm break-words">
