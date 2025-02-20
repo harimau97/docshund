@@ -7,6 +7,7 @@ import { toast } from "react-toastify";
 import _ from "lodash";
 
 const ManageNotification = () => {
+  const [loading, setLoading] = useState(false);
   const [notifications, setNotifications] = useState([]);
 
   const [isEditorOpen, setIsEditorOpen] = useState(false);
@@ -103,11 +104,13 @@ const ManageNotification = () => {
       toast.success("삭제 성공", {
         toastId: "deleteNotification",
       });
+      setLoading(false);
       fetchNoticeData();
     } else {
       toast.error("공지 삭제 실패", {
         toastId: "deleteNotification",
       });
+      setLoading(false);
     }
   };
 
@@ -296,9 +299,12 @@ const ManageNotification = () => {
                       수정
                     </button>
                     <button
-                      onClick={() =>
-                        debouncedHandleDeleteNotification(notification.noticeId)
-                      }
+                      onClick={() => {
+                        setLoading(true);
+                        debouncedHandleDeleteNotification(
+                          notification.noticeId
+                        );
+                      }}
                       className="text-red-600 hover:text-red-700 transition-colors duration-150 cursor-pointer"
                     >
                       삭제
