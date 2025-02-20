@@ -7,6 +7,7 @@ import { toast } from "react-toastify";
 import _ from "lodash";
 
 const ManageNotification = () => {
+  const [loading, setLoading] = useState(false);
   const [notifications, setNotifications] = useState([]);
 
   const [isEditorOpen, setIsEditorOpen] = useState(false);
@@ -103,11 +104,17 @@ const ManageNotification = () => {
       toast.success("삭제 성공", {
         toastId: "deleteNotification",
       });
+      setTimeout(() => {
+        setLoading(false);
+      }, 50);
       fetchNoticeData();
     } else {
       toast.error("공지 삭제 실패", {
         toastId: "deleteNotification",
       });
+      setTimeout(() => {
+        setLoading(false);
+      }, 50);
     }
   };
 
@@ -281,28 +288,39 @@ const ManageNotification = () => {
                     {handleUTC(notification.updatedAt).toLocaleString()}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
-                    <button
-                      onClick={() => {
-                        setIsEditorOpen(true);
-                        setIsEditing(true);
-                        setEditId(notification.noticeId);
-                        setNewNotification({
-                          title: notification.title,
-                          content: notification.content,
-                        });
-                      }}
-                      className="text-[#bc5b39] hover:text-[#a34b2b] transition-colors duration-150 cursor-pointer"
-                    >
-                      수정
-                    </button>
-                    <button
-                      onClick={() =>
-                        debouncedHandleDeleteNotification(notification.noticeId)
-                      }
-                      className="text-red-600 hover:text-red-700 transition-colors duration-150 cursor-pointer"
-                    >
-                      삭제
-                    </button>
+                    {!loading && !isEditorOpen && (
+                      <div className="gap-2 flex">
+                        <button
+                          onClick={() => {
+                            setIsEditorOpen(true);
+                            setIsEditing(true);
+                            setEditId(notification.noticeId);
+                            setNewNotification({
+                              title: notification.title,
+                              content: notification.content,
+                            });
+                          }}
+                          className="text-[#bc5b39] hover:text-[#a34b2b] transition-colors duration-150 cursor-pointer"
+                        >
+                          수정
+                        </button>
+                        <button
+                          onClick={() => {
+                            const deleteConfirm =
+                              confirm("공지를 삭제하시겠습니까?");
+                            if (deleteConfirm) {
+                              setLoading(true);
+                              debouncedHandleDeleteNotification(
+                                notification.noticeId
+                              );
+                            }
+                          }}
+                          className="text-red-600 hover:text-red-700 transition-colors duration-150 cursor-pointer"
+                        >
+                          삭제
+                        </button>
+                      </div>
+                    )}
                   </td>
                 </tr>
               ))}

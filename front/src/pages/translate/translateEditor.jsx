@@ -80,7 +80,6 @@ const TranslateEditor = () => {
 
   const handleClose = () => {
     clearDocsPart();
-    clearBestTrans();
     clearTempSave();
     clearSubmitData();
   };
@@ -135,6 +134,7 @@ const TranslateEditor = () => {
                           toast.error("내용을 입력해주세요.", {
                             toastId: "emptyContent",
                           });
+                          setLoading(false);
                           return;
                         }
 
