@@ -144,17 +144,27 @@
 ## 🪛 기술적 설명
 
 ### 메인화면
-메인화면
+- 메인화면
+
+
+
 ![main.gif](image/gif/main.gif)
 
 
 
 ### 회원관리
-로그인
+- 로그인
+
+
+
 ![login.gif](image/gif/login.gif)
 
 
-마이페이지
+- 마이페이지
+
+
+
+
 ![profile.gif](image/gif/profile.gif)
 
 
@@ -165,11 +175,18 @@
 <br>
 
 ### 문서번역
-문서리스트
+- 문서리스트
+
+
+
+
 ![docslist.gif](image/gif/docslist.gif)
 
 
-문서번역
+- 문서번역
+
+
+
 ![docstrans.gif](image/gif/docstrans.gif)
 
 
@@ -195,15 +212,24 @@
 
 
 ### 채팅 및 실시간 알림
-채팅
+- 채팅
+
+
 ![chatting.gif](image/gif/chatting.gif)
 
 
-챗봇
+- 챗봇
+
+
+
 ![chatbot.gif](image/gif/chatbot.gif)
 
 
-실시간 알림
+- 실시간 알림
+
+
+
+
 ![alert.gif](image/gif/alert.gif)
 
 
@@ -216,7 +242,10 @@
 
 ### 기타
 
-메모
+- 메모
+
+
+
 ![memo.gif](image/gif/memo.gif)
 
 <br>
