@@ -4,6 +4,7 @@ import ChatBotBtn from "../chatBot/chatBotBtn.jsx";
 import Information from "./page/information.jsx";
 import { MessageCircle } from "lucide-react";
 import { contextMenu } from "react-contexify";
+import { toast } from "react-toastify";
 
 // 아이콘
 import Korean from "../../assets/icon/korean.png";
@@ -50,6 +51,10 @@ const ViewerMainPage = () => {
   const CheckNumber = (e) => {
     if (e.target.value > docDataLength.current) {
       e.target.value = docDataLength.current;
+    } else if (e.target.value < 1 && e.target.value !== "") {
+      toast.warn("최소 값은 1입니다.", {
+        toastId: "minValue",
+      });
     }
     targetPartId.current = Number(e.target.value - 1);
   };
@@ -94,7 +99,7 @@ const ViewerMainPage = () => {
     >
       <Information />
       {docDataLength.current > 0 && (
-        <div className="flex fixed top-5 right-4 gap-2 z-[1100] items-center">
+        <div className="flex fixed top-5 right-4 gap-2 z-[1100] items-center hidden sm:flex">
           <div className="relative">
             <input
               type="number"
@@ -123,7 +128,7 @@ const ViewerMainPage = () => {
               className="w-32 px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-[#C96442] focus:border-[#C96442] outline-none transition-all duration-200 shadow-sm hover:shadow-md bg-white text-gray-700 placeholder-gray-400 [&::-webkit-inner-spin-button]:hidden [&::-webkit-outer-spin-button]:hidden"
             />
             <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm">
-              / {docDataLength.current + 1}
+              / {docDataLength.current}
             </span>
           </div>
           <button
