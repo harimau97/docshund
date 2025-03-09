@@ -128,6 +128,8 @@
      - react-virtuoso 라이브러리를 사용하여 화면에 보이는 영역만 렌더링
      - 검색 및 문단 이동 기능 구현
   3. 마크업/마크다운 문법을 지원하는 에디터/뷰어를 적용
+  4. 사용자 편의를 위한 기능 투어 구현
+     - react-joyride 라이브러리를 이용
      
 - **챗봇 프롬프팅 및 UI 구현**
   
@@ -307,6 +309,10 @@
 - 문서리스트
 
 ![docslist.gif](image/gif/docslist.gif)
+
+- 기능 투어
+
+![Tour.gif](image/gif/Tour.gif)
 
 - 문서번역
 
